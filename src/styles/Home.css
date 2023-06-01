@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.main-screen {
+  width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+}
+
+.main-sub{
+  width: 400px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.home{
+  overflow-x: hidden;
+  color: white;
+  max-width: 400px;
+}
