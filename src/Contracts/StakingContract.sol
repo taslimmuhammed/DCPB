@@ -7,14 +7,14 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract StakingContract {
     mapping(address => bool) public Active;
     IERC20 public token;
-    uint256 public decimals = 10**6;
+    uint256 public decimals = 10 ** 6;
     address public owner = 0x6B851e5B220438396ac5ee74779DDe1a54f795A9;
     address public AWallet = 0x584C5ab8e595c0C2a1aA0cD23a1aEa56a35B9698;
     address public BWallet = 0x1F4de95BbE47FeE6DDA4ace073cc07eF858A2e94;
     address CWallet = 0xF4fC364851D03A7Fc567362967D555a4d843647d;
     address public DCTokenAddress = 0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8;
     mapping(address => UserStruct) public Users;
-    struct DynamicStruct{
+    struct DynamicStruct {
         uint256 reward;
         uint256 timeStamp;
     }
@@ -60,7 +60,7 @@ contract StakingContract {
         locked = false;
     }
 
-    function signIn(address _friend) public nonReentrant{
+    function signIn(address _friend) public nonReentrant {
         require(msg.sender != _friend);
         require(!Active[msg.sender], "Already signed in");
         require(
@@ -73,14 +73,14 @@ contract StakingContract {
     }
 
     function handleUpReferals(address _friend) internal {
-        address[6] storage upReferals = Users[_friend].upReferals;
-        for (uint8 i = 0; i < 5; i++) upReferals[i + 1] = upReferals[i];
+        address[6] memory upReferals = Users[_friend].upReferals;
+        for (uint8 i = 5; i > 0; i--) upReferals[i] = upReferals[i - 1];
         upReferals[0] = _friend;
         Users[msg.sender].upReferals = upReferals;
     }
 
     function handleDownReferals() internal {
-        for(uint8 i =0;i<3;i++) Users[msg.sender].downReferrals.push();
+        for (uint8 i = 0; i < 3; i++) Users[msg.sender].downReferrals.push();
         address friend;
         for (uint8 i = 0; i < 3; i++) {
             friend = Users[msg.sender].upReferals[i];
@@ -101,7 +101,12 @@ contract StakingContract {
     }
 
     function _stake(uint256 _amount) internal {
-        StakeStruct memory newStake = StakeStruct(_amount * 2,0,0,block.timestamp);
+        StakeStruct memory newStake = StakeStruct(
+            _amount * 2,
+            0,
+            0,
+            block.timestamp
+        );
         require(
             token.transferFrom(msg.sender, address(this), _amount),
             "Please increase the allowance to the contract"
@@ -127,7 +132,9 @@ contract StakingContract {
         for (uint8 i = 0; i < 6; i++) {
             if (upRefererals[i] == address(0)) break;
             if (Users[upRefererals[i]].downReferrals[0].length > i)
-                Users[upRefererals[i]].dynamicPerDay.push(DynamicStruct(reward, block.timestamp)) ;
+                Users[upRefererals[i]].dynamicPerDay.push(
+                    DynamicStruct(reward, block.timestamp)
+                );
         }
 
         address[][] memory downReferrals = Users[msg.sender].downReferrals;
@@ -137,26 +144,34 @@ contract StakingContract {
                 if (referer == address(0)) break;
                 else {
                     if (Users[referer].downReferrals[0].length > i)
-                        Users[upRefererals[i]].dynamicPerDay.push(DynamicStruct(reward, block.timestamp)) ;
+                        Users[upRefererals[i]].dynamicPerDay.push(
+                            DynamicStruct(reward, block.timestamp)
+                        );
                 }
             }
         }
     }
 
-    function getTotalDynamicRewards(address _user) public view returns (uint256) {
+    function getTotalDynamicRewards(
+        address _user
+    ) public view returns (uint256) {
         uint256 total = 0;
         DynamicStruct[] memory list = Users[_user].dynamicPerDay;
-        for(uint256 i = 0; i < list.length; i++) {
-           uint256 timeDiff = block.timestamp - list[i].timeStamp;
-           timeDiff = timeDiff / 1 days;
-           total += timeDiff * list[i].reward;
+        for (uint256 i = 0; i < list.length; i++) {
+            uint256 timeDiff = block.timestamp - list[i].timeStamp;
+            timeDiff = timeDiff / 1 days;
+            total += timeDiff * list[i].reward;
         }
-        total+=Users[_user].dynamicAvailable;
-        total+=getTotalStaticRewards(_user)*calculateTeamBonus(_user)/100;
+        total += Users[_user].dynamicAvailable;
+        total +=
+            (getTotalStaticRewards(_user) * calculateTeamBonus(_user)) /
+            100;
         return total;
     }
 
-    function getTotalStaticRewards(address _user) public view returns (uint256) {
+    function getTotalStaticRewards(
+        address _user
+    ) public view returns (uint256) {
         StakeStruct[] memory stakes = Users[_user].stakes;
         uint256 total = 0;
         for (uint256 i = 0; i < stakes.length; i++) {
@@ -179,7 +194,7 @@ contract StakingContract {
     }
 
     function calculateTeamBonus(address _user) private view returns (uint256) {
-        uint8 rank = Users[_user].rank; 
+        uint8 rank = Users[_user].rank;
         if (rank == 1) return 10;
         if (rank == 2) return 20;
         if (rank == 3) return 30;
@@ -189,100 +204,122 @@ contract StakingContract {
         return 0;
     }
 
-    function claimStaticReward(uint256 _amount) public nonReentrant{
-        uint256 totalReward= getTotalStaticRewards(msg.sender);
-        require(_amount<=totalReward, "The amount should be less than the totals rewards"); 
+    function claimStaticReward(uint256 _amount) public nonReentrant {
+        uint256 totalReward = getTotalStaticRewards(msg.sender);
+        require(
+            _amount <= totalReward,
+            "The amount should be less than the totals rewards"
+        );
         updateTotalStaticReward(_amount);
         token.transfer(msg.sender, _amount);
     }
-    function updateTotalStaticReward(uint256 _amount) internal{
+
+    function updateTotalStaticReward(uint256 _amount) internal {
         StakeStruct[] memory stakes = Users[msg.sender].stakes;
         uint256 reward = _amount;
         for (uint256 i = 0; i < stakes.length; i++) {
-            if(reward<=0) break;
-             uint256 timeDiff = block.timestamp - stakes[i].timestamp;
+            if (reward <= 0) break;
+            uint256 timeDiff = block.timestamp - stakes[i].timestamp;
             timeDiff = timeDiff / 1 days;
             uint256 totalClaimable = (timeDiff * stakes[i].reward) / 200;
             totalClaimable = totalClaimable - stakes[i].staticClaimed;
-            if ((totalClaimable +stakes[i].dynamicClaimed +stakes[i].staticClaimed) >= stakes[i].reward)
-            {
-                totalClaimable =stakes[i].reward -(stakes[i].dynamicClaimed + stakes[i].staticClaimed);
+            if (
+                (totalClaimable +
+                    stakes[i].dynamicClaimed +
+                    stakes[i].staticClaimed) >= stakes[i].reward
+            ) {
+                totalClaimable =
+                    stakes[i].reward -
+                    (stakes[i].dynamicClaimed + stakes[i].staticClaimed);
             }
-            if(totalClaimable>reward) totalClaimable = reward;
-            reward -=totalClaimable;
+            if (totalClaimable > reward) totalClaimable = reward;
+            reward -= totalClaimable;
             Users[msg.sender].stakes[i].staticClaimed += totalClaimable;
         }
     }
 
-    function claimDynamicReward(uint256 _amount) public nonReentrant{
-        uint256 totalReward= getTotalDynamicRewards(msg.sender);
-        require(_amount<=totalReward, "The amount should be less than the totals rewards"); 
-        uint256 total  = updateStakes(_amount);
+    function claimDynamicReward(uint256 _amount) public nonReentrant {
+        uint256 totalReward = getTotalDynamicRewards(msg.sender);
+        require(
+            _amount <= totalReward,
+            "The amount should be less than the totals rewards"
+        );
+        uint256 total = updateStakes(_amount);
         token.transfer(msg.sender, total);
     }
 
-    function updateStakes(uint256 _amount) internal returns(uint256){
+    function updateStakes(uint256 _amount) internal returns (uint256) {
         StakeStruct[] memory stakes = Users[msg.sender].stakes;
         uint256 reward = _amount;
         uint256 total = 0;
         for (uint256 i = 0; i < stakes.length; i++) {
-            uint256 totalClaimable = stakes[i].reward - (stakes[i].dynamicClaimed + stakes[i].staticClaimed);
-            if(reward<=totalClaimable){
-               total+= reward;
-               Users[msg.sender].stakes[i].dynamicClaimed+=reward;
-               return total;
-            }else{
-                reward -=totalClaimable;
-                total  +=totalClaimable;
-                Users[msg.sender].stakes[i].dynamicClaimed+=totalClaimable;
+            uint256 totalClaimable = stakes[i].reward -
+                (stakes[i].dynamicClaimed + stakes[i].staticClaimed);
+            if (reward <= totalClaimable) {
+                total += reward;
+                Users[msg.sender].stakes[i].dynamicClaimed += reward;
+                return total;
+            } else {
+                reward -= totalClaimable;
+                total += totalClaimable;
+                Users[msg.sender].stakes[i].dynamicClaimed += totalClaimable;
             }
         }
         return total;
     }
-    function checkUpgradablity(address _user) public view returns(bool){
+
+    function checkUpgradablity(address _user) public view returns (bool) {
         UserStruct memory user = Users[_user];
-        if(user.rank==0){
-           if(getTotalStakes(_user)>=2000*decimals) return true;
-           else return false;
-        }else if(user.rank==1){
-            if(getRefsWithRank(1,_user)>=3) return true;
+        if (user.rank == 0) {
+            if (getTotalStakes(_user) >= 2000 * decimals) return true;
             else return false;
-        }else if(user.rank==2){
-            if(getRefsWithRank(2,_user)>=3) return true;
+        } else if (user.rank == 1) {
+            if (getRefsWithRank(1, _user) >= 3) return true;
             else return false;
-        }else if(user.rank==3){
-            if(getRefsWithRank(3,_user)>=3) return true;
+        } else if (user.rank == 2) {
+            if (getRefsWithRank(2, _user) >= 3) return true;
             else return false;
-        }else if(user.rank==4){
-            if(getRefsWithRank(4,_user)>=3) return true;
+        } else if (user.rank == 3) {
+            if (getRefsWithRank(3, _user) >= 3) return true;
             else return false;
-        }else if(user.rank==5){
-            if(getRefsWithRank(5,_user)>=3) return true;
+        } else if (user.rank == 4) {
+            if (getRefsWithRank(4, _user) >= 3) return true;
             else return false;
-        }else{
+        } else if (user.rank == 5) {
+            if (getRefsWithRank(5, _user) >= 3) return true;
+            else return false;
+        } else {
             return false;
         }
     }
 
-    function getTotalStakes(address _user) public view returns(uint256){
+    function getTotalStakes(address _user) public view returns (uint256) {
         StakeStruct[] memory stakes = Users[_user].stakes;
         uint256 total = 0;
-        for (uint256 i = 0; i < stakes.length; i++) total+= stakes[i].reward;
+        for (uint256 i = 0; i < stakes.length; i++) total += stakes[i].reward;
         return total;
     }
 
-    function getRefsWithRank(uint8 _rank, address _user) public view returns(uint256){
+    function getRefsWithRank(
+        uint8 _rank,
+        address _user
+    ) public view returns (uint256) {
         address[] memory refs = Users[_user].downReferrals[0];
         uint256 total = 0;
-        for (uint256 i = 0; i < refs.length; i++){
-          if(Users[refs[i]].rank==_rank) total++;
+        for (uint256 i = 0; i < refs.length; i++) {
+            if (Users[refs[i]].rank == _rank) total++;
         }
         return total;
     }
-    function upgradeLevel() public nonReentrant{
-        require(checkUpgradablity(msg.sender), "You cant upgrade untill next goal is fulfilled");
-        Users[msg.sender].rank+=1;
+
+    function upgradeLevel() public nonReentrant {
+        require(
+            checkUpgradablity(msg.sender),
+            "You cant upgrade untill next goal is fulfilled"
+        );
+        Users[msg.sender].rank += 1;
     }
+
     // Admin Functions:- Only to be used in case of emergencies
     function withDrawTokens(
         address _token,
@@ -295,22 +332,42 @@ contract StakingContract {
         );
     }
 
-    function changeDCTokenAddress(address newAddr) public onlyOwner{
+    function changeDCTokenAddress(address newAddr) public onlyOwner {
         DCTokenAddress = newAddr;
     }
-    function getStakes(address _user) public view returns(StakeStruct[] memory){
+
+    function getStakes(
+        address _user
+    ) public view returns (StakeStruct[] memory) {
         return Users[_user].stakes;
     }
-    function getUpReferals(address _user) public view returns(address[6] memory){
+
+    function getUpReferals(
+        address _user
+    ) public view returns (address[6] memory) {
         return Users[_user].upReferals;
     }
-    function getDownReferals(address _user) public view returns(address[][] memory){
+
+    function getDownReferals(
+        address _user
+    ) public view returns (address[][] memory) {
         return Users[_user].downReferrals;
     }
-    function getDynamicPerDay(address _user) public view returns(DynamicStruct[] memory){
+
+    function getDownReferalsInLevel(
+        address _user,
+        uint8 index
+    ) public view returns (address[] memory) {
+        return Users[_user].downReferrals[index];
+    }
+
+    function getDynamicPerDay(
+        address _user
+    ) public view returns (DynamicStruct[] memory) {
         return Users[_user].dynamicPerDay;
     }
-        // function DistributeDynamicAmount(
+
+    // function DistributeDynamicAmount(
     //     uint256 TReward,
     //     address _user
     // ) internal returns (uint256) {
@@ -330,4 +387,12 @@ contract StakingContract {
     //     }
     //     return TReward;
     // }
+    // 0x0000000000000000000000000000000000000000
+    // 0x17F6AD8Ef982297579C203069C1DbfFE4348c372
+    // 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4
+    // 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
+    // 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db
+    // stake - 0x9d83e140330758a8fFD07F8Bd73e86ebcA8a5692
+    // token -0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8
+    // 100000000
 }
