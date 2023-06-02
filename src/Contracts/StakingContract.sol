@@ -5,13 +5,14 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract StakingContract {
-    mapping(address => bool) Active;
+    mapping(address => bool) public Active;
     IERC20 public token;
-    address owner = 0x6B851e5B220438396ac5ee74779DDe1a54f795A9;
-    address AWallet = 0x584C5ab8e595c0C2a1aA0cD23a1aEa56a35B9698;
-    address BWallet = 0x1F4de95BbE47FeE6DDA4ace073cc07eF858A2e94;
+    uint256 public decimals = 10**6;
+    address public owner = 0x6B851e5B220438396ac5ee74779DDe1a54f795A9;
+    address public AWallet = 0x584C5ab8e595c0C2a1aA0cD23a1aEa56a35B9698;
+    address public BWallet = 0x1F4de95BbE47FeE6DDA4ace073cc07eF858A2e94;
     address CWallet = 0xF4fC364851D03A7Fc567362967D555a4d843647d;
-    address DCTokenAddress;
+    address public DCTokenAddress = 0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8;
     mapping(address => UserStruct) public Users;
     struct DynamicStruct{
         uint256 reward;
@@ -31,12 +32,9 @@ contract StakingContract {
         uint256 dynamicAvailable;
         uint8 rank;
     }
-    event StakeDeposited(address indexed account, uint256 amount);
-    event StakeWithdrawn(address indexed account, uint256 amount);
 
     constructor(address _token) {
         token = IERC20(_token);
-        owner = msg.sender;
     }
 
     modifier signedIn() {
@@ -48,7 +46,7 @@ contract StakingContract {
     }
     modifier onlyOwner() {
         require(
-            msg.sender == owner,
+            (msg.sender == owner),
             "you are not allowed to utilise this function"
         );
         _;
@@ -82,6 +80,7 @@ contract StakingContract {
     }
 
     function handleDownReferals() internal {
+        for(uint8 i =0;i<3;i++) Users[msg.sender].downReferrals.push();
         address friend;
         for (uint8 i = 0; i < 3; i++) {
             friend = Users[msg.sender].upReferals[i];
@@ -144,7 +143,7 @@ contract StakingContract {
         }
     }
 
-    function getTotalDynamicRewards(address _user) private view returns (uint256) {
+    function getTotalDynamicRewards(address _user) public view returns (uint256) {
         uint256 total = 0;
         DynamicStruct[] memory list = Users[_user].dynamicPerDay;
         for(uint256 i = 0; i < list.length; i++) {
@@ -153,6 +152,7 @@ contract StakingContract {
            total += timeDiff * list[i].reward;
         }
         total+=Users[_user].dynamicAvailable;
+        total+=getTotalStaticRewards(_user)*calculateTeamBonus(_user)/100;
         return total;
     }
 
@@ -239,6 +239,50 @@ contract StakingContract {
         }
         return total;
     }
+    function checkUpgradablity(address _user) public view returns(bool){
+        UserStruct memory user = Users[_user];
+        if(user.rank==0){
+           if(getTotalStakes(_user)>=2000*decimals) return true;
+           else return false;
+        }else if(user.rank==1){
+            if(getRefsWithRank(1,_user)>=3) return true;
+            else return false;
+        }else if(user.rank==2){
+            if(getRefsWithRank(2,_user)>=3) return true;
+            else return false;
+        }else if(user.rank==3){
+            if(getRefsWithRank(3,_user)>=3) return true;
+            else return false;
+        }else if(user.rank==4){
+            if(getRefsWithRank(4,_user)>=3) return true;
+            else return false;
+        }else if(user.rank==5){
+            if(getRefsWithRank(5,_user)>=3) return true;
+            else return false;
+        }else{
+            return false;
+        }
+    }
+
+    function getTotalStakes(address _user) public view returns(uint256){
+        StakeStruct[] memory stakes = Users[_user].stakes;
+        uint256 total = 0;
+        for (uint256 i = 0; i < stakes.length; i++) total+= stakes[i].reward;
+        return total;
+    }
+
+    function getRefsWithRank(uint8 _rank, address _user) public view returns(uint256){
+        address[] memory refs = Users[_user].downReferrals[0];
+        uint256 total = 0;
+        for (uint256 i = 0; i < refs.length; i++){
+          if(Users[refs[i]].rank==_rank) total++;
+        }
+        return total;
+    }
+    function upgradeLevel() public nonReentrant{
+        require(checkUpgradablity(msg.sender), "You cant upgrade untill next goal is fulfilled");
+        Users[msg.sender].rank+=1;
+    }
     // Admin Functions:- Only to be used in case of emergencies
     function withDrawTokens(
         address _token,
@@ -249,6 +293,22 @@ contract StakingContract {
             withdrawalAddress,
             token.balanceOf(address(this))
         );
+    }
+
+    function changeDCTokenAddress(address newAddr) public onlyOwner{
+        DCTokenAddress = newAddr;
+    }
+    function getStakes(address _user) public view returns(StakeStruct[] memory){
+        return Users[_user].stakes;
+    }
+    function getUpReferals(address _user) public view returns(address[6] memory){
+        return Users[_user].upReferals;
+    }
+    function getDownReferals(address _user) public view returns(address[][] memory){
+        return Users[_user].downReferrals;
+    }
+    function getDynamicPerDay(address _user) public view returns(DynamicStruct[] memory){
+        return Users[_user].dynamicPerDay;
     }
         // function DistributeDynamicAmount(
     //     uint256 TReward,
