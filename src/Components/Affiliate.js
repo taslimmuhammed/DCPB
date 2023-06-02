@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { EthersContext } from '../Contexts/EthersContext'
 
 function Affiliate() {
+    const { tokenContract, contract } = useContext(EthersContext)
     return (
         <div className='text-white'>
            

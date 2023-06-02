@@ -16,6 +16,8 @@ export default function Home() {
           <Route exact path='/list' element={< ListPage />}></Route>
           <Route exact path='/affiliate' element={< AffiliatePage />}></Route>
           <Route exact path='/admin' element={< AdminPage />}></Route>
+          <Route exact path='/login' element={< AdminPage />}></Route>
+          <Route exact path='/landing' element={< AdminPage />}></Route>
         </Routes>
      </div>
     </div>

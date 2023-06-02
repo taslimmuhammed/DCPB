@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { EthersContext } from '../Contexts/EthersContext'
 
 function StakingList() {
+    const { tokenContract,contract, address } = useContext(EthersContext)
     const stakingList = ["", "", "", "", "",]
   return (
     <div className='p-3 mb-10'>

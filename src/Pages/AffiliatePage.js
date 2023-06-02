@@ -1,10 +1,18 @@
-import React from 'react'
+import { EthersContext } from '../Contexts/EthersContext'
+import { useContext } from 'react'
 import Footer from '../Components/Footer'
 import Navbar from '../Components/Navbar'
 import Affiliate from '../Components/Affiliate'
+import Connect from '../Components/Connect'
+import Loader from '../Components/Loader'
+import Login from '../Components/Login'
 
 function AffiliatePage() {
-  return (
+  const { address, SignedIn, L1, L2 } = useContext(EthersContext)
+  if (!address) return (<Connect />)
+  else if (L1 || L2) return <Loader />
+  else if (!SignedIn) return (<Login />)
+  else return (
     <div>
           <Navbar heading="Affiliate"/>
           <Affiliate/>

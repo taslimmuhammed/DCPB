@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import copy from '../Assets/copy.svg'
+import { EthersContext } from '../Contexts/EthersContext'
 function Home() {
+  const { tokenContract, contract } = useContext(EthersContext)
   return (
     <div className='p-2 home'>
       <div className='flex justify-between  py-3'>

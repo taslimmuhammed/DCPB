@@ -3,11 +3,20 @@ import Footer from '../Components/Footer'
 import Navbar from '../Components/Navbar'
 import Staking from '../Components/Staking'
 import StakingList from '../Components/StakingList'
+import { EthersContext } from '../Contexts/EthersContext'
+import { useContext } from 'react'
+import Connect from '../Components/Connect'
+import Loader from '../Components/Loader'
+import Login from '../Components/Login'
 
 function ListPage() {
-  return (
-    <div>
-      <Navbar heading="Staking List" />
+  const { address, SignedIn, L1, L2 } = useContext(EthersContext)
+  if (!address) return (<Connect />)
+  else if (L1 || L2) return <Loader />
+  else if (!SignedIn) return (<Login />)
+  else return (
+      <div>
+      <Navbar heading="Staking List"/>
       <StakingList/>
       <Footer />
     </div>

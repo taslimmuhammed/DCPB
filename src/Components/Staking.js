@@ -1,8 +1,32 @@
-import React , {useState}from 'react'
+import React , {useContext, useState}from 'react'
 import USDT from '../Assets/usdt.png'
 import verify from '../Assets/verify.svg'
+import { useContract } from "@thirdweb-dev/react";
+import { EthersContext } from '../Contexts/EthersContext';
+import { ContractAddress } from '../Utils/Utils';
+import { ethers } from 'ethers';
+import { useContractWrite } from "@thirdweb-dev/react";
+import { toast } from 'react-toastify';
+
 function Staking() {
     const [TokenInput, setTokenInput] = useState('1000')
+    const [isLoading, setisLoading] = useState(false)
+  const { tokenContract, contract } = useContext(EthersContext)
+  const { mutateAsync: increaseAllowance } = useContractWrite(tokenContract, "increaseAllowance")
+  const handleBuy = async()=>{
+    setisLoading(true)
+    try{
+    let  amount = parseInt(TokenInput)
+    amount = ethers.BigNumber.from(amount)
+    amount = amount.mul(10**6+"")
+    const data = await increaseAllowance({ args: [ContractAddress, amount] });
+    toast.success("Transaction succeful")
+    }catch(e){
+     console.log(e);
+     toast.error("transaction failed")
+    }
+    setisLoading(false)
+  }
   return (
     <div className='text-white font-mono'>
           <div className="flex flex-col relative mt-10">
@@ -56,7 +80,8 @@ function Staking() {
                   </div>
               </div>
 
-              <div className='mt-5 w-full text-center bg-stone-600 text-yellow-400 font-bold text-2xl p-2 hover:bg-stone-700'>
+              <div className='mt-5 w-full text-center bg-stone-600 text-yellow-400 font-bold text-2xl p-2 hover:bg-stone-700'
+              onClick={handleBuy}>
                   Confirm
               </div>
 
