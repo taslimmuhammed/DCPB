@@ -5,6 +5,7 @@ import StakingPage from "./Pages/StakingPage";
 import ListPage from "./Pages/ListPage";
 import AffiliatePage from "./Pages/AffiliatePage";
 import AdminPage from "./Pages/AdminPage";
+import WalletPage from "./Pages/WalletPage";
 
 export default function Home() {
   return (
@@ -16,8 +17,7 @@ export default function Home() {
           <Route exact path='/list' element={< ListPage />}></Route>
           <Route exact path='/affiliate' element={< AffiliatePage />}></Route>
           <Route exact path='/admin' element={< AdminPage />}></Route>
-          <Route exact path='/login' element={< AdminPage />}></Route>
-          <Route exact path='/landing' element={< AdminPage />}></Route>
+          <Route exact path='/wallet' element={< WalletPage />}></Route>
         </Routes>
      </div>
     </div>

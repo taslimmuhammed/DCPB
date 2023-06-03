@@ -7,19 +7,23 @@ import { ContractAddress } from '../Utils/Utils';
 import { ethers } from 'ethers';
 import { useContractWrite } from "@thirdweb-dev/react";
 import { toast } from 'react-toastify';
+import Loader from './Loader';
 
 function Staking() {
     const [TokenInput, setTokenInput] = useState('1000')
     const [isLoading, setisLoading] = useState(false)
   const { tokenContract, contract } = useContext(EthersContext)
   const { mutateAsync: increaseAllowance } = useContractWrite(tokenContract, "increaseAllowance")
+  const { mutateAsync: stake } = useContractWrite(contract, "stake")
   const handleBuy = async()=>{
     setisLoading(true)
+    alert("You must approve 2 upcoming transactions for staking")
     try{
     let  amount = parseInt(TokenInput)
     amount = ethers.BigNumber.from(amount)
     amount = amount.mul(10**6+"")
     const data = await increaseAllowance({ args: [ContractAddress, amount] });
+    const tx = await stake({ args: [amount] });
     toast.success("Transaction succeful")
     }catch(e){
      console.log(e);
@@ -27,6 +31,8 @@ function Staking() {
     }
     setisLoading(false)
   }
+  if(isLoading)return<Loader/>
+  else
   return (
     <div className='text-white font-mono'>
           <div className="flex flex-col relative mt-10">
