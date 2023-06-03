@@ -4,6 +4,7 @@ export const ContractAddress = "0xBB359119e293d8aBbc8530e9a56300665F97d885"
 export const TokenAddress = "0x863aa21721D42B59CCA2a49213780DEc5837D7f1"
 
 export const BigNoToUSDT = (bigno)=>{
+    console.log(bigno);
     let amount = bigno.div(10 ** 6 + "")
     amount = parseInt(amount._hex, 16)
     return amount

@@ -12,6 +12,7 @@ function Wallet() {
     const [DynamicInput, setDynamicInput] = useState("0")
     const [DCIput, setDCIput] = useState("0")
     const { data:_dynamic, isLoading: L3 } = useContractRead(contract, "getTotalDynamicRewards", [address])
+    const { data: User, isLoading: L5 } = useContractRead(contract, "Users", [address])
     const { data: _static, isLoading: L4 } = useContractRead(contract, "getTotalStaticRewards", [address])
     const { mutateAsync: claimDynamicReward } = useContractWrite(contract, "claimDynamicReward")
     const { mutateAsync: claimStaticReward } = useContractWrite(contract, "claimStaticReward")
@@ -42,7 +43,7 @@ function Wallet() {
         }
         setisLoading(false)
     }
-    if (isLoading || L3 || L4 ) return <Loader />
+    if (isLoading || L3 || L4 ||L5) return <Loader />
     else return(
         <div className='text-white'>
 
@@ -57,7 +58,7 @@ function Wallet() {
             <div className='flex w-full justify-between'>
                 <div>
                     <div className='font-semibold text-lg w-32'>Intrest Value</div>
-                    <div className='text-xs text-stone-300'>Min 5USDT | Max {_static && BigNoToUSDT(_static)}</div>
+                    <div className='text-xs text-stone-300'>Min {User && BigNoToUSDT(User.staticLimit)} | Max {_static && BigNoToUSDT(_static)}</div>
                 </div>
                 <input className='bg-stone-700 w-32 p-2 ' placeholder='0' type='number' onChange={(e) => setStaticInput(e.target.value)} />
                 <div className='border border-yellow-300 border-2 p-2 hover:bg-yellow-600' onClick={handleStatic}>
@@ -69,7 +70,7 @@ function Wallet() {
             <div className='flex w-full justify-between mt-5'>
                 <div>
                     <div className='font-semibold text-lg w-32'>Booster Value</div>
-                    <div className='text-xs text-stone-300'>Min 20USDT | Max {_dynamic && BigNoToUSDT(_dynamic)}</div>
+                    <div className='text-xs text-stone-300'>Min {User && BigNoToUSDT(User.dynamicLimit)} | Max {_dynamic && BigNoToUSDT(_dynamic)}</div>
                 </div>
                 <input className='bg-stone-700 w-32 p-2 ' placeholder='0' type='number' onChange={(e) => setDynamicInput(e.target.value)} />
                 <div className='border border-yellow-300 border-2 p-2 hover:bg-yellow-600' onClick={handleDynamic}>
