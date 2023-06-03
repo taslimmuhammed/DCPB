@@ -16,3 +16,8 @@ export const stringToUSDT = (_amount) => {
     amount = amount.mul(10 ** 6 + "")
     return amount
 }
+
+export const getRankfromUser = (_user)=>{
+    if (_user) return 
+    return 0
+}

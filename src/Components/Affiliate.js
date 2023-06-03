@@ -1,26 +1,60 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { EthersContext } from '../Contexts/EthersContext'
+import { useContractRead, useContractWrite } from '@thirdweb-dev/react'
+import { toast } from 'react-toastify'
+import Loader from './Loader'
+import { getRankfromUser } from '../Utils/Utils'
 
 function Affiliate() {
-    const { tokenContract, contract } = useContext(EthersContext)
-    return (
+    const { tokenContract, contract, address } = useContext(EthersContext)
+    const [isLoading, setisLoading] = useState(false)
+    const [Rank, setRank] = useState(0)
+    const { data : Upgradable, isLoading:L3 } = useContractRead(contract, "checkUpgradablity", [address])
+    const { mutateAsync: upgradeLevel } = useContractWrite(contract, "upgradeLevel")
+    const { data:User, isLoading:L4 } = useContractRead(contract, "Users", [address])
+    const handleUpgrade = async () => {
+        setisLoading(true)
+        try {
+            const tx = await upgradeLevel({ args: [] });
+            toast.success("Transaction succeful")
+            window.location.reload()
+        } catch (e) {
+            console.log(e);
+            toast.error("transaction failed")
+        }
+        setisLoading(false)
+    }
+    useEffect(() => {
+        setRank(User? User.rank: 0)
+    }, [User])
+    const getClass = (index)=>{
+        if (index === Rank) return "bg-yellow-500 w-24 h-10 p-1 text-center text-white"
+        else return "bg-stone-500 w-24 h-10 p-1 text-center"
+    }
+    if (isLoading || L3 || L4) return <Loader />
+    else return (
         <div className='text-white'>
 
             {/* seprator */}
             <div className='mt-6 px-3 w-full h-px bg-stone-500' />
 
             <div className='flex w-full justify-evenly mt-3 text-2xl text-stone-400'>
-                <div className='bg-stone-500 w-24 h-10 p-1'>V6</div>
-                <div className='bg-stone-500 w-24 h-10 p-1'>V5</div>
-                <div className='bg-stone-500 w-24 h-10 p-1'>V4</div>
+                <div className={getClass(6)}>V6</div>
+                <div className={getClass(5)}>V5</div>
+                <div className={getClass(4)}>V4</div>
             </div>
 
             <div className='flex w-full justify-evenly mt-3 text-2xl text-stone-400'>
-                <div className='bg-stone-500 w-24 h-10 p-1'>V3</div>
-                <div className='bg-stone-500 w-24 h-10 p-1'>V2</div>
-                <div className='bg-stone-500 w-24 h-10 p-1'>V1</div>
+                <div className={getClass(3)}>V3</div>
+                <div className={getClass(2)}>V2</div>
+                <div className={getClass(1)}>V1</div>
             </div>
-
+            
+            <div className='w-full flex justify-center my-10'>
+            {
+                    Upgradable && <button className="button-85" role="button" onClick={handleUpgrade}>Upgrade Level</button>
+            }
+            </div>
             {/* seprator */}
             <div className='mt-3 px-3 w-full h-px bg-stone-500' />
             
