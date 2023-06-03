@@ -7,7 +7,7 @@ import Connect from '../Components/Connect'
 
 function HomePage() {
     return (
-      <div>
+      <div className= 'pb-32'>
       <Home/>
       <Footer/>
     </div>

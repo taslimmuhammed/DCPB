@@ -13,7 +13,7 @@ function AffiliatePage() {
   else if (L1 || L2) return <Loader />
   else if (!SignedIn) return (<Login />)
   else return (
-    <div>
+    <div className='pb-32'>
           <Navbar heading="Affiliate"/>
           <Affiliate/>
           <Footer />
