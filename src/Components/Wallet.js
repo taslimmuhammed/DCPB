@@ -15,9 +15,6 @@ function Wallet() {
     const { data: _static, isLoading: L4 } = useContractRead(contract, "getTotalStaticRewards", [address])
     const { mutateAsync: claimDynamicReward } = useContractWrite(contract, "claimDynamicReward")
     const { mutateAsync: claimStaticReward } = useContractWrite(contract, "claimStaticReward")
-     useEffect(() => {
-       console.log({_static, _dynamic});
-     }, [_static, _dynamic])
      
     const handleStatic = async () => {
         setisLoading(true)

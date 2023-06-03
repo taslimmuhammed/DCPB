@@ -31,6 +31,8 @@ contract StakingContract {
         DynamicStruct[] dynamicPerDay;
         uint256 dynamicAvailable;
         uint8 rank;
+        uint256 dynamicLimit;
+        uint256 staticLimit;
     }
 
     constructor(address _token) {
@@ -70,6 +72,8 @@ contract StakingContract {
         Active[msg.sender] = true;
         handleUpReferals(_friend);
         handleDownReferals();
+        Users[msg.sender].dynamicLimit = 2 * decimals;
+        Users[msg.sender].staticLimit = 1 * decimals;
     }
 
     function handleUpReferals(address _friend) internal {
@@ -94,7 +98,7 @@ contract StakingContract {
             Users[msg.sender].stakes.length < 5,
             "No of stakes exceeds the limit"
         );
-        require(_amount >= 100, "Min staking amount is 100USDT");
+        require(_amount >= 10 * decimals, "Min staking amount is 100USDT");
         _stake(_amount);
         distributeStakeMoney(_amount);
         handleDirectBonus(_amount);
@@ -159,7 +163,7 @@ contract StakingContract {
         DynamicStruct[] memory list = Users[_user].dynamicPerDay;
         for (uint256 i = 0; i < list.length; i++) {
             uint256 timeDiff = block.timestamp - list[i].timeStamp;
-            timeDiff = timeDiff / 1 days;
+            timeDiff = timeDiff / 60;
             total += timeDiff * list[i].reward;
         }
         total += Users[_user].dynamicAvailable;
@@ -176,7 +180,7 @@ contract StakingContract {
         uint256 total = 0;
         for (uint256 i = 0; i < stakes.length; i++) {
             uint256 timeDiff = block.timestamp - stakes[i].timestamp;
-            timeDiff = timeDiff / 1 days;
+            timeDiff = timeDiff / 60;
             uint256 totalClaimable = (timeDiff * stakes[i].reward) / 200;
             totalClaimable = totalClaimable - stakes[i].staticClaimed;
             if (
@@ -210,8 +214,13 @@ contract StakingContract {
             _amount <= totalReward,
             "The amount should be less than the totals rewards"
         );
+        require(
+            _amount >= Users[msg.sender].staticLimit,
+            "The amount less than the allowed limit"
+        );
         updateTotalStaticReward(_amount);
         token.transfer(msg.sender, _amount);
+        Users[msg.sender].staticLimit = getNextLimit(false, msg.sender);
     }
 
     function updateTotalStaticReward(uint256 _amount) internal {
@@ -220,7 +229,7 @@ contract StakingContract {
         for (uint256 i = 0; i < stakes.length; i++) {
             if (reward <= 0) break;
             uint256 timeDiff = block.timestamp - stakes[i].timestamp;
-            timeDiff = timeDiff / 1 days;
+            timeDiff = timeDiff / 60;
             uint256 totalClaimable = (timeDiff * stakes[i].reward) / 200;
             totalClaimable = totalClaimable - stakes[i].staticClaimed;
             if (
@@ -244,8 +253,13 @@ contract StakingContract {
             _amount <= totalReward,
             "The amount should be less than the totals rewards"
         );
+        require(
+            _amount >= Users[msg.sender].dynamicLimit,
+            "The amount less than the allowed limit"
+        );
         uint256 total = updateStakes(_amount);
         token.transfer(msg.sender, total);
+        Users[msg.sender].staticLimit = getNextLimit(true, msg.sender);
     }
 
     function updateStakes(uint256 _amount) internal returns (uint256) {
@@ -268,10 +282,21 @@ contract StakingContract {
         return total;
     }
 
+    function getNextLimit(
+        bool dynamic,
+        address _user
+    ) public view returns (uint256) {
+        if (dynamic) {
+            return Users[_user].dynamicLimit * 2;
+        } else {
+            return Users[_user].dynamicLimit * 2;
+        }
+    }
+
     function checkUpgradablity(address _user) public view returns (bool) {
         UserStruct memory user = Users[_user];
         if (user.rank == 0) {
-            if (getTotalStakes(_user) >= 2000 * decimals) return true;
+            if (getTotalStakes(_user) >= 40 * decimals) return true;
             else return false;
         } else if (user.rank == 1) {
             if (getRefsWithRank(1, _user) >= 3) return true;

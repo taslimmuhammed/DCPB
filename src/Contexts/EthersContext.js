@@ -5,10 +5,11 @@ import { useContract, useContractWrite, useContractRead } from "@thirdweb-dev/re
 import { ThirdwebSDK } from "@thirdweb-dev/sdk/evm";
 import { useAddress, useBalance } from "@thirdweb-dev/react";
 import { ContractAddress, TokenAddress } from "../Utils/Utils";
+import { StakingABI } from "../Utils/StakingABI";
 
 export const EthersContext = createContext(null);
 export default function Ethers({ children }) {
-    const { contract, isLoading:L1 } = useContract(ContractAddress);
+    const { contract, isLoading:L1 } = useContract(ContractAddress, StakingABI);
     const { contract: tokenContract } = useContract(TokenAddress);
     const address = useAddress();
     const { data:SignedIn, isLoading:L2 } = useContractRead(contract, "Active", [address])
