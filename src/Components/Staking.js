@@ -3,7 +3,7 @@ import USDT from '../Assets/usdt.png'
 import verify from '../Assets/verify.svg'
 import { useContract } from "@thirdweb-dev/react";
 import { EthersContext } from '../Contexts/EthersContext';
-import { ContractAddress } from '../Utils/Utils';
+import { ContractAddress, stringToUSDT } from '../Utils/Utils';
 import { ethers } from 'ethers';
 import { useContractWrite } from "@thirdweb-dev/react";
 import { toast } from 'react-toastify';
@@ -19,9 +19,7 @@ function Staking() {
     setisLoading(true)
     alert("You must approve 2 upcoming transactions for staking")
     try{
-    let  amount = parseInt(TokenInput)
-    amount = ethers.BigNumber.from(amount)
-    amount = amount.mul(10**6+"")
+    let  amount = stringToUSDT(TokenInput)
     const data = await increaseAllowance({ args: [ContractAddress, amount] });
     const tx = await stake({ args: [amount] });
     toast.success("Transaction succeful")

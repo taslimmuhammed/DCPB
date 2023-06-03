@@ -11,7 +11,6 @@ function StakingList() {
           <div className='w-full bg-stone-800 p-5 text-white font-semibold text-sm'>
             {
                   stakingList.map((stake, index) =>{
-                    console.log(stake);
                     let amount = stake.reward.div(2*10**6+"")
                     amount = parseInt(amount._hex,16)
                     let date = parseInt(stake.timestamp._hex, 16) *1000

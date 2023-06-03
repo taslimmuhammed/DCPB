@@ -16,7 +16,7 @@ function WalletPage() {
     else if (!SignedIn) return (<Login />)
     else return (
         <div>
-            <Navbar heading="USDT Staking" />
+            <Navbar heading="Wallet" />
             <Wallet />
             <Footer />
         </div>
