@@ -14,11 +14,17 @@
 }
 
 .main-sub {
-  width: 400px;
+  width: 100vw;
   min-height: 100vh;
   overflow-x: hidden;
 }
-
+@media screen and (min-width: 600px) {
+  .main-sub {
+      width: 400px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+}
 .home {
   overflow-x: hidden;
   color: white;
