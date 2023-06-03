@@ -2,12 +2,15 @@ import React, { useContext } from 'react'
 import copy from '../Assets/copy.svg'
 import { EthersContext } from '../Contexts/EthersContext'
 import VideoPlayer from './VideoPlayer'
+import logo from '../Assets/logo.jpg'
 function Home() {
   const { tokenContract, contract } = useContext(EthersContext)
   return (
     <div className='p-2 home'>
       <div className='flex justify-between  py-3'>
-        <div className='golden-gradient py-2 px-4 rounded-sm font-semibold text-xl'> DCPB</div>
+        {/* <div className='golden-gradient py-2 px-4 rounded-sm font-semibold text-xl'> DCPB</div> */}
+        <img src={logo} className='h-12'/>
+
         <div className='bg-stone-700  py-2 px-4 rounded-sm font-semibold flex text-xl'>
           ID = 0x12345...46897
           <img onClick={() => { navigator.clipboard.writeText("0x7y987429487ddsjfjbdsbjd4") }} src={copy} className='w-8 h-8'></img>
