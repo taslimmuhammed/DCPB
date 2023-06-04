@@ -104,6 +104,7 @@ contract StakingContract {
         distributeStakeMoney(_amount);
         handleDirectBonus(_amount);
         handleRelationBonus(_amount);
+        handleTeamBonus(_amount);
     }
 
     function _stake(uint256 _amount) internal {
@@ -132,7 +133,7 @@ contract StakingContract {
         Users[_friend].directBonus += (_amount * 20) / 100;
     }
 
-    function handleRelationBonus(uint256 _amount) private {
+    function handleRelationBonus(uint256 _amount) internal {
         address[6] memory upRefererals = Users[msg.sender].upReferals;
         uint256 reward = (_amount * 5) / 10000;
         for (uint8 i = 0; i < 6; i++) {
@@ -157,7 +158,38 @@ contract StakingContract {
             }
         }
     }
-
+    function handleTeamBonus(uint256 _amount) internal {
+        uint256 multiple = _amount/10000;
+        address friend = msg.sender;
+        uint256 total  =multiple*60;
+        uint8 rank = Users[friend].rank;
+        while(friend!=address(0)){
+            uint8 friendRank = Users[friend].rank;
+            if(friendRank>rank){
+                uint256 _bonus=(friendRank -rank)*10*multiple;
+                if(total<=_bonus) {
+                    Users[friend].directBonus+=total;
+                    break;
+                    }
+                else {
+                    Users[friend].directBonus+=_bonus;
+                    total-=_bonus;
+                }
+                rank = friendRank;
+            }
+          friend = Users[friend].upReferals[0];
+        }
+    }
+    function handleSameRankBonus(uint256 _amount) internal {
+        address friend = msg.sender;
+        uint256 reward = _amount/1000;
+        uint8 rank = Users[friend].rank;
+        while (true) {
+            friend = Users[friend].upReferals[0];
+            if(friend==address(0)|| Users[friend].rank !=rank) break;
+            else Users[friend].directBonus+=reward;
+        }
+    }
     function getTotalDynamicRewards(
         address _user
     ) public view returns (uint256) {
