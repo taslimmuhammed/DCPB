@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import { EthersContext } from '../Contexts/EthersContext'
 import Loader from './Loader'
 import { useContractRead } from '@thirdweb-dev/react'
+import { BigNoToUSDT, HexToDateString, stringToUSDT } from '../Utils/Utils'
 
 function StakingList() {
     const { tokenContract,contract, address } = useContext(EthersContext)
@@ -11,19 +12,14 @@ function StakingList() {
           <div className='w-full bg-stone-800 p-5 text-white font-semibold text-sm'>
             {
                   stakingList.map((stake, index) =>{
-                    let amount = stake.reward.div(2*10**6+"")
-                    amount = parseInt(amount._hex,16)
-                    let date = parseInt(stake.timestamp._hex, 16) *1000
-                    date = new Date(date)
-                      let dyReward = stake.staticClaimed.div(10 ** 6 + "")
-                      dyReward = parseInt(dyReward._hex, 16)
-                      let stReward = stake.dynamicClaimed.div(10 ** 6 + "")
-                      stReward = parseInt(stReward._hex, 16)
+                    let amount = BigNoToUSDT(stake.reward)/2
+                      let dyReward = BigNoToUSDT(stake.dynamicClaimed)
+                      let stReward = BigNoToUSDT(stake.staticClaimed)
                     return (
                   <div className='bg-stone-700 p-3 mb-3' key={index}>
                       <div className='flex justify-between'>
                           <div className=''>Staking Date:</div>
-                                <div>{date.getFullYear()}/{date.getMonth()+1}/{date.getDate()}</div>
+                                <div>{HexToDateString(stake?.timestamp)}</div>
                       </div>
                       <div className='flex justify-between'>
                           <div className=''>Staking Amount:</div>
@@ -31,11 +27,11 @@ function StakingList() {
                       </div>
                       <div className='flex justify-between'>
                           <div className=''>Staking Intrest:</div>
-                                <div>{amount/100} USDT/day</div>
+                                <div>{stReward} USDT</div>
                       </div>
                             <div className='flex justify-between'>
-                                <div className=''>Staking Intrest:</div>
-                                <div>{amount / 100} USDT/day</div>
+                                <div className=''>Booster Value:</div>
+                                <div>{dyReward} USDT</div>
                             </div>
                       <div className='flex justify-between'>
                           <div className=''>Total Profit</div>

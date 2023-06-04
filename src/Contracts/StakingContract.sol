@@ -170,10 +170,14 @@ contract StakingContract {
             if (friendRank > rank) {
                 uint256 _bonus = (friendRank - rank) * 10 * multiple;
                 if (total <= _bonus) {
-                    Users[friend].directBonus += total;
+                    Users[friend].dynamicPerDay.push(
+                    DynamicStruct(msg.sender, total, block.timestamp)
+                );
                     break;
                 } else {
-                    Users[friend].directBonus += _bonus;
+                    Users[friend].dynamicPerDay.push(
+                    DynamicStruct(msg.sender, _bonus, block.timestamp)
+                );
                     total -= _bonus;
                 }
                 rank = friendRank;
@@ -189,7 +193,9 @@ contract StakingContract {
         while (true) {
             friend = Users[friend].upReferals[0];
             if (friend == address(0) || Users[friend].rank != rank) break;
-            else Users[friend].directBonus += reward;
+            else Users[friend].dynamicPerDay.push(
+                    DynamicStruct(msg.sender, reward, block.timestamp)
+                );
         }
     }
 

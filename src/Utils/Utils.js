@@ -30,4 +30,5 @@ export function shortenAddress(address, startChars = 6, endChars = 4) {
 export function HexToDateString(timestamp){
     let date = parseInt(timestamp._hex, 16) *1000
     date = new Date(date)
+    return `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}`
 }
