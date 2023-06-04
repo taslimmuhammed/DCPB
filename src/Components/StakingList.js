@@ -33,6 +33,10 @@ function StakingList() {
                           <div className=''>Staking Intrest:</div>
                                 <div>{amount/100} USDT/day</div>
                       </div>
+                            <div className='flex justify-between'>
+                                <div className=''>Staking Intrest:</div>
+                                <div>{amount / 100} USDT/day</div>
+                            </div>
                       <div className='flex justify-between'>
                           <div className=''>Total Profit</div>
                               <div>{stReward+dyReward} | {amount*2} <span className='text-yellow-300 font-normal'>Max</span></div>

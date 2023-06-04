@@ -16,9 +16,6 @@ function Staking() {
   const { mutateAsync: increaseAllowance } = useContractWrite(tokenContract, "increaseAllowance")
   const { mutateAsync: stake } = useContractWrite(contract, "stake")
   const { data:Balance} = useBalance(TokenAddress);
-  useEffect(() => {
-    console.log(Balance.displayValue)
-  }, [Balance])
   
   const handleBuy = async()=>{
     setisLoading(true)

@@ -26,3 +26,8 @@ export function shortenAddress(address, startChars = 6, endChars = 4) {
     if (!address) return '';
     return `${address.slice(0, startChars)}...${address.slice(-endChars)}`;
 }
+
+export function HexToDateString(timestamp){
+    let date = parseInt(timestamp._hex, 16) *1000
+    date = new Date(date)
+}
