@@ -1,9 +1,9 @@
-import React , {useContext, useState}from 'react'
+import React , {useContext, useEffect, useState}from 'react'
 import USDT from '../Assets/usdt.png'
 import verify from '../Assets/verify.svg'
-import { useContract } from "@thirdweb-dev/react";
+import { useBalance, useContract } from "@thirdweb-dev/react";
 import { EthersContext } from '../Contexts/EthersContext';
-import { ContractAddress, stringToUSDT } from '../Utils/Utils';
+import { ContractAddress, TokenAddress, stringToUSDT } from '../Utils/Utils';
 import { ethers } from 'ethers';
 import { useContractWrite } from "@thirdweb-dev/react";
 import { toast } from 'react-toastify';
@@ -15,6 +15,11 @@ function Staking() {
   const { tokenContract, contract } = useContext(EthersContext)
   const { mutateAsync: increaseAllowance } = useContractWrite(tokenContract, "increaseAllowance")
   const { mutateAsync: stake } = useContractWrite(contract, "stake")
+  const { data:Balance} = useBalance(TokenAddress);
+  useEffect(() => {
+    console.log(Balance.displayValue)
+  }, [Balance])
+  
   const handleBuy = async()=>{
     setisLoading(true)
     alert("You must approve 2 upcoming transactions for staking")
@@ -29,6 +34,7 @@ function Staking() {
     }
     setisLoading(false)
   }
+
   if(isLoading)return<Loader/>
   else
   return (
@@ -51,7 +57,7 @@ function Staking() {
               </div>
           </div>
           <div className='text-sm text-stone-100 mb-2 mt-1'>
-            <span className='text-stone-500'>Available:</span>  10 USDT
+        <span className='text-stone-500'>Available:</span>  {Balance && Balance.displayValue} USDT
            </div>
         
           <div className='text-stone-500 mt-6'>
