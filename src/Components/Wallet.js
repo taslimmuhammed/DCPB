@@ -19,7 +19,6 @@ function Wallet() {
      
     const handleStatic = async () => {
         setisLoading(true)
-        alert("You must approve 2 upcoming transactions for staking")
         try {
             let amount = stringToUSDT(StaticInput)
             const tx = await claimStaticReward({ args: [amount] });
@@ -32,7 +31,6 @@ function Wallet() {
     }
     const handleDynamic = async () => {
         setisLoading(true)
-        alert("You must approve 2 upcoming transactions for staking")
         try {
             let amount = stringToUSDT(DynamicInput)
             const tx = await claimDynamicReward({ args: [amount] });
