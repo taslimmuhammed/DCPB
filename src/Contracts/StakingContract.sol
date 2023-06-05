@@ -241,18 +241,6 @@ contract StakingContract {
         return total;
     }
 
-    function getTotalWithdrawable(address _user) public view returns (uint256) {
-        StakeStruct[] memory stakes = Users[_user].stakes;
-        uint256 total = 0;
-        for (uint256 i = 0; i < stakes.length; i++) {
-            uint256 available = stakes[i].reward -
-                stakes[i].staticClaimed -
-                stakes[i].dynamicClaimed;
-            total += available;
-        }
-        return total;
-    }
-
     function getIndividualDynamicAlloc(
         address _user
     ) public view returns (uint256[] memory) {
@@ -284,17 +272,6 @@ contract StakingContract {
         return total;
     }
 
-    function calculateTeamBonus(address _user) private view returns (uint256) {
-        uint8 rank = Users[_user].rank;
-        if (rank == 1) return 10;
-        if (rank == 2) return 20;
-        if (rank == 3) return 30;
-        if (rank == 4) return 40;
-        if (rank == 5) return 50;
-        if (rank == 6) return 60;
-        return 0;
-    }
-
     function claimStaticReward(uint256 _amount) public nonReentrant {
         uint256 totalReward = getTotalStaticRewards(msg.sender);
         require(
@@ -307,7 +284,7 @@ contract StakingContract {
         );
         updateTotalStaticReward(_amount);
         token.transfer(msg.sender, _amount);
-        Users[msg.sender].staticLimit = getNextLimit(false, msg.sender);
+        Users[msg.sender].staticLimit *=2;
     }
 
     function updateTotalStaticReward(uint256 _amount) internal {
@@ -339,7 +316,7 @@ contract StakingContract {
         updateDynamicStakes(_amount);
         updatedDynamicPerDay();
         token.transfer(msg.sender, _amount);
-        Users[msg.sender].dynamicLimit = getNextLimit(true, msg.sender);
+        Users[msg.sender].dynamicLimit *=2 ;
     }
 
     function updateDynamicStakes(uint256 _amount) internal {
@@ -366,17 +343,6 @@ contract StakingContract {
     function updatedDynamicPerDay() internal {
         for (uint i = 0; i < Users[msg.sender].dynamicPerDay.length; i++) {
             Users[msg.sender].dynamicPerDay[i].timestamp %= 60;
-        }
-    }
-
-    function getNextLimit(
-        bool dynamic,
-        address _user
-    ) public view returns (uint256) {
-        if (dynamic) {
-            return Users[_user].dynamicLimit * 2;
-        } else {
-            return Users[_user].staticLimit * 2;
         }
     }
 
@@ -445,12 +411,6 @@ contract StakingContract {
         return stakes;
     }
 
-    function getRawStakes(
-        address _user
-    ) public view returns (StakeStruct[] memory) {
-        return Users[_user].stakes;
-    }
-
     function getIndividualStaticReward(
         address _user,
         uint256 index
@@ -467,30 +427,12 @@ contract StakingContract {
         return total;
     }
 
-    function getUpReferals(
-        address _user
-    ) public view returns (address[6] memory) {
-        return Users[_user].upReferals;
-    }
-
-    function getDownReferals(
-        address _user
-    ) public view returns (address[][] memory) {
-        return Users[_user].downReferrals;
-    }
-
-    function getDownReferalsInLevel(
-        address _user,
-        uint8 index
-    ) public view returns (address[] memory) {
-        return Users[_user].downReferrals[index];
-    }
-
-    function getDynamicPerDay(
-        address _user
-    ) public view returns (DynamicStruct[] memory) {
-        return Users[_user].dynamicPerDay;
-    }
+    function getUser(address _user)
+        public
+        view
+        returns (UserStruct memory){
+        return Users[_user];
+        }
 
     // Admin Functions:- Only to be used in case of emergencies
     function transferOwnership(address newOwner) public onlyOwner nonReentrant {

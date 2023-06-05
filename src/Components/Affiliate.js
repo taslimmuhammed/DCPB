@@ -3,16 +3,19 @@ import { EthersContext } from '../Contexts/EthersContext'
 import { useContractRead, useContractWrite } from '@thirdweb-dev/react'
 import { toast } from 'react-toastify'
 import Loader from './Loader'
-import { getRankfromUser } from '../Utils/Utils'
+import { BigNoToInt, BigNoToUSDT, getRankfromUser } from '../Utils/Utils'
 import graph from '../Assets/graph.png'
 import community from '../Assets/community.png'
 function Affiliate() {
     const { tokenContract, contract, address } = useContext(EthersContext)
     const [isLoading, setisLoading] = useState(false)
+    const [Total, setTotal] = useState("0")
+    const [Refs, setRefs] = useState(null)
     const [Rank, setRank] = useState(0)
     const { data : Upgradable, isLoading:L3 } = useContractRead(contract, "checkUpgradablity", [address])
     const { mutateAsync: upgradeLevel } = useContractWrite(contract, "upgradeLevel")
     const { data:User, isLoading:L4 } = useContractRead(contract, "Users", [address])
+    const { data: RefRanks, isLoading: L5 } = useContractRead(contract, "getReferralRanks", [address])
     const handleUpgrade = async () => {
         setisLoading(true)
         try {
@@ -28,7 +31,20 @@ function Affiliate() {
     useEffect(() => {
         setRank(User? User.rank: 0)
     }, [User])
-
+    useEffect(() => {
+      let total=0;
+       let tempArr = []
+        if(RefRanks){
+            for(let i=0;i<RefRanks.length;i++){
+                let temp=BigNoToInt(RefRanks[i])
+                total+=temp
+                tempArr.push(temp)
+            }
+            setTotal(total)
+            setRefs(tempArr)
+        }
+    }, [RefRanks])
+    
     if (isLoading || L3 || L4) return <Loader />
     else return (
         <div className='text-white'>
@@ -51,20 +67,20 @@ function Affiliate() {
             </div>
             </div>
             <div className='flex w-full justify-evenly mt-3 text-2xl text-stone-400 text-white'>
-                <div className='bg-stone-800 w-24 h-10 p-1 px-3  flex justify-between'><span className=''>V6</span><span className='text-yellow-500'>0</span></div>
-                <div className='bg-stone-800 w-24 h-10 p-1 px-3  flex justify-between'><span className=''>V6</span><span className='text-yellow-500'>0</span></div>
-                <div className='bg-stone-800 w-24 h-10 p-1 px-3  flex justify-between'><span className=''>V6</span><span className='text-yellow-500'>0</span></div>
+                <div className='bg-stone-800 w-24 h-10 p-1 px-3  flex justify-between'><span className=''>V6</span><span className='text-yellow-500'>{Refs && Refs[6]}</span></div>
+                <div className='bg-stone-800 w-24 h-10 p-1 px-3  flex justify-between'><span className=''>V5</span><span className='text-yellow-500'>{Refs && Refs[5]}</span></div>
+                <div className='bg-stone-800 w-24 h-10 p-1 px-3  flex justify-between'><span className=''>V4</span><span className='text-yellow-500'>{Refs && Refs[4]}</span></div>
             </div>
 
             <div className='flex w-full justify-evenly mt-3 text-2xl text-stone-400 text-white'>
-                <div className='bg-stone-800 w-24 h-10 p-1 px-3  flex justify-between'><span className=''>V6</span><span className='text-yellow-500'>0</span></div>
-                <div className='bg-stone-800 w-24 h-10 p-1 px-3  flex justify-between'><span className=''>V6</span><span className='text-yellow-500'>0</span></div>
-                <div className='bg-stone-800 w-24 h-10 p-1 px-3  flex justify-between'><span className=''>V6</span><span className='text-yellow-500'>0</span></div>
+                <div className='bg-stone-800 w-24 h-10 p-1 px-3  flex justify-between'><span className=''>V3</span><span className='text-yellow-500'>{Refs && Refs[3]}</span></div>
+                <div className='bg-stone-800 w-24 h-10 p-1 px-3  flex justify-between'><span className=''>V2</span><span className='text-yellow-500'>{Refs && Refs[2]}</span></div>
+                <div className='bg-stone-800 w-24 h-10 p-1 px-3  flex justify-between'><span className=''>V1</span><span className='text-yellow-500'>{Refs && Refs[1]}</span></div>
             </div>
             
             <div className=' flex p-5'>
                 <img src={community} className='w-14'></img>
-                <div className='bg-stone-800 w-20 h-10 p-1 px-3  flex justify-between mt-2 ml-3'>V6</div>
+                <div className='bg-stone-800 w-20 h-10 p-1 px-3  flex justify-between mt-2 ml-3'>{Total && Total-1}</div>
             </div>
             {/* seprator */}
             <div className='mt-3 px-3 w-full h-px bg-stone-500' />

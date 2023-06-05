@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 
-export const ContractAddress = "0x80403b4b7251E7CCd3D2741CA213D9A777cc71C4"
+export const ContractAddress = "0x8E23b38E7482b9E1c4C17dAAD87243E4ADb098dc"
 export const TokenAddress = "0x863aa21721D42B59CCA2a49213780DEc5837D7f1"
 
 export const BigNoToUSDT = (bigno)=>{
@@ -8,7 +8,10 @@ export const BigNoToUSDT = (bigno)=>{
     amount = parseInt(amount._hex, 16)
     return amount
 }
-
+export const BigNoToInt = (bigno)=>{
+    let amount = parseInt(bigno._hex, 16)
+    return amount
+}
 export const stringToUSDT = (_amount) => {
     let amount = parseInt(_amount)
     amount = ethers.BigNumber.from(amount)

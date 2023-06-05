@@ -133,32 +133,6 @@ export const StakingABI = [
         "type": "function"
     },
     {
-        "inputs": [],
-        "name": "AWallet",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "BWallet",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [
             {
                 "internalType": "address",
@@ -210,98 +184,6 @@ export const StakingABI = [
         "type": "function"
     },
     {
-        "inputs": [],
-        "name": "decimals",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_user",
-                "type": "address"
-            }
-        ],
-        "name": "getDownReferals",
-        "outputs": [
-            {
-                "internalType": "address[][]",
-                "name": "",
-                "type": "address[][]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_user",
-                "type": "address"
-            },
-            {
-                "internalType": "uint8",
-                "name": "index",
-                "type": "uint8"
-            }
-        ],
-        "name": "getDownReferalsInLevel",
-        "outputs": [
-            {
-                "internalType": "address[]",
-                "name": "",
-                "type": "address[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_user",
-                "type": "address"
-            }
-        ],
-        "name": "getDynamicPerDay",
-        "outputs": [
-            {
-                "components": [
-                    {
-                        "internalType": "address",
-                        "name": "referer",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "reward",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "timestamp",
-                        "type": "uint256"
-                    }
-                ],
-                "internalType": "struct StakingContract.DynamicStruct[]",
-                "name": "",
-                "type": "tuple[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [
             {
                 "internalType": "address",
@@ -347,24 +229,18 @@ export const StakingABI = [
     {
         "inputs": [
             {
-                "internalType": "bool",
-                "name": "dynamic",
-                "type": "bool"
-            },
-            {
                 "internalType": "address",
                 "name": "_user",
                 "type": "address"
-            }
-        ],
-        "name": "getNextLimit",
-        "outputs": [
+            },
             {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
+                "internalType": "uint256[7]",
+                "name": "rankSet",
+                "type": "uint256[7]"
             }
         ],
+        "name": "getRankNos",
+        "outputs": [],
         "stateMutability": "view",
         "type": "function"
     },
@@ -376,34 +252,12 @@ export const StakingABI = [
                 "type": "address"
             }
         ],
-        "name": "getRawStakes",
+        "name": "getReferralRanks",
         "outputs": [
             {
-                "components": [
-                    {
-                        "internalType": "uint256",
-                        "name": "reward",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "staticClaimed",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "dynamicClaimed",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "timestamp",
-                        "type": "uint256"
-                    }
-                ],
-                "internalType": "struct StakingContract.StakeStruct[]",
+                "internalType": "uint256[7]",
                 "name": "",
-                "type": "tuple[]"
+                "type": "uint256[7]"
             }
         ],
         "stateMutability": "view",
@@ -558,12 +412,93 @@ export const StakingABI = [
                 "type": "address"
             }
         ],
-        "name": "getUpReferals",
+        "name": "getUser",
         "outputs": [
             {
-                "internalType": "address[6]",
+                "components": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint256",
+                                "name": "reward",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "staticClaimed",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "dynamicClaimed",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "timestamp",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct StakingContract.StakeStruct[]",
+                        "name": "stakes",
+                        "type": "tuple[]"
+                    },
+                    {
+                        "internalType": "address[6]",
+                        "name": "upReferals",
+                        "type": "address[6]"
+                    },
+                    {
+                        "internalType": "address[][]",
+                        "name": "downReferrals",
+                        "type": "address[][]"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "referer",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "reward",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "timestamp",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct StakingContract.DynamicStruct[]",
+                        "name": "dynamicPerDay",
+                        "type": "tuple[]"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "directBonus",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint8",
+                        "name": "rank",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "dynamicLimit",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "staticLimit",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct StakingContract.UserStruct",
                 "name": "",
-                "type": "address[6]"
+                "type": "tuple"
             }
         ],
         "stateMutability": "view",
