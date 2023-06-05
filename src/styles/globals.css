@@ -6,20 +6,6 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   overflow-x: hidden;
 }
-.footer-main {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  justify-content: center;
-  display: flex;
-}
-.footer-sub{
-  width: 400px;
-  background-color: #000000;
-  display: flex;
-  justify-content: space-evenly;
-}
 
 .golden-gradient{
       background-color: rgb(247, 202, 54);

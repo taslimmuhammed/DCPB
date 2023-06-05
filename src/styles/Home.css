@@ -31,6 +31,29 @@
   max-width: 400px;
 }
 
+.footer-main {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  justify-content: center;
+  display: flex;
+}
+
+.footer-sub {
+  width: 100vw;
+  background-color: #000000;
+  display: flex;
+  justify-content: space-evenly;
+}
+@media screen and (min-width: 600px) {
+  .footer-sub {
+      width: 400px;
+      background-color: #000000;
+      display: flex;
+      justify-content: space-evenly;
+    }
+}
 .button-85 {
   padding: 0.6em 2em;
   border: none;
