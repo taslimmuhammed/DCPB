@@ -13,8 +13,6 @@ function Wallet() {
     const [DCIput, setDCIput] = useState("0")
     const { data: _dynamic, isLoading: L3 } = useContractRead(contract, "getTotalDynamicRewards", [address])
     const { data: _claimableDynamic, isLoading: L6 } = useContractRead(contract, "claimableDynamicReward", [address])
-    const { data: _totalReward, isLoading: L7 } = useContractRead(contract, "claimableDynamicReward", [address])
-    const { data: User, isLoading: L5 } = useContractRead(contract, "Users", [address])
     const { data: _static, isLoading: L4 } = useContractRead(contract, "getTotalStaticRewards", [address])
     const { mutateAsync: claimDynamicReward } = useContractWrite(contract, "claimDynamicReward")
     const { mutateAsync: claimStaticReward } = useContractWrite(contract, "claimStaticReward")
@@ -53,7 +51,7 @@ function Wallet() {
             setDCIput(0)
         }
     }
-    if (isLoading || L3 || L4 || L5) return <Loader />
+    if (isLoading || L3 || L4 || L6) return <Loader />
     else return (
         <div className='text-white'>
 
@@ -79,7 +77,7 @@ function Wallet() {
                         <span className='text-stone-500'>Available:</span>  {BigNoToUSDT(_static)} USDT
                     </div>
                 </div>
-                <div className='flex flex-col justify-center' onClick={handleDynamic}>
+                <div className='flex flex-col justify-center' onClick={handleStatic}>
                     <img src={withdraw} className='w-14 hover:w-12' />
                 </div>
             </div>
