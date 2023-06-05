@@ -34,7 +34,12 @@ function Affiliate() {
     if (isLoading || L3 || L4) return <Loader />
     else return (
         <div className='text-white'>
-
+            <div className='flex w-full justify-center p-5'>
+                <div className='bg-stone-700 px-5 py-2 font-semibold'>
+                    DC/USDT
+                    <span className='bg-black ml-32 px-4 py-1'>0.10</span>
+                </div>
+            </div>
             {/* seprator */}
             <div className='mt-6 px-3 w-full h-px bg-stone-500' />
 
