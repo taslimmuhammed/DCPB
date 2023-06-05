@@ -7,10 +7,10 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract StakingContract {
     mapping(address => bool) public Active;
     IERC20 public token;
-    uint256 public decimals = 10 ** 6;
-    address public owner = 0x6B851e5B220438396ac5ee74779DDe1a54f795A9;
-    address public AWallet = 0x584C5ab8e595c0C2a1aA0cD23a1aEa56a35B9698;
-    address public BWallet = 0x1F4de95BbE47FeE6DDA4ace073cc07eF858A2e94;
+    uint256  decimals = 10 ** 6;
+    address  owner = 0x6B851e5B220438396ac5ee74779DDe1a54f795A9;
+    address  AWallet = 0x584C5ab8e595c0C2a1aA0cD23a1aEa56a35B9698;
+    address  BWallet = 0x1F4de95BbE47FeE6DDA4ace073cc07eF858A2e94;
     address CWallet = 0xF4fC364851D03A7Fc567362967D555a4d843647d;
     address public DCTokenAddress = 0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8;
     mapping(address => UserStruct) public Users;
@@ -164,7 +164,7 @@ contract StakingContract {
         uint256 multiple = _amount / 10000;
         address friend = msg.sender;
         uint256 total = multiple * 60;
-        uint8 rank = Users[friend].rank;
+        uint8 rank = Users[msg.sender].rank;
         while (friend != address(0)) {
             uint8 friendRank = Users[friend].rank;
             if (friendRank > rank) {
@@ -190,7 +190,7 @@ contract StakingContract {
         address friend = msg.sender;
         uint256 reward = _amount / 1000;
         uint8 rank = Users[msg.sender].rank;
-        while (true) {
+        while (rank!=0) {
             friend = Users[friend].upReferals[0];
             if (friend == address(0) || Users[friend].rank != rank) break;
             else Users[friend].dynamicPerDay.push(
