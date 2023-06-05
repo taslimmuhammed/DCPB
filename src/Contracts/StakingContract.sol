@@ -212,6 +212,23 @@ contract StakingContract {
         total += Users[_user].directBonus;
         return total;
     }
+    function getReferralRanks(address _user) public view returns(uint256[7] memory){
+        uint256[7] memory rankSet;
+        getRankNos(_user, rankSet);
+        return rankSet;
+    }
+
+    function getRankNos(address _user, uint256[7] memory rankSet) public view  {
+        //count rank of each user
+        rankSet[Users[_user].rank]++;
+        address[] memory downReferrals = Users[_user].downReferrals[0];
+        for (uint256 i = 0; i < downReferrals.length; i++) {
+            if (downReferrals[i] == address(0)) break;
+            else {
+                getRankNos(downReferrals[i], rankSet);
+            }
+        }
+    }
 
     function getTotalStaticRewards(
         address _user
