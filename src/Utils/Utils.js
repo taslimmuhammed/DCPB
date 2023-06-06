@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 
-export const ContractAddress = "0xA09027926890aed66091b25Af7A4f2897041da5A"
+export const ContractAddress = "0x6ae390107d3Dab478e5940e1770D9e0F5AAEfbcB"
 export const TokenAddress = "0x863aa21721D42B59CCA2a49213780DEc5837D7f1"
 
 export const BigNoToUSDT = (bigno)=>{

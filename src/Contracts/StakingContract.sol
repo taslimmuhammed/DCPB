@@ -146,13 +146,13 @@ contract StakingContract {
         }
 
         address[][] memory downReferrals = Users[msg.sender].downReferrals;
-        for (uint8 i = 0; i < downReferrals.length; i++) {
-            for (uint8 j = 0; j < downReferrals[i].length; j++) {
+        for (uint8 i = 0; i < 3; i++) {
+            for (uint256 j = 0; j < downReferrals[i].length; j++) {
                 address referer = downReferrals[i][j];
                 if (referer == address(0)) break;
                 else {
                     if (Users[referer].downReferrals[0].length > i)
-                        Users[upRefererals[i]].dynamicPerDay.push(
+                        Users[referer].dynamicPerDay.push(
                             DynamicStruct(msg.sender, reward, block.timestamp)
                         );
                 }
