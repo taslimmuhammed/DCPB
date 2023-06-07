@@ -51,9 +51,7 @@ function Wallet() {
             setDCIput(0)
         }
     }
-    useEffect(() => {
-        console.log(User);
-    }, [User])
+
     useEffect(() => {
         if (_reward) {
             let stT = 0;

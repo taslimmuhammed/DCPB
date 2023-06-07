@@ -19,7 +19,6 @@ function StakingList() {
                     let amount = BigNoToUSDT(stake.reward)/2
                       let dyReward = BigNoToUSDT(stake.dynamicClaimed)
                       let stReward = BigNoToUSDT(stake.staticClaimed)
-                      console.log(stake);
                     return (
                   <div className='bg-stone-700 p-3 mb-3' key={index}>
                       <div className='flex justify-between'>
