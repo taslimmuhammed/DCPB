@@ -14,7 +14,7 @@ function Affiliate() {
     const [Rank, setRank] = useState(0)
     const { data : Upgradable, isLoading:L3 } = useContractRead(contract, "checkUpgradablity", [address])
     const { mutateAsync: upgradeLevel } = useContractWrite(contract, "upgradeLevel")
-    const { data:User, isLoading:L4 } = useContractRead(contract, "Users", [address])
+    const { data:User, isLoading:L4 } = useContractRead(contract, "getUser", [address])
     const { data: RefRanks, isLoading: L5 } = useContractRead(contract, "getReferralRanks", [address])
     const handleUpgrade = async () => {
         setisLoading(true)

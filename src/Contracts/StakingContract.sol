@@ -83,7 +83,7 @@ contract StakingContract {
 
         for (uint i = 0; i < stakes.length; i++) availableArray[i] = stakes[i].reward -stakes[i].directBonus;
 
-        for (uint i = baseTime; i < currentTime; i += 60) {
+        for (uint256 i = baseTime; i < currentTime; i += 60) {
             uint256 dynamicReward = 0;
             // calculating dynamic
             for (uint8 j = 0; j < dynamicPerDay.length; j++) {
@@ -93,11 +93,11 @@ contract StakingContract {
             }
             //calculating static
             for (uint8 j = 0; j < stakes.length; j++) {
-                if (availableArray[j] == 0 || stakes[j].timestamp < i) continue;
+                if (availableArray[j] != 0 && stakes[j].timestamp < i){
                 uint256 staticReward;
                 if (stakes[j].timestamp <= i)
                     staticReward = (stakes[j].reward) / 200;
-                if (staticReward > availableArray[j]) {
+                if (staticReward >= availableArray[j]) {
                     rewardStructs[j].staticReward += availableArray[j];
                     availableArray[j] = 0;
                 } else {
@@ -113,11 +113,11 @@ contract StakingContract {
                         dynamicReward -= availableArray[j];
                         availableArray[j] = 0;
                     }
-                }
+                }}
             }
         }
 
-        for (uint i = 0; i < 5; i++){
+        for (uint i = 0; i < stakes.length; i++){
             rewardStructs[i].dynamicReward += stakes[i].directBonus;
             rewardStructs[i].dynamicReward -= stakes[i].dynamicClaimed;
             rewardStructs[i].staticReward -= stakes[i].staticClaimed;
@@ -169,8 +169,8 @@ contract StakingContract {
             _amount * 2,
             0,
             0,
-            0,
-            block.timestamp
+            block.timestamp,
+            0
         );
         require(
             token.transferFrom(msg.sender, address(this), _amount),
@@ -194,11 +194,11 @@ contract StakingContract {
         StakeStruct[] memory stakes = Users[msg.sender].stakes;
         for (uint i = 0; i < stakes.length; i++) {
             if (rewardArr[i].available >= total) {
-                Users[msg.sender].stakes[i].directBonus += total;
+                Users[_friend].stakes[i].directBonus += total;
                 total = 0;
             } else {
                 total -= rewardArr[i].available;
-                Users[msg.sender].stakes[i].directBonus += rewardArr[i]
+                Users[_friend].stakes[i].directBonus += rewardArr[i]
                     .available;
             }
         }

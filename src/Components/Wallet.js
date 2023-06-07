@@ -59,7 +59,6 @@ function Wallet() {
     if (isLoading || L3 || L4 || L6) return <Loader />
     else return (
         <div className='text-white'>
-
             {/* Intrest */}
             <div className='flex w-full justify-between mt-5'>
                 <div>

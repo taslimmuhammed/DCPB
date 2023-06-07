@@ -140,12 +140,29 @@ export const StakingABI = [
                 "type": "address"
             }
         ],
-        "name": "checkUpgradablity",
+        "name": "calculatAllReward",
         "outputs": [
             {
-                "internalType": "bool",
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "staticReward",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "dynamicReward",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "available",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct StakingContract.RewardStruct[5]",
                 "name": "",
-                "type": "bool"
+                "type": "tuple[5]"
             }
         ],
         "stateMutability": "view",
@@ -159,12 +176,12 @@ export const StakingABI = [
                 "type": "address"
             }
         ],
-        "name": "claimableDynamicReward",
+        "name": "checkUpgradablity",
         "outputs": [
             {
-                "internalType": "uint256",
+                "internalType": "bool",
                 "name": "",
-                "type": "uint256"
+                "type": "bool"
             }
         ],
         "stateMutability": "view",
@@ -178,49 +195,6 @@ export const StakingABI = [
                 "internalType": "address",
                 "name": "",
                 "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_user",
-                "type": "address"
-            }
-        ],
-        "name": "getIndividualDynamicAlloc",
-        "outputs": [
-            {
-                "internalType": "uint256[]",
-                "name": "",
-                "type": "uint256[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_user",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "index",
-                "type": "uint256"
-            }
-        ],
-        "name": "getIndividualStaticReward",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
             }
         ],
         "stateMutability": "view",
@@ -318,6 +292,11 @@ export const StakingABI = [
                         "internalType": "uint256",
                         "name": "timestamp",
                         "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "directBonus",
+                        "type": "uint256"
                     }
                 ],
                 "internalType": "struct StakingContract.StakeStruct[]",
@@ -355,45 +334,43 @@ export const StakingABI = [
                 "type": "address"
             }
         ],
+        "name": "getTotalRewards",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "staticReward",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "dynamicReward",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "available",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct StakingContract.RewardStruct",
+                "name": "",
+                "type": "tuple"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_user",
+                "type": "address"
+            }
+        ],
         "name": "getTotalStakes",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_user",
-                "type": "address"
-            }
-        ],
-        "name": "getTotalStaticRewards",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_user",
-                "type": "address"
-            }
-        ],
-        "name": "getTotalWithdrawable",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -437,6 +414,11 @@ export const StakingABI = [
                                 "internalType": "uint256",
                                 "name": "timestamp",
                                 "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "directBonus",
+                                "type": "uint256"
                             }
                         ],
                         "internalType": "struct StakingContract.StakeStruct[]",
@@ -444,9 +426,9 @@ export const StakingABI = [
                         "type": "tuple[]"
                     },
                     {
-                        "internalType": "address[6]",
-                        "name": "upReferals",
-                        "type": "address[6]"
+                        "internalType": "address",
+                        "name": "referer",
+                        "type": "address"
                     },
                     {
                         "internalType": "address[][]",
@@ -476,11 +458,6 @@ export const StakingABI = [
                         "type": "tuple[]"
                     },
                     {
-                        "internalType": "uint256",
-                        "name": "directBonus",
-                        "type": "uint256"
-                    },
-                    {
                         "internalType": "uint8",
                         "name": "rank",
                         "type": "uint8"
@@ -506,59 +483,12 @@ export const StakingABI = [
     },
     {
         "inputs": [],
-        "name": "owner",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
         "name": "token",
         "outputs": [
             {
                 "internalType": "contract IERC20",
                 "name": "",
                 "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "name": "Users",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "directBonus",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint8",
-                "name": "rank",
-                "type": "uint8"
-            },
-            {
-                "internalType": "uint256",
-                "name": "dynamicLimit",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "staticLimit",
-                "type": "uint256"
             }
         ],
         "stateMutability": "view",

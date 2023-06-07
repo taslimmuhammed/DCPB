@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { EthersContext } from '../Contexts/EthersContext'
 import Loader from './Loader'
 import { useContractRead } from '@thirdweb-dev/react'
@@ -6,7 +6,11 @@ import { BigNoToUSDT, HexToDateString, stringToUSDT } from '../Utils/Utils'
 
 function StakingList() {
     const { tokenContract,contract, address } = useContext(EthersContext)
-    const { data: stakingList, isLoading } = useContractRead(contract, "getStakes", [address])
+    const { data: stakingList, isLoading, error } = useContractRead(contract, "getStakes", [address])
+    useEffect(() => {
+      console.log(error);
+    }, [error])
+    
     if (isLoading) return (<Loader />)
     else return (<div className='p-3 mb-10'>
           <div className='w-full bg-stone-800 p-5 text-white font-semibold text-sm'>
@@ -15,6 +19,7 @@ function StakingList() {
                     let amount = BigNoToUSDT(stake.reward)/2
                       let dyReward = BigNoToUSDT(stake.dynamicClaimed)
                       let stReward = BigNoToUSDT(stake.staticClaimed)
+                      console.log(stake);
                     return (
                   <div className='bg-stone-700 p-3 mb-3' key={index}>
                       <div className='flex justify-between'>
