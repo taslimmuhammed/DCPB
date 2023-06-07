@@ -12,7 +12,7 @@ function Wallet() {
     const [DynamicInput, setDynamicInput] = useState("0")
     const [DCIput, setDCIput] = useState("0")
     const { data: _dynamic, isLoading: L3 } = useContractRead(contract, "getTotalDynamicRewards", [address])
-    const { data: _reward, isLoading: L4 } = useContractRead(contract, "calculatAllReward", [address])
+    const { data: _reward, isLoading: L4 } = useContractRead(contract, "calculateAllReward", [address])
     const { data: User } = useContractRead(contract, "getUser", [address])
     const { mutateAsync: claimDynamicReward } = useContractWrite(contract, "claimDynamicReward")
     const { mutateAsync: claimStaticReward } = useContractWrite(contract, "claimStaticReward")
@@ -51,7 +51,9 @@ function Wallet() {
             setDCIput(0)
         }
     }
-
+    useEffect(() => {
+        console.log(User);
+    }, [User])
     useEffect(() => {
         if (_reward) {
             let stT = 0;

@@ -140,7 +140,7 @@ export const StakingABI = [
                 "type": "address"
             }
         ],
-        "name": "calculatAllReward",
+        "name": "calculateAllReward",
         "outputs": [
             {
                 "components": [
