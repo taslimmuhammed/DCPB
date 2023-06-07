@@ -7,13 +7,13 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract StakingContract {
     mapping(address => bool) public Active;
     IERC20 public token;
-    uint256  decimals = 10 ** 6;
-    address  owner = 0x6B851e5B220438396ac5ee74779DDe1a54f795A9;
-    address  AWallet = 0x584C5ab8e595c0C2a1aA0cD23a1aEa56a35B9698;
-    address  BWallet = 0x1F4de95BbE47FeE6DDA4ace073cc07eF858A2e94;
+    uint256 decimals = 10 ** 6;
+    address owner = 0x6B851e5B220438396ac5ee74779DDe1a54f795A9;
+    address AWallet = 0x584C5ab8e595c0C2a1aA0cD23a1aEa56a35B9698;
+    address BWallet = 0x1F4de95BbE47FeE6DDA4ace073cc07eF858A2e94;
     address CWallet = 0xF4fC364851D03A7Fc567362967D555a4d843647d;
-    address public DCTokenAddress = 0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8;
-    mapping(address => UserStruct) public Users;
+    address  public DCTokenAddress = 0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8;
+    mapping(address => UserStruct)   Users;
     struct DynamicStruct {
         address referer;
         uint256 reward;
@@ -24,16 +24,21 @@ contract StakingContract {
         uint256 staticClaimed;
         uint256 dynamicClaimed;
         uint256 timestamp;
+        uint256 directBonus;
     }
     struct UserStruct {
         StakeStruct[] stakes;
-        address[6] upReferals;
+        address referer;
         address[][] downReferrals;
         DynamicStruct[] dynamicPerDay;
-        uint256 directBonus;
         uint8 rank;
         uint256 dynamicLimit;
         uint256 staticLimit;
+    }
+    struct RewardStruct {
+        uint256 staticReward;
+        uint256 dynamicReward;
+        uint256 available;
     }
 
     constructor(address _token) {
@@ -63,6 +68,64 @@ contract StakingContract {
         locked = false;
     }
 
+    function calculatAllReward(
+        address _user
+    ) public view returns (RewardStruct[5] memory) {
+        RewardStruct[5] memory rewardStructs;
+        if (Users[_user].stakes.length == 0) {
+            return rewardStructs;
+        }
+        uint256 baseTime = Users[_user].stakes[0].timestamp;
+        uint256 currentTime = block.timestamp;
+        StakeStruct[] memory stakes = Users[_user].stakes;
+        DynamicStruct[] memory dynamicPerDay = Users[_user].dynamicPerDay;
+        uint256[5] memory availableArray;
+
+        for (uint i = 0; i < stakes.length; i++) availableArray[i] = stakes[i].reward -stakes[i].directBonus;
+
+        for (uint i = baseTime; i < currentTime; i += 60) {
+            uint256 dynamicReward = 0;
+            // calculating dynamic
+            for (uint8 j = 0; j < dynamicPerDay.length; j++) {
+                if (dynamicPerDay[j].timestamp <= i) {
+                    dynamicReward += dynamicPerDay[j].reward;
+                }
+            }
+            //calculating static
+            for (uint8 j = 0; j < stakes.length; j++) {
+                if (availableArray[j] == 0 || stakes[j].timestamp < i) continue;
+                uint256 staticReward;
+                if (stakes[j].timestamp <= i)
+                    staticReward = (stakes[j].reward) / 200;
+                if (staticReward > availableArray[j]) {
+                    rewardStructs[j].staticReward += availableArray[j];
+                    availableArray[j] = 0;
+                } else {
+                    rewardStructs[j].staticReward += staticReward;
+                    availableArray[j] -= staticReward;
+
+                    if (availableArray[j] >= dynamicReward) {
+                        availableArray[j] -= dynamicReward;
+                        rewardStructs[j].dynamicReward += dynamicReward;
+                        dynamicReward = 0;
+                    } else {
+                        rewardStructs[j].dynamicReward += availableArray[j];
+                        dynamicReward -= availableArray[j];
+                        availableArray[j] = 0;
+                    }
+                }
+            }
+        }
+
+        for (uint i = 0; i < 5; i++){
+            rewardStructs[i].dynamicReward += stakes[i].directBonus;
+            rewardStructs[i].dynamicReward -= stakes[i].dynamicClaimed;
+            rewardStructs[i].staticReward -= stakes[i].staticClaimed;
+            rewardStructs[i].available = availableArray[i];
+            }            
+        return rewardStructs;
+    }
+
     function signIn(address _friend) public nonReentrant {
         require(msg.sender != _friend);
         require(!Active[msg.sender], "Already signed in");
@@ -71,24 +134,17 @@ contract StakingContract {
             "Invalid referal id"
         );
         Active[msg.sender] = true;
-        handleUpReferals(_friend);
+        Users[msg.sender].referer = _friend;
         handleDownReferals();
         Users[msg.sender].dynamicLimit = 2 * decimals;
         Users[msg.sender].staticLimit = 1 * decimals;
     }
 
-    function handleUpReferals(address _friend) internal {
-        address[6] memory upReferals = Users[_friend].upReferals;
-        for (uint8 i = 5; i > 0; i--) upReferals[i] = upReferals[i - 1];
-        upReferals[0] = _friend;
-        Users[msg.sender].upReferals = upReferals;
-    }
-
     function handleDownReferals() internal {
-        for (uint8 i = 0; i < 3; i++) Users[msg.sender].downReferrals.push();
-        address friend;
-        for (uint8 i = 0; i < 3; i++) {
-            friend = Users[msg.sender].upReferals[i];
+        for (uint8 i = 0; i < 6; i++) Users[msg.sender].downReferrals.push();
+        address friend = msg.sender;
+        for (uint8 i = 0; i < 6; i++) {
+            friend = Users[friend].referer;
             if (friend == address(0)) break;
             Users[friend].downReferrals[i].push(msg.sender);
         }
@@ -113,6 +169,7 @@ contract StakingContract {
             _amount * 2,
             0,
             0,
+            0,
             block.timestamp
         );
         require(
@@ -130,20 +187,33 @@ contract StakingContract {
     }
 
     function handleDirectBonus(uint256 _amount) internal {
-        address _friend = Users[msg.sender].upReferals[0];
-        Users[_friend].directBonus += (_amount * 20) / 100;
+        address _friend = Users[msg.sender].referer;
+        if (_friend == address(0)) return;
+        uint256 total = (_amount * 20) / 100;
+        RewardStruct[5] memory rewardArr = calculatAllReward(_friend);
+        StakeStruct[] memory stakes = Users[msg.sender].stakes;
+        for (uint i = 0; i < stakes.length; i++) {
+            if (rewardArr[i].available >= total) {
+                Users[msg.sender].stakes[i].directBonus += total;
+                total = 0;
+            } else {
+                total -= rewardArr[i].available;
+                Users[msg.sender].stakes[i].directBonus += rewardArr[i]
+                    .available;
+            }
+        }
     }
 
     function handleRelationBonus(uint256 _amount) internal {
-        address[6] memory upRefererals = Users[msg.sender].upReferals;
+        // address[6] memory upRefererals = Users[msg.sender].upReferals;
         uint256 reward = (_amount * 5) / 10000;
-        for (uint8 i = 0; i < 6; i++) {
-            if (upRefererals[i] == address(0)) break;
-            if (Users[upRefererals[i]].downReferrals[0].length > i)
-                Users[upRefererals[i]].dynamicPerDay.push(
-                    DynamicStruct(msg.sender, reward, block.timestamp)
-                );
-        }
+        // for (uint8 i = 0; i < 6; i++) {
+        //     if (upRefererals[i] == address(0)) break;
+        //     if (Users[upRefererals[i]].downReferrals[0].length > i)
+        //         Users[upRefererals[i]].dynamicPerDay.push(
+        //             DynamicStruct(msg.sender, reward, block.timestamp)
+        //         );
+        // }
 
         address[][] memory downReferrals = Users[msg.sender].downReferrals;
         for (uint8 i = 0; i < 3; i++) {
@@ -171,18 +241,18 @@ contract StakingContract {
                 uint256 _bonus = (friendRank - rank) * 10 * multiple;
                 if (total <= _bonus) {
                     Users[friend].dynamicPerDay.push(
-                    DynamicStruct(msg.sender, total, block.timestamp)
-                );
+                        DynamicStruct(msg.sender, total, block.timestamp)
+                    );
                     break;
                 } else {
                     Users[friend].dynamicPerDay.push(
-                    DynamicStruct(msg.sender, _bonus, block.timestamp)
-                );
+                        DynamicStruct(msg.sender, _bonus, block.timestamp)
+                    );
                     total -= _bonus;
                 }
                 rank = friendRank;
             }
-            friend = Users[friend].upReferals[0];
+            friend = Users[friend].referer;
         }
     }
 
@@ -190,10 +260,11 @@ contract StakingContract {
         address friend = msg.sender;
         uint256 reward = _amount / 1000;
         uint8 rank = Users[msg.sender].rank;
-        while (rank!=0) {
-            friend = Users[friend].upReferals[0];
+        while (rank != 0) {
+            friend = Users[friend].referer;
             if (friend == address(0) || Users[friend].rank != rank) break;
-            else Users[friend].dynamicPerDay.push(
+            else
+                Users[friend].dynamicPerDay.push(
                     DynamicStruct(msg.sender, reward, block.timestamp)
                 );
         }
@@ -204,21 +275,25 @@ contract StakingContract {
     ) public view returns (uint256) {
         uint256 total = 0;
         DynamicStruct[] memory list = Users[_user].dynamicPerDay;
+        StakeStruct[] memory stakes = Users[_user].stakes;
         for (uint256 i = 0; i < list.length; i++) {
             uint256 timeDiff = block.timestamp - list[i].timestamp;
             timeDiff = timeDiff / 60;
             total += timeDiff * list[i].reward;
         }
-        total += Users[_user].directBonus;
+        for (uint256 i = 0; i < stakes.length; i++) total += stakes[i].directBonus;
         return total;
     }
-    function getReferralRanks(address _user) public view returns(uint256[7] memory){
+
+    function getReferralRanks(
+        address _user
+    ) public view returns (uint256[7] memory) {
         uint256[7] memory rankSet;
         getRankNos(_user, rankSet);
         return rankSet;
     }
 
-    function getRankNos(address _user, uint256[7] memory rankSet) public view  {
+    function getRankNos(address _user, uint256[7] memory rankSet) public view {
         //count rank of each user
         rankSet[Users[_user].rank]++;
         address[] memory downReferrals = Users[_user].downReferrals[0];
@@ -230,120 +305,121 @@ contract StakingContract {
         }
     }
 
-    function getTotalStaticRewards(
+    function getTotalRewards(
         address _user
-    ) public view returns (uint256) {
-        uint256 total = 0;
-        for (uint256 i = 0; i < Users[_user].stakes.length; i++) {
-            uint256 r1 = getIndividualStaticReward(_user, i);
-            total += r1;
+    ) public view returns (RewardStruct memory) {
+        uint256 staticReward = 0;
+        uint256 dynamicReward = 0;
+        RewardStruct[5] memory arr = calculatAllReward(_user);
+        for (uint256 i = 0; i < 5; i++) {
+            staticReward += arr[i].staticReward;
+            dynamicReward += arr[i].dynamicReward;
         }
-        return total;
+
+        return RewardStruct(staticReward, dynamicReward, 0);
     }
 
-    function getIndividualDynamicAlloc(
-        address _user
-    ) public view returns (uint256[] memory) {
-        StakeStruct[] memory stakes = Users[_user].stakes;
-        uint256 total = getTotalDynamicRewards(_user);
-        uint256[] memory allocArray = new uint256[](stakes.length);
-        for (uint256 i = 0; i < stakes.length; i++) {
-            uint256 available = stakes[i].reward -
-                stakes[i].staticClaimed -
-                stakes[i].dynamicClaimed;
-            available = available - getIndividualStaticReward(_user, i);
-            if (total <= available) {
-                allocArray[i] = total;
-                total = 0;
-            } else {
-                total -= available;
-                allocArray[i] = available;
-            }
-        }
-        return allocArray;
-    }
+    // function getIndividualDynamicAlloc(
+    //     address _user
+    // ) public view returns (uint256[] memory) {
+    //     StakeStruct[] memory stakes = Users[_user].stakes;
+    //     uint256 total = getTotalDynamicRewards(_user);
+    //     uint256[] memory allocArray = new uint256[](stakes.length);
+    //     for (uint256 i = 0; i < stakes.length; i++) {
+    //         uint256 available = stakes[i].reward -
+    //             stakes[i].staticClaimed -
+    //             stakes[i].dynamicClaimed;
+    //         available = available - getIndividualStaticReward(_user, i);
+    //         if (total <= available) {
+    //             allocArray[i] = total;
+    //             total = 0;
+    //         } else {
+    //             total -= available;
+    //             allocArray[i] = available;
+    //         }
+    //     }
+    //     return allocArray;
+    // }
 
-    function claimableDynamicReward(
-        address _user
-    ) public view returns (uint256) {
-        uint256[] memory allocArray = getIndividualDynamicAlloc(_user);
-        uint256 total = 0;
-        for (uint i = 0; i < allocArray.length; i++) total += allocArray[i];
-        return total;
-    }
+    // function claimableDynamicReward(
+    //     address _user
+    // ) public view returns (uint256) {
+    //     uint256[] memory allocArray = getIndividualDynamicAlloc(_user);
+    //     uint256 total = 0;
+    //     for (uint i = 0; i < allocArray.length; i++) total += allocArray[i];
+    //     return total;
+    // }
 
     function claimStaticReward(uint256 _amount) public nonReentrant {
-        uint256 totalReward = getTotalStaticRewards(msg.sender);
+        RewardStruct memory totalReward = getTotalRewards(msg.sender);
         require(
-            _amount <= totalReward,
+            _amount <= totalReward.staticReward,
             "The amount should be less than the totals rewards"
         );
         require(
             _amount >= Users[msg.sender].staticLimit,
             "The amount less than the allowed limit"
         );
-        updateTotalStaticReward(_amount);
+        updateStaticReward(_amount);
         token.transfer(msg.sender, _amount);
-        Users[msg.sender].staticLimit *=2;
+        Users[msg.sender].staticLimit *= 2;
     }
 
-    function updateTotalStaticReward(uint256 _amount) internal {
+    function updateStaticReward(uint256 _amount) internal {
         StakeStruct[] memory stakes = Users[msg.sender].stakes;
         uint256 total = _amount;
-
+        RewardStruct[5] memory rewardArr = calculatAllReward(msg.sender);
         for (uint256 i = 0; i < stakes.length; i++) {
-            uint256 r1 = getIndividualStaticReward(msg.sender, i);
-            if (total <= r1) {
+            if(total<=rewardArr[i].staticReward){
                 Users[msg.sender].stakes[i].staticClaimed += total;
-                break;
-            } else {
-                Users[msg.sender].stakes[i].staticClaimed += r1;
-                total -= r1;
+                return;
+            }else{
+                total -= rewardArr[i].staticReward;
+                Users[msg.sender].stakes[i].staticClaimed += rewardArr[i].staticReward;
             }
+            Users[msg.sender].stakes[i].staticClaimed += rewardArr[i].staticReward;
         }
     }
 
     function claimDynamicReward(uint256 _amount) public nonReentrant {
-        uint256 total = claimableDynamicReward(msg.sender);
+        RewardStruct memory totalReward = getTotalRewards(msg.sender);
         require(
-            _amount <= total,
-            "The amount should be less than what vailable"
+            _amount <= totalReward.dynamicReward,
+            "The amount should be less than the totals rewards"
         );
         require(
             _amount >= Users[msg.sender].dynamicLimit,
             "The amount less than the allowed limit"
         );
         updateDynamicStakes(_amount);
-        updatedDynamicPerDay();
         token.transfer(msg.sender, _amount);
-        Users[msg.sender].dynamicLimit *=2 ;
+        Users[msg.sender].dynamicLimit *= 2;
     }
 
     function updateDynamicStakes(uint256 _amount) internal {
-        uint256[] memory allocArray = getIndividualDynamicAlloc(msg.sender);
-        uint256 reward = _amount;
-        uint256 directBonus = Users[msg.sender].directBonus;
-        if (reward <= directBonus) Users[msg.sender].directBonus -= reward;
-        else {
-            reward -= directBonus;
-            Users[msg.sender].directBonus = 0;
-            for (uint256 i = 0; i < allocArray.length; i++) {
-                uint256 available = allocArray[i];
-                if (reward <= available) {
-                    Users[msg.sender].stakes[i].dynamicClaimed += reward;
-                    break;
-                } else {
-                    Users[msg.sender].stakes[i].dynamicClaimed += available;
-                    reward -= available;
-                }
+        RewardStruct[5] memory allocArray = calculatAllReward(msg.sender);
+        StakeStruct[] memory stakes = Users[msg.sender].stakes;
+        uint256 total =_amount;
+        for(uint256 i=0; i<stakes.length;i++){
+            if(total>allocArray[i].dynamicReward){
+            Users[msg.sender].stakes[i].dynamicClaimed += allocArray[i].dynamicReward;
+            total -= allocArray[i].dynamicReward;
+            }else{
+                Users[msg.sender].stakes[i].dynamicClaimed += total;
+                return;
             }
-        }
-    }
-
-    function updatedDynamicPerDay() internal {
-        for (uint i = 0; i < Users[msg.sender].dynamicPerDay.length; i++) {
-            Users[msg.sender].dynamicPerDay[i].timestamp %= 60;
-        }
+            if(total>stakes[i].directBonus){
+            Users[msg.sender].stakes[i].dynamicClaimed += stakes[i].directBonus;
+            total -= stakes[i].directBonus;
+            Users[msg.sender].stakes[i].directBonus = 0;
+            }else{
+                Users[msg.sender].stakes[i].dynamicClaimed += total;
+                Users[msg.sender].stakes[i].directBonus -= total;
+                return;
+            }
+            
+            }
+        
     }
 
     function checkUpgradablity(address _user) public view returns (bool) {
@@ -392,10 +468,10 @@ contract StakingContract {
 
     function upgradeLevel() public nonReentrant {
         require(
-            checkUpgradablity(msg.sender),
-            "You cant upgrade untill next goal is fulfilled"
+           checkUpgradablity(msg.sender),
+           "You cant upgrade untill next goal is fulfilled"
         );
-        Users[msg.sender].rank += 1;
+       Users[msg.sender].rank += 1;
     }
 
     //Reading functions
@@ -403,36 +479,19 @@ contract StakingContract {
         address _user
     ) public view returns (StakeStruct[] memory) {
         StakeStruct[] memory stakes = Users[_user].stakes;
-        uint256[] memory dynamicAlloc = getIndividualDynamicAlloc(_user);
+        RewardStruct[5] memory rewardArr = calculatAllReward(_user);
         for (uint i = 0; i < stakes.length; i++) {
-            stakes[i].dynamicClaimed = dynamicAlloc[i];
-            stakes[i].staticClaimed = getIndividualStaticReward(_user, i);
+            stakes[i].dynamicClaimed = rewardArr[i].dynamicReward;
+            stakes[i].staticClaimed = rewardArr[i].staticReward;
         }
         return stakes;
     }
 
-    function getIndividualStaticReward(
-        address _user,
-        uint256 index
-    ) public view returns (uint256) {
-        StakeStruct memory Stake = Users[_user].stakes[index];
-        uint256 available = Stake.reward -
-            Stake.staticClaimed -
-            Stake.dynamicClaimed;
-        uint256 timeDiff = block.timestamp - Stake.timestamp;
-        timeDiff = timeDiff / 60;
-        uint256 total = (timeDiff * Stake.reward) / 200;
-        total = total - Stake.staticClaimed;
-        if (total > available) total = available;
-        return total;
-    }
 
-    function getUser(address _user)
-        public
-        view
-        returns (UserStruct memory){
+
+    function getUser(address _user) public view returns (UserStruct memory) {
         return Users[_user];
-        }
+    }
 
     // Admin Functions:- Only to be used in case of emergencies
     function transferOwnership(address newOwner) public onlyOwner nonReentrant {
@@ -443,8 +502,7 @@ contract StakingContract {
         address _token,
         address withdrawalAddress
     ) public onlyOwner nonReentrant {
-        IERC20 _tokenContract = IERC20(_token);
-        _tokenContract.transfer(
+        IERC20(_token).transfer(
             withdrawalAddress,
             token.balanceOf(address(this))
         );
@@ -454,32 +512,5 @@ contract StakingContract {
         DCTokenAddress = newAddr;
     }
 
-    // function DistributeDynamicAmount(
-    //     uint256 TReward,
-    //     address _user
-    // ) internal returns (uint256) {
-    //     StakeStruct[] memory stakes = Users[_user].stakes;
-    //     for (uint256 i = 0; i < stakes.length; i++) {
-    //         uint256 max = stakes[i].reward -
-    //             stakes[i].dynamicClaimed +
-    //             stakes[i].staticClaimed;
-    //         if (max >= TReward) {
-    //             Users[_user].stakes[i].dynamicReward += TReward;
-    //             TReward -= max;
-    //             break;
-    //         } else {
-    //             Users[_user].stakes[i].dynamicReward += max;
-    //             TReward -= max;
-    //         }
-    //     }
-    //     return TReward;
-    // }
-    // 0x0000000000000000000000000000000000000000
-    // 0x17F6AD8Ef982297579C203069C1DbfFE4348c372
-    // 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4
-    // 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
-    // 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db
-    // stake - 0x9d83e140330758a8fFD07F8Bd73e86ebcA8a5692
-    // token -0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8
-    // 100000000
+
 }
