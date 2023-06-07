@@ -12,12 +12,11 @@ function Wallet() {
     const [DynamicInput, setDynamicInput] = useState("0")
     const [DCIput, setDCIput] = useState("0")
     const { data: _dynamic, isLoading: L3 } = useContractRead(contract, "getTotalDynamicRewards", [address])
-    const { data: _claimableDynamic, isLoading: L6 } = useContractRead(contract, "claimableDynamicReward", [address])
-    const { data: _static, isLoading: L4 } = useContractRead(contract, "getTotalStaticRewards", [address])
+    const { data: _reward, isLoading: L4 } = useContractRead(contract, "calculatAllReward", [address])
     const { data: User } = useContractRead(contract, "getUser", [address])
     const { mutateAsync: claimDynamicReward } = useContractWrite(contract, "claimDynamicReward")
     const { mutateAsync: claimStaticReward } = useContractWrite(contract, "claimStaticReward")
-
+    const [Rewards, setRewards] = useState([0, 0])
     const handleStatic = async () => {
         setisLoading(true)
         try {
@@ -43,20 +42,32 @@ function Wallet() {
         setisLoading(false)
     }
 
-    const setMax =(index)=>{
-        if(index===0){
-            setStaticInput(BigNoToUSDT(_static))
-        }else if(index===1){
-            setDynamicInput(_claimableDynamic)
-        }else{
+    const setMax = (index) => {
+        if (index === 0) {
+            setStaticInput(BigNoToUSDT(_reward.staticReward))
+        } else if (index === 1) {
+            setDynamicInput(BigNoToUSDT(_reward.dynamicReward))
+        } else {
             setDCIput(0)
         }
     }
     useEffect(() => {
-      console.log(User);
+        console.log(User);
     }, [User])
-    
-    if (isLoading || L3 || L4 || L6) return <Loader />
+    useEffect(() => {
+        if (_reward) {
+            let stT = 0;
+            let dyT = 0;
+            for (let index = 0; index < _reward.length; index++) {
+                let st = BigNoToUSDT(_reward[index].staticReward)
+                let dy = BigNoToUSDT(_reward[index].dynamicReward)
+                stT += st;
+                dyT += dy;
+            }
+            setRewards([stT, dyT])
+        }
+    }, [_reward])
+    if (isLoading || L3 || L4) return <Loader />
     else return (
         <div className='text-white'>
             {/* Intrest */}
@@ -74,11 +85,11 @@ function Wallet() {
                             onChange={(e) => setStaticInput(e.target.value)}
                         />
                         <div className="absolute top-1/2 right-3 transform -translate-y-1 flex">
-                            <div className=' border border-yellow-300 border-2 px-2 hover:bg-yellow-600 mt-2' onClick={()=>setMax(0)}>max</div>
+                            <div className=' border border-yellow-300 border-2 px-2 hover:bg-yellow-600 mt-2' onClick={() => setMax(0)}>max</div>
                         </div>
                     </div>
                     <div className='text-xs text-stone-100 mb-2 mt-1'>
-                        <span className='text-stone-500'>Available:</span>  {BigNoToUSDT(_static)} USDT
+                        <span className='text-stone-500'>Available:</span>  {Rewards && Rewards[0]} USDT
                     </div>
                 </div>
                 <div className='flex flex-col justify-center' onClick={handleStatic}>
@@ -88,7 +99,7 @@ function Wallet() {
 
             {/* Booster */}
             <div className='flex w-full justify-between mt-5'>
-                 <div>
+                <div>
                     <div className="flex flex-col relative">
                         <label className="text-lg  mb-2" >
                             Booster Value
@@ -105,11 +116,11 @@ function Wallet() {
                         </div>
                     </div>
                     <div className='text-xs text-stone-100 mb-2 mt-1'>
-                        <span className='text-stone-500'>Available:</span>  {BigNoToUSDT(_claimableDynamic)} USDT
+                        <span className='text-stone-500'>Available:</span>  {Rewards && Rewards[1]} USDT
                     </div>
-                 </div>
+                </div>
                 <div className='flex flex-col justify-center' onClick={handleDynamic}>
-                    <img src={withdraw } className='w-14 hover:w-12'/>
+                    <img src={withdraw} className='w-14 hover:w-12' />
                 </div>
             </div>
             {/* DC profit */}
@@ -144,7 +155,7 @@ function Wallet() {
                 <div className='border border-yellow-300 border-2 p-2 w-96'>
                     <div className='flex justify-between'>
                         <div>Total Intrest Value</div>
-                        <div>{BigNoToUSDT(_static)} USDT</div>
+                        <div>{_reward && Rewards[0]} USDT</div>
                     </div>
                     <div className='flex justify-between'>
                         <div>Total Booster Value</div>
@@ -152,7 +163,7 @@ function Wallet() {
                     </div>
                     <div className='flex justify-between'>
                         <div>Claimable Booster Value</div>
-                        <div>{BigNoToUSDT(_claimableDynamic)} USDT</div>
+                        <div>{Rewards && Rewards[1]} USDT</div>
                     </div>
                     <div className='flex justify-between'>
                         <div>Total DC Value</div>
@@ -160,7 +171,7 @@ function Wallet() {
                     </div>
                     <div className='flex justify-between'>
                         <div>Total Withdrawal Value</div>
-                        <div>{BigNoToUSDT(_claimableDynamic) +  BigNoToUSDT(_static)} USDT</div>
+                        <div>{Rewards && Rewards[0] + Rewards[1]} USDT</div>
                     </div>
 
                 </div>

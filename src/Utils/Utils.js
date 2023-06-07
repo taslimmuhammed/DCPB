@@ -10,7 +10,7 @@ export const BigNoToUSDT = (bigno)=>{
     amount/=10;
     return amount
     }catch(e){
-        console.log(e);
+        //console.log(e);
         return 0
     }
 
