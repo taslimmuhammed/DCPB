@@ -12,7 +12,7 @@ import Loader from './Loader';
 function Staking() {
   const [TokenInput, setTokenInput] = useState('1000')
   const [isLoading, setisLoading] = useState(false)
-  const { tokenContract, contract } = useContext(EthersContext)
+  const { tokenContract, contract, address } = useContext(EthersContext)
   const { mutateAsync: increaseAllowance } = useContractWrite(tokenContract, "increaseAllowance")
   const { mutateAsync: stake } = useContractWrite(contract, "stake")
   const { data: Balance } = useBalance(TokenAddress);
