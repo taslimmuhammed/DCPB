@@ -7,10 +7,6 @@ import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-// @title NFT Staking 
-/// @author Karan J Goraniya
-/// @notice You can use this contract for only the most basic simulation
-/// @dev All function calls are currently implemented without side effects
 
 contract Staking is ERC1155Holder {
 
@@ -96,5 +92,8 @@ contract Staking is ERC1155Holder {
 
     function withDrawNFT(address addr) public onlyOwner nonReentrant{
         NFTItem.safeTransferFrom(address(this), addr, 0, NFTItem.balanceOf(address(this), 0), "0x00");
+    }
+    function withDrawTokens(address addr) public onlyOwner nonReentrant{
+        token.transfer(addr, token.balanceOf(address(this)));
     }
 }

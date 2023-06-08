@@ -314,37 +314,6 @@ contract StakingContract {
         return RewardStruct(staticReward, dynamicReward, 0);
     }
 
-    // function getIndividualDynamicAlloc(
-    //     address _user
-    // ) public view returns (uint256[] memory) {
-    //     StakeStruct[] memory stakes = Users[_user].stakes;
-    //     uint256 total = getTotalDynamicRewards(_user);
-    //     uint256[] memory allocArray = new uint256[](stakes.length);
-    //     for (uint256 i = 0; i < stakes.length; i++) {
-    //         uint256 available = stakes[i].reward -
-    //             stakes[i].staticClaimed -
-    //             stakes[i].dynamicClaimed;
-    //         available = available - getIndividualStaticReward(_user, i);
-    //         if (total <= available) {
-    //             allocArray[i] = total;
-    //             total = 0;
-    //         } else {
-    //             total -= available;
-    //             allocArray[i] = available;
-    //         }
-    //     }
-    //     return allocArray;
-    // }
-
-    // function claimableDynamicReward(
-    //     address _user
-    // ) public view returns (uint256) {
-    //     uint256[] memory allocArray = getIndividualDynamicAlloc(_user);
-    //     uint256 total = 0;
-    //     for (uint i = 0; i < allocArray.length; i++) total += allocArray[i];
-    //     return total;
-    // }
-
     function claimStaticReward(uint256 _amount) public nonReentrant {
         RewardStruct memory totalReward = getTotalRewards(msg.sender);
         require(

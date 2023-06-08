@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import USDT from '../Assets/usdt.png'
 import verify from '../Assets/verify.svg'
-import { useBalance, useContract } from "@thirdweb-dev/react";
+import { useBalance, useContract, useContractRead } from "@thirdweb-dev/react";
 import { EthersContext } from '../Contexts/EthersContext';
 import { ContractAddress, TokenAddress, stringToUSDT } from '../Utils/Utils';
 import { ethers } from 'ethers';
@@ -16,8 +16,10 @@ function Staking() {
   const { mutateAsync: increaseAllowance } = useContractWrite(tokenContract, "increaseAllowance")
   const { mutateAsync: stake } = useContractWrite(contract, "stake")
   const { data: Balance } = useBalance(TokenAddress);
-
+  const { data: User , isLoading:L3 } = useContractRead(contract, "getUser", [address])
+  const [Disabled, setDisabled] = useState(false)
   const handleBuy = async () => {
+    if(Disabled) return toast.error("You have reached the maximum number of stakes")
     setisLoading(true)
     alert("You must approve 2 upcoming transactions for staking")
     try {
@@ -31,8 +33,14 @@ function Staking() {
     }
     setisLoading(false)
   }
-
-  if (isLoading) return <Loader />
+  useEffect(() => {
+    if(User){
+      if(User.stakes.length >=5){
+        setDisabled(true)
+    }
+    }
+  }, [User])
+  if (isLoading || L3) return <Loader />
   else
     return (
       <div className='text-white font-mono'>
