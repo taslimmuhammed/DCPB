@@ -60,7 +60,7 @@ function Affiliate() {
             <div >Rank Status</div>
             <div className='border border-yellow-300 border-2 w-80 p-4 flex mt-1'>
              <img src={graph} className='w-10'/>
-             <div className='text-yellow-500 text-2xl ml-5 mt-1 mr-5'> V6</div>
+             <div className='text-yellow-500 text-2xl ml-5 mt-1 mr-5'> V{User? User.rank:"0"}</div>
                 {
                     Upgradable && <button className="button-85" role="button" onClick={handleUpgrade}>Upgrade Level</button>
                 }
