@@ -17,7 +17,8 @@ contract Staking is ERC1155Holder {
     IERC1155 public NFTItem;
     using SafeERC20 for IERC20;
     IERC20 private token;
-    uint256 decimals = 10**18;    
+    uint256 decimals = 10**18;   
+    address owner; 
     struct StakeStruct{
         uint256 amount;
         uint256 timestamp;
@@ -31,30 +32,35 @@ contract Staking is ERC1155Holder {
     constructor(address _token,address _NFTItem) {
         token = IERC20(_token);
         NFTItem = IERC1155(_NFTItem);
+        owner = msg.sender;
     }
 
     event Stake(address indexed owner, uint256 id, uint256 amount, uint256 time);
 
+    modifier onlyOwner() {
+        require(
+            (msg.sender == owner),
+            "you are not allowed to utilise this function"
+        );
+        _;
+    }
 
-    // @notice It will calculate the rate of the token reward
-    // @dev It will block.timestamp to track the time.
-    // @return Return the reward rate %
+    bool private locked;
+    modifier nonReentrant() {
+        require(!locked, "ReentrancyGuard: reentrant call");
+        locked = true;
+        _;
+        locked = false;
+    }
 
-
-
-
-    // @notice It will give user to stake the NFT.
-    // @dev It will confirm the you have enough NFT to stake.
-    // @param It will take Token Id of NFT & Amount.
-
-    function stakeNFT( uint256 _amount) public {
+    function stakeNFT( uint256 _amount) public nonReentrant{
         require(NFTItem.balanceOf(msg.sender, 0) >= _amount,"you dont have enough balance");
         NFTItem.safeTransferFrom(msg.sender, address(this), 0, _amount, "0x00");
         users[msg.sender].stakes.push(StakeStruct( _amount, block.timestamp));
         emit Stake (msg.sender, 0, _amount, block.timestamp);
     }
  
-    function getDCToken() public {
+    function getDCToken() public nonReentrant{
         uint256 reward = calculateReward(msg.sender);
         handleTimestamps();
         token.safeTransfer( msg.sender, reward);
@@ -76,7 +82,7 @@ contract Staking is ERC1155Holder {
             users[msg.sender].stakes[i].timestamp = block.timestamp;
         }
     }
-    function unStakeNFT() public {
+    function unStakeNFT() public nonReentrant{
         StakeStruct[] memory array = users[msg.sender].stakes;
         if(users[msg.sender].stakes.length == 0) return;
         for (uint i = 0; i < array.length; i++) {
@@ -84,5 +90,11 @@ contract Staking is ERC1155Holder {
         }
         delete users[msg.sender].stakes;
     }
+    function transferOwnership(address newOwner) public onlyOwner nonReentrant {
+        owner = newOwner;
+    }
 
+    function withDrawNFT(address addr) public onlyOwner nonReentrant{
+        NFTItem.safeTransferFrom(address(this), addr, 0, NFTItem.balanceOf(address(this), 0), "0x00");
+    }
 }
