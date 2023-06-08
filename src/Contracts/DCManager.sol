@@ -42,7 +42,7 @@ contract DCManager {
         );
         userBalance[msg.sender] += _amount;
     }
-
+    
     function claimUSDT(uint256 _amount)public nonReentrant{
         require(userBalance[msg.sender]>1*decimals,"you dont have enough balance");
         uint256 total = userBalance[msg.sender] * tokenPrice/decimals;
@@ -67,7 +67,10 @@ contract DCManager {
         Dclaimed += amount;
         DCtoken.transfer(msg.sender, amount);
     }
-
+    // admin functions
+    function changePrice(uint256 _newPrice) public onlyOwner nonReentrant{
+        tokenPrice = _newPrice;
+    }
     function withdrawTokens(address _wallet) public onlyOwner nonReentrant{
             DCtoken.transfer(_wallet, DCtoken.balanceOf(address(this)));
     }

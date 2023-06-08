@@ -53,6 +53,9 @@ contract NFTRelease is ERC1155Holder {
     function getcount(address _user) public view returns(uint256){
         return Staking(stakingContract).getTotalStakes(_user)/(2*10**9) -  count[_user];
     }
+    function getBalance(address _user) public view returns(uint256){
+        return NFTItem.balanceOf(_user, 0);
+    }
 
      // admin functions
     function changeStakingContract(address _newc) public onlyOwner nonReentrant{
@@ -68,4 +71,5 @@ contract NFTRelease is ERC1155Holder {
     function withdrawNFTS(address _addr) public onlyOwner nonReentrant{
         NFTItem.safeTransferFrom( address(this),_addr , 0, NFTItem.balanceOf(address(this), 0), "0x00");
     }
+    
 }

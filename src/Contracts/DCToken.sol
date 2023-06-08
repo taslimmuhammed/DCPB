@@ -10,8 +10,8 @@ contract MyToken is ERC20, ERC20Burnable, Ownable {
          _mint(msg.sender, 1_000_000_000 *(10**18));
     }
 
-    function mint(address reciver, uint256 amount) public onlyOwner {
-         _mint(reciver, amount);
+    function mint() public virtual onlyOwner  {
+         require(false, "you can not mint more tokens");
     }
     function transfer(address recipient, uint256 amount) public virtual override returns (bool) {
         require(amount > 1 *(10**18),"you can not transfer less than 1 DC");

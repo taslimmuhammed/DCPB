@@ -41,8 +41,9 @@ contract StakingContract {
         uint256 available;
     }
 
-    constructor(address _token) {
+        constructor(address _token, address _dcaddress) {
         token = IERC20(_token);
+        DCTokenAddress = _dcaddress;
     }
 
     modifier signedIn() {

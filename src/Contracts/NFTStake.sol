@@ -61,6 +61,15 @@ contract Staking is ERC1155Holder {
         handleTimestamps();
         token.safeTransfer( msg.sender, reward);
     }
+    function getTotalStake(address _user) public view returns(uint256){
+        uint256 total;
+        StakeStruct[] memory array = users[_user].stakes;
+        if(array.length == 0) return 0;
+        for (uint i = 0; i < array.length; i++) {
+            total += array[i].amount;
+        }
+        return total;
+    }
     function calculateReward(address _user) public  view returns(uint256) {
         uint256 reward;
         StakeStruct[] memory array = users[_user].stakes;
