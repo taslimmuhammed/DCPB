@@ -1,39 +1,46 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { EthersContext } from '../Contexts/EthersContext'
-import { useContractRead, useContractWrite } from '@thirdweb-dev/react'
+import { useBalance, useContractRead, useContractWrite } from '@thirdweb-dev/react'
 import { toast } from 'react-toastify'
 import Loader from './Loader'
-import { BigNoToInt, BigNoToUSDT, getRankfromUser } from '../Utils/Utils'
+import { BigNoToInt, BigNoToUSDT, DCTokenAddress, getRankfromUser } from '../Utils/Utils'
 import graph from '../Assets/graph.png'
 import community from '../Assets/community.png'
 function Affiliate() {
-    const { tokenContract, contract, address } = useContext(EthersContext)
+    const { address,
+        L0,L1, L2, L13, L14, L15,
+        SignedIn,
+        tokenContract,
+        contract,
+        NFTStaking,
+        DCManager,
+        handleClaim,
+        handleUpgrade,
+        NFTRelease } = useContext(EthersContext)
     const [isLoading, setisLoading] = useState(false)
+    const [Claimable, setClaimable] = useState(false)
     const [Total, setTotal] = useState("0")
     const [Refs, setRefs] = useState(null)
     const [Rank, setRank] = useState(0)
     const { data : Upgradable, isLoading:L3 } = useContractRead(contract, "checkUpgradablity", [address])
-    const { mutateAsync: upgradeLevel } = useContractWrite(contract, "upgradeLevel")
     const { data:User, isLoading:L4 } = useContractRead(contract, "getUser", [address])
     const { data: RefRanks, isLoading: L5 } = useContractRead(contract, "getReferralRanks", [address])
-    const handleUpgrade = async () => {
-        setisLoading(true)
-        try {
-            const tx = await upgradeLevel({ args: [] });
-            toast.success("Transaction succeful")
-            window.location.reload()
-        } catch (e) {
-            console.log(e);
-            toast.error("transaction failed")
-        }
-        setisLoading(false)
-    }
+    const { data: _count, isLoading: L6 } = useContractRead(NFTRelease, "count", [address])
+    const { data: _withdrawableNFT, isLoading: L7 } = useContractRead(NFTRelease, "getcount", [address])
+    const { data: _nftBalance, isLoading: L8 } = useContractRead(NFTRelease, "getBalance", [address])
+    const { data: _stakedNFTs, isLoading: L9 } = useContractRead(NFTStaking, "getTotalStake", [address])
+    const { data: _DCreward, isLoading: L10 } = useContractRead(NFTStaking, "calculateReward", [address])
+    const { data: _md, isLoading: L11 } = useContractRead(NFTStaking, "getTotalStake", [address])
+    // const { data: Balance } = useBalance(DCTokenAddress);
+
+
     useEffect(() => {
         setRank(User? User.rank: 0)
     }, [User])
     useEffect(() => {
       let total=0;
        let tempArr = []
+       console.log(RefRanks);
         if(RefRanks){
             for(let i=0;i<RefRanks.length;i++){
                 let temp=BigNoToInt(RefRanks[i])
@@ -44,18 +51,19 @@ function Affiliate() {
             setRefs(tempArr)
         }
     }, [RefRanks])
+    useEffect(() => {
+      if(_count){
+        if(BigNoToInt(_count)>0) setClaimable(true)
+        else setClaimable(false)
+      }
+    }, [_count])
+    useEffect(() => {
+        console.log({Upgradable});
+    }, [Upgradable])
     
-    if (isLoading || L3 || L4) return <Loader />
+    if (isLoading || L3 || L4 ||L0) return <Loader />
     else return (
         <div className='text-white'>
-            {/* <div className='flex w-full justify-center p-5'>
-                <div className='bg-stone-700 px-5 py-2 font-semibold'>
-                    DC/USDT
-                    <span className='bg-black ml-32 px-4 py-1'>0.10</span>
-                </div>
-            </div> */}
-            {/* seprator */}
-            {/* <div className='mt-6 px-3 w-full h-px bg-stone-500' /> */}
             <div className='ml-5 my-10'>
             <div >Rank Status</div>
             <div className='border border-yellow-300 border-2 w-80 p-4 flex mt-1'>
@@ -80,11 +88,16 @@ function Affiliate() {
             
             <div className=' flex p-5'>
                 <img src={community} className='w-14'></img>
-                <div className='bg-stone-800 w-20 h-10 p-1 px-3  flex justify-between mt-2 ml-3'>{Total && Total-1}</div>
+                <div className='bg-stone-800 w-20 h-10 p-1 px-3  flex justify-between mt-2 ml-3'>{Total && Total}</div>
             </div>
             {/* seprator */}
             <div className='mt-3 px-3 w-full h-px bg-stone-500' />
             
+            {
+                 Claimable && <div className='flex w-full justify-center mt-6'>
+                    <button className="button-85" role="button" onClick={handleClaim}>claim NFT</button>
+                </div>
+            }
              {/*Bottom Box  */}
             <div className='p-3 my-5 border border-yellow-300 border-2'>
                 <div className='flex justify-between'>
@@ -108,6 +121,7 @@ function Affiliate() {
                     <div>5 <span className='text-yellow-300 '>USDT</span></div>
                 </div>
             </div>
+            
 
             {/*  */}
             <div className='flex w-full justify-center'>

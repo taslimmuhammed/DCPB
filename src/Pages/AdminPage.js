@@ -8,9 +8,9 @@ import Loader from '../Components/Loader'
 import Login from '../Components/Login'
 
 function AdminPage() {
-  const { address, SignedIn, L1, L2 } = useContext(EthersContext)
+  const { address, SignedIn, L1, L2, L13, L14, L15 } = useContext(EthersContext)
   if (!address) return (<Connect />)
-  else if (L1 || L2) return <Loader />
+  else if (L1 || L2 ||L13 || L14 || L15) return <Loader />
   else if (!SignedIn) return (<Login />)
   else return (
     <div className='pb-32'>

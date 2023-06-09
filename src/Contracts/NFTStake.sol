@@ -79,7 +79,7 @@ contract Staking is ERC1155Holder {
             timeDiff = timeDiff / 2 days;
             reward +=array[i].amount*timeDiff;
         }
-        return reward;
+        return reward*decimals;
     }
     function handleTimestamps() internal {
         if(users[msg.sender].stakes.length == 0) return;

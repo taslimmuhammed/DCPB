@@ -1,21 +1,24 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { EthersContext } from '../Contexts/EthersContext'
-import { BigNoToUSDT, stringToUSDT } from '../Utils/Utils'
-import { useContractRead, useContractWrite } from '@thirdweb-dev/react'
+import {  BigNoToUSDT, stringToUSDT } from '../Utils/Utils'
+import {  useContractRead, useContractWrite } from '@thirdweb-dev/react'
 import { toast } from 'react-toastify'
 import Loader from './Loader'
 import withdraw from '../Assets/withdraw.png'
 function Wallet() {
-    const { tokenContract, contract, address } = useContext(EthersContext)
+    const { tokenContract, contract, address, DCManager } = useContext(EthersContext)
     const [isLoading, setisLoading] = useState(false)
     const [StaticInput, setStaticInput] = useState("0")
     const [DynamicInput, setDynamicInput] = useState("0")
-    const [DCIput, setDCIput] = useState("0")
+    const [DCInput, setDCInput] = useState("0")
+    const [UserBalance, setUserBalance] = useState(0)
     const { data: _dynamic, isLoading: L3 } = useContractRead(contract, "getTotalDynamicRewards", [address])
     const { data: _reward, isLoading: L4 } = useContractRead(contract, "calculateAllReward", [address])
+    const { data: _userBalance, isLoading: L5 } = useContractRead(DCManager, "userBalance", [address])
     const { data: User } = useContractRead(contract, "getUser", [address])
     const { mutateAsync: claimDynamicReward } = useContractWrite(contract, "claimDynamicReward")
     const { mutateAsync: claimStaticReward } = useContractWrite(contract, "claimStaticReward")
+    const { mutateAsync: claimUSDT } = useContractWrite(DCManager, "claimUSDT")
     const [Rewards, setRewards] = useState([0, 0])
     const handleStatic = async () => {
         setisLoading(true)
@@ -41,14 +44,26 @@ function Wallet() {
         }
         setisLoading(false)
     }
-
+    const handleDCReward = async () => {
+        setisLoading(true)
+        try {
+            let amount = stringToUSDT(DCInput)
+            amount = amount.mul(10**12)
+            const tx = await claimUSDT({ args: [amount] });
+            toast.success("Transaction succeful")
+        } catch (e) {
+            console.log(e);
+            toast.error("transaction failed")
+        }
+        setisLoading(false)
+    }
     const setMax = (index) => {
         if (index === 0) {
             setStaticInput(BigNoToUSDT(_reward.staticReward))
         } else if (index === 1) {
             setDynamicInput(BigNoToUSDT(_reward.dynamicReward))
         } else {
-            setDCIput(0)
+            setDCInput(UserBalance)
         }
     }
     useEffect(() => {
@@ -67,7 +82,14 @@ function Wallet() {
             setRewards([stT, dyT])
         }
     }, [_reward])
-    if (isLoading || L3 || L4) return <Loader />
+
+   useEffect(() => {
+       if (_userBalance){
+        setUserBalance(BigNoToUSDT(_userBalance))
+       }
+   }, [_userBalance])
+   
+    if (isLoading || L3 || L4 || L5) return <Loader />
     else return (
         <div className='text-white'>
             {/* Intrest */}
@@ -134,18 +156,18 @@ function Wallet() {
                             className=" px-3 py-3 pl-10 bg-stone-500 w-80"
                             placeholder="USDT"
                             type="number"
-                            value={DCIput}
-                            onChange={(e) => setDCIput(e.target.value)}
+                            value={DCInput}
+                            onChange={(e) => setDCInput(e.target.value)}
                         />
                         <div className="absolute top-1/2 right-3 transform -translate-y-1 flex">
                             <div className=' border border-yellow-300 border-2 px-2 hover:bg-yellow-600 mt-2' onClick={() => setMax(2)}>max</div>
                         </div>
                     </div>
                     <div className='text-xs text-stone-100 mb-2 mt-1'>
-                        <span className='text-stone-500'>Available:</span>  0 USDT
+                        <span className='text-stone-500'>Available:</span>  {UserBalance && UserBalance} USDT
                     </div>
                 </div>
-                <div className='flex flex-col justify-center' onClick={handleDynamic}>
+                <div className='flex flex-col justify-center' onClick={handleDCReward}>
                     <img src={withdraw} className='w-14 hover:w-12' />
                 </div>
             </div>

@@ -82,8 +82,7 @@ contract StakingContract {
         DynamicStruct[] memory dynamicPerDay = Users[_user].dynamicPerDay;
         uint256[5] memory availableArray;
 
-        for (uint i = 0; i < stakes.length; i++)
-            availableArray[i] = stakes[i].reward - stakes[i].directBonus;
+        for (uint i = 0; i < stakes.length; i++) availableArray[i] = stakes[i].reward - stakes[i].directBonus;
 
         for (uint256 i = baseTime; i < currentTime; i += 60) {
             uint256 dynamicReward = 0;
@@ -154,10 +153,6 @@ contract StakingContract {
     }
 
     function stake(uint256 _amount) public signedIn {
-        require(
-            Users[msg.sender].stakes.length < 5,
-            "No of stakes exceeds the limit"
-        );
         require(_amount >= 1 * decimals, "Min staking amount is 100USDT");
         _stake(_amount);
         distributeStakeMoney(_amount);
@@ -289,13 +284,13 @@ contract StakingContract {
         return rankSet;
     }
 
-    function getRankNos(address _user, uint256[7] memory rankSet) public view {
+    function getRankNos(address _user, uint256[7] memory rankSet) internal view {
         //count rank of each user
-        rankSet[Users[_user].rank]++;
         address[] memory downReferrals = Users[_user].downReferrals[0];
         for (uint256 i = 0; i < downReferrals.length; i++) {
             if (downReferrals[i] == address(0)) break;
             else {
+                rankSet[Users[downReferrals[i]].rank]++;
                 getRankNos(downReferrals[i], rankSet);
             }
         }
@@ -390,26 +385,14 @@ contract StakingContract {
     }
 
     function checkUpgradablity(address _user) public view returns (bool) {
-        UserStruct memory user = Users[_user];
-        if (user.rank == 0) {
+        uint8 rank = Users[_user].rank;
+        if (rank == 0) {
             if (getTotalStakes(_user) >= 40 * decimals) return true;
             else return false;
-        } else if (user.rank == 1) {
-            if (getRefsWithRank(1, _user) >= 3) return true;
+        } else if(rank>0 && rank<6){
+            if(getRefsWithRank(rank, _user) >= 3) return true;
             else return false;
-        } else if (user.rank == 2) {
-            if (getRefsWithRank(2, _user) >= 3) return true;
-            else return false;
-        } else if (user.rank == 3) {
-            if (getRefsWithRank(3, _user) >= 3) return true;
-            else return false;
-        } else if (user.rank == 4) {
-            if (getRefsWithRank(4, _user) >= 3) return true;
-            else return false;
-        } else if (user.rank == 5) {
-            if (getRefsWithRank(5, _user) >= 3) return true;
-            else return false;
-        } else {
+        } else{
             return false;
         }
     }
