@@ -60,13 +60,13 @@ function Affiliate() {
         else setClaimable(false)
       }
     }, [_count])
-    useEffect(() => {
-      setNFTCount(BigNoToInt(_count))
-      setNFTBalance(BigNoToInt(_nftBalance))
-      setStakedNFTs(BigNoToInt(_stakedNFTs))
-      setWithdrawableNFT(BigNoToInt(_withdrawableNFT))
-      setStakingReward(BigNoToDC(_StakingReward))
-    }, [_count, _nftBalance, _stakedNFTs, _withdrawableNFT, _StakingReward])
+    // useEffect(() => {
+    //   setNFTCount(BigNoToInt(_count))
+    //   setNFTBalance(BigNoToInt(_nftBalance))
+    //   setStakedNFTs(BigNoToInt(_stakedNFTs))
+    //   setWithdrawableNFT(BigNoToInt(_withdrawableNFT))
+    //   setStakingReward(BigNoToDC(_StakingReward))
+    // }, [_count, _nftBalance, _stakedNFTs, _withdrawableNFT, _StakingReward])
     
     if (isLoading || L3 || L4 ||L0) return <Loader />
     else return (
@@ -113,7 +113,7 @@ function Affiliate() {
                 </div>
                 <div className='flex justify-between'>
                     <div className=''>NFT Staking:</div>
-                    <div>{StakedNFTs} USDT</div
+                    <div>{StakedNFTs} USDT</div>
                 </div>
                 <div className='flex justify-between'>
                     <div className=''>Staking Profit:</div>
