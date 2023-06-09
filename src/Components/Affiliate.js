@@ -3,7 +3,7 @@ import { EthersContext } from '../Contexts/EthersContext'
 import { useBalance, useContractRead, useContractWrite } from '@thirdweb-dev/react'
 import { toast } from 'react-toastify'
 import Loader from './Loader'
-import { BigNoToInt, BigNoToUSDT, DCTokenAddress, getRankfromUser } from '../Utils/Utils'
+import { BigNoToDC, BigNoToInt, BigNoToUSDT, DCTokenAddress, NFTAddress, getRankfromUser } from '../Utils/Utils'
 import graph from '../Assets/graph.png'
 import community from '../Assets/community.png'
 function Affiliate() {
@@ -22,6 +22,11 @@ function Affiliate() {
     const [Total, setTotal] = useState("0")
     const [Refs, setRefs] = useState(null)
     const [Rank, setRank] = useState(0)
+    const [NFTCount, setNFTCount] = useState(0)
+    const [NFTBalance, setNFTBalance] = useState(0)
+    const [WithdrawableNFT, setWithdrawableNFT] = useState(0)
+    const [StakedNFTs, setStakedNFTs] = useState(0)
+    const [StakingReward, setStakingReward] = useState(0)
     const { data : Upgradable, isLoading:L3 } = useContractRead(contract, "checkUpgradablity", [address])
     const { data:User, isLoading:L4 } = useContractRead(contract, "getUser", [address])
     const { data: RefRanks, isLoading: L5 } = useContractRead(contract, "getReferralRanks", [address])
@@ -29,9 +34,8 @@ function Affiliate() {
     const { data: _withdrawableNFT, isLoading: L7 } = useContractRead(NFTRelease, "getcount", [address])
     const { data: _nftBalance, isLoading: L8 } = useContractRead(NFTRelease, "getBalance", [address])
     const { data: _stakedNFTs, isLoading: L9 } = useContractRead(NFTStaking, "getTotalStake", [address])
-    const { data: _DCreward, isLoading: L10 } = useContractRead(NFTStaking, "calculateReward", [address])
+    const { data: _StakingReward, isLoading: L10 } = useContractRead(NFTStaking, "calculateReward", [address])
     const { data: _md, isLoading: L11 } = useContractRead(NFTStaking, "getTotalStake", [address])
-    // const { data: Balance } = useBalance(DCTokenAddress);
 
 
     useEffect(() => {
@@ -40,7 +44,6 @@ function Affiliate() {
     useEffect(() => {
       let total=0;
        let tempArr = []
-       console.log(RefRanks);
         if(RefRanks){
             for(let i=0;i<RefRanks.length;i++){
                 let temp=BigNoToInt(RefRanks[i])
@@ -58,8 +61,12 @@ function Affiliate() {
       }
     }, [_count])
     useEffect(() => {
-        console.log({Upgradable});
-    }, [Upgradable])
+      setNFTCount(BigNoToInt(_count))
+      setNFTBalance(BigNoToInt(_nftBalance))
+      setStakedNFTs(BigNoToInt(_stakedNFTs))
+      setWithdrawableNFT(BigNoToInt(_withdrawableNFT))
+      setStakingReward(BigNoToDC(_StakingReward))
+    }, [_count, _nftBalance, _stakedNFTs, _withdrawableNFT, _StakingReward])
     
     if (isLoading || L3 || L4 ||L0) return <Loader />
     else return (
@@ -102,11 +109,11 @@ function Affiliate() {
             <div className='p-3 my-5 border border-yellow-300 border-2'>
                 <div className='flex justify-between'>
                     <div className=''>NFT Reward:</div>
-                    <div>100NFT</div>
+                    <div>{NFTCount}NFT</div>
                 </div>
                 <div className='flex justify-between'>
                     <div className=''>NFT Staking:</div>
-                    <div>50 USDT</div>
+                    <div>{StakedNFTs} USDT</div
                 </div>
                 <div className='flex justify-between'>
                     <div className=''>Staking Profit:</div>

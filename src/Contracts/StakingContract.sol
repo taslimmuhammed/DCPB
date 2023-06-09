@@ -390,7 +390,7 @@ contract StakingContract {
             if (getTotalStakes(_user) >= 40 * decimals) return true;
             else return false;
         } else if(rank>0 && rank<6){
-            if(getRefsWithRank(rank, _user) >= 3) return true;
+            if(getRefsWithRank(rank, _user) >= 1) return true;
             else return false;
         } else{
             return false;

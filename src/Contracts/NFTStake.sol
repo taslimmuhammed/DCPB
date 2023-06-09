@@ -21,7 +21,7 @@ contract Staking is ERC1155Holder {
     }
     struct User{
         StakeStruct[] stakes;
-        uint256 id;
+        uint256 claimed;
     }
     mapping(address => User) public users;
 
