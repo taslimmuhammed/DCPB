@@ -405,7 +405,7 @@ contract StakingContract {
         address[] memory refs = Users[_user].downReferrals[0];
         uint256 total = 0;
         for (uint256 i = 0; i < refs.length; i++) {
-            if (Users[refs[i]].rank == _rank) total++;
+            if (Users[refs[i]].rank >= _rank) total++;
         }
         return total;
     }

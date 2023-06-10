@@ -12,16 +12,16 @@ function Wallet() {
     const [DynamicInput, setDynamicInput] = useState("0")
     const [DCInput, setDCInput] = useState("0")
     const [UserBalance, setUserBalance] = useState(0)
-    const [DCProfit, setDCProfit] = useState(0)
+    const [DCUser, setDCUser] = useState(0)
     const { data: _dynamic, isLoading: L3 } = useContractRead(contract, "getTotalDynamicRewards", [address])
+    const { data: User } = useContractRead(contract, "getUser", [address])
     const { data: _reward, isLoading: L4 } = useContractRead(contract, "calculateAllReward", [address])
-    const { data: _userBalance, isLoading: L5 } = useContractRead(DCManager, "userBalance", [address])
     const { mutateAsync: claimDynamicReward } = useContractWrite(contract, "claimDynamicReward")
     const { mutateAsync: claimStaticReward } = useContractWrite(contract, "claimStaticReward")
     const { mutateAsync: claimUSDT } = useContractWrite(DCManager, "claimUSDT")
     const [Rewards, setRewards] = useState([0, 0])
     const { data: _DCUser } = useContractRead(DCManager, "Users", [address])
-
+    
     const handleStatic = async () => {
         setisLoading(true)
         try {
@@ -64,12 +64,18 @@ function Wallet() {
         } else if (index === 1) {
             setDynamicInput(BigNoToUSDT(_reward.dynamicReward))
         } else {
-            setDCInput(DCProfit)
+            setDCInput(DCUser.balance)
         }
     }
     useEffect(() => {
         if(_DCUser){
-            setDCProfit(BigNoToInt(_DCUser.profit))
+            if (_DCUser) {
+                setDCUser({
+                    profit: BigNoToInt(_DCUser.profit),
+                    totalCoins: BigNoToInt(_DCUser.totalCoins),
+                    balance: BigNoToInt(_DCUser.balance)
+                })
+            }
         }
     }, [_DCUser])
     useEffect(() => {
@@ -85,14 +91,12 @@ function Wallet() {
             setRewards([stT, dyT])
         }
     }, [_reward])
+useEffect(() => {
+  console.log(User);
+}, [User])
 
-   useEffect(() => {
-       if (_userBalance){
-        setUserBalance(BigNoToUSDT(_userBalance))
-       }
-   }, [_userBalance])
    
-    if (isLoading || L3 || L4 || L5) return <Loader />
+    if (isLoading || L3 || L4 ) return <Loader />
     else return (
         <div className='text-white'>
             {/* Intrest */}
@@ -167,7 +171,7 @@ function Wallet() {
                         </div>
                     </div>
                     <div className='text-xs text-stone-100 mb-2 mt-1'>
-                        <span className='text-stone-500'>Available:</span>{DCProfit} USDT
+                        <span className='text-stone-500'>Available:</span>{DCUser.balance} USDT
                     </div>
                 </div>
                 <div className='flex flex-col justify-center' onClick={handleDCReward}>
