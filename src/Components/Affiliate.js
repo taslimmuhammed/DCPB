@@ -56,10 +56,11 @@ function Affiliate() {
         }
     }, [RefRanks])
     useEffect(() => {
+        console.log({ _count, _nftBalance, _stakedNFTs, _DCUser, StakeUser, _nftClaimable });
         try {
-            setNFTCount(BigNoToInt(_count))
-            setNFTBalance(BigNoToInt(_nftBalance))
-            setStakedNFTs(BigNoToInt(_stakedNFTs))
+            if(_count)setNFTCount(BigNoToInt(_count))
+            if(_nftBalance) setNFTBalance(BigNoToInt(_nftBalance))
+            if(_stakedNFTs) setStakedNFTs(BigNoToInt(_stakedNFTs))
            if (_DCUser) {
                 setDCUser({
                     profit: BigNoToInt(_DCUser.profit),
@@ -68,6 +69,7 @@ function Affiliate() {
                 })
             }
             if (StakeUser) {
+                console.log(StakeUser);
                 setDCclaimed(BigNoToDC(StakeUser.claimed))
             }
             if (_nftClaimable && BigNoToInt(_nftClaimable)>=1) {
@@ -157,7 +159,7 @@ function Affiliate() {
 
                     <div className='flex mt-6'>
                         <input className='bg-stone-700 w-32 py-2 px-3 mr-10' placeholder='0' onChange={(e)=>setDCinput(e.target.value)}/>
-                        <div className='border border-yellow-300 border-2 p-2 hover:bg-yellow-600 px-6' onClick={() => handleNFTStake(NFTinput)}>
+                        <div className='border border-yellow-300 border-2 p-2 hover:bg-yellow-600 px-6' onClick={() => handleDCSell(DCinput)}>
                             DC Sell
                         </div>
                     </div>

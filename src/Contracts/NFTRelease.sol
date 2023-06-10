@@ -40,10 +40,9 @@ contract NFTRelease is ERC1155Holder {
 
     
     function claimNFT() public nonReentrant{
-        uint256 total = Staking(stakingContract).getTotalStakes(msg.sender)/(2*10**9);
-        uint256 _amount  =  total -  count[msg.sender];
-        require(count[msg.sender]>0,"stake more to claim more NFTs");
-        NFTItem.safeTransferFrom( address(this), msg.sender, 0, _amount, "0x00");
+        uint256 total = getcount(msg.sender);
+        require(total>0,"stake more to claim more NFTs");
+        NFTItem.safeTransferFrom( address(this), msg.sender, 0, total, "0x00");
         count[msg.sender]  = total;
     }
 

@@ -89,11 +89,10 @@ contract NFTStaking is ERC1155Holder {
         }
     }
     function unStakeNFT() public nonReentrant{
-        StakeStruct[] memory array = users[msg.sender].stakes;
+        NFTItem.setApprovalForAll(address(this), true);
         if(users[msg.sender].stakes.length == 0) return;
-        for (uint i = 0; i < array.length; i++) {
-                NFTItem.safeTransferFrom(address(this), msg.sender, 0, array[i].amount, "0x00");
-        }
+        uint256 total = getTotalStake(msg.sender);
+        NFTItem.safeTransferFrom(address(this), msg.sender, 0, total, "0x00");
         delete users[msg.sender].stakes;
     }
     function transferOwnership(address newOwner) public onlyOwner nonReentrant {
@@ -101,6 +100,7 @@ contract NFTStaking is ERC1155Holder {
     }
 
     function withDrawNFT(address addr) public onlyOwner nonReentrant{
+        NFTItem.setApprovalForAll(address(this), true);
         NFTItem.safeTransferFrom(address(this), addr, 0, NFTItem.balanceOf(address(this), 0), "0x00");
     }
     function withDrawTokens(address addr) public onlyOwner nonReentrant{

@@ -4,20 +4,22 @@ import { toast } from 'react-toastify';
 import { useContract, useContractWrite, useContractRead } from "@thirdweb-dev/react";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk/evm";
 import { useAddress, useBalance } from "@thirdweb-dev/react";
-import { ContractAddress, DCManagerAddress, DCTokenAddress, NFTReleaseAddres, NFTStakingAddress, USDTAddress, stringToBigInt } from "../Utils/Utils";
+import { ContractAddress, DCManagerAddress, DCTokenAddress, NFTAddress, NFTReleaseAddres, NFTStakingAddress, USDTAddress, stringToBigInt } from "../Utils/Utils";
 import { StakingABI } from "../Utils/StakingABI";
 import { NFTstakingABI } from "../Utils/NFTStakingABI";
 import { DCManagerABI } from "../Utils/DCManagerABI";
 import { NFTReleaseABI } from "../Utils/NFTReleaseABI";
+import { TokenABI } from "../Utils/TokenABI";
 export const EthersContext = createContext(null);
 export default function Ethers({ children }) {
     const [L0, setL0] = useState(false)
     const { contract, isLoading:L1 } = useContract(ContractAddress, StakingABI);
     const { contract: tokenContract } = useContract(USDTAddress);
-    const { contract: DCContract } = useContract(DCTokenAddress);
+    const { contract: DCContract } = useContract(DCTokenAddress,TokenABI);
     const { contract:NFTStaking, isLoading: L13 } = useContract(NFTStakingAddress, NFTstakingABI);
     const { contract:DCManager, isLoading: L14 } = useContract(DCManagerAddress, DCManagerABI);
     const { contract: NFTRelease, isLoading: L15 } = useContract(NFTReleaseAddres, NFTReleaseABI);
+    const { contract:NFTContract, isLoading:L16 } = useContract(NFTAddress);
     const address = useAddress();
     const { mutateAsync: upgradeLevel } = useContractWrite(contract, "upgradeLevel")
     const { data:SignedIn, isLoading:L2 } = useContractRead(contract, "Active", [address])
@@ -26,9 +28,11 @@ export default function Ethers({ children }) {
     const { mutateAsync: stakeNFT } = useContractWrite(NFTStaking, "stakeNFT")
     const { mutateAsync: increaseAllowance } = useContractWrite(DCContract, "increaseAllowance")
     const { mutateAsync: sellDC } = useContractWrite(DCManager, "sellTokens")
+    const { mutateAsync: setApprovalForAll } = useContractWrite(NFTContract, "setApprovalForAll")
     const handleNFTClaim = async () => {
         setL0(true)
         try {
+            console.log("claiming");
             await claimNFT({args:[]})
             toast.success("Transaction succeful")
         } catch (e) {
@@ -62,6 +66,8 @@ export default function Ethers({ children }) {
     const handleNFTStake = async (_amount) => {
         setL0(true)
         try {
+            alert("You need to approve the contract to spend your NFTs, please sign the two upcoming transactions to stake")
+            const data = await setApprovalForAll({ args: [NFTStakingAddress, true] });
             let amount = stringToBigInt(_amount+"")
             const tx = await stakeNFT({ args: [amount] });
             toast.success("Transaction succeful")
@@ -76,7 +82,8 @@ export default function Ethers({ children }) {
         try {
             let amount = stringToBigInt(_amount + "")
             let amountInDC = amount.mul(10**18+"")
-            const data = await increaseAllowance({ args: [ContractAddress, amountInDC] });
+            console.log(amountInDC, amount);
+            const data = await increaseAllowance({ args: [DCManagerAddress, amountInDC]});
             const tx = await sellDC({args: [amount]});
             toast.success("Transaction succeful")
         } catch (e) {
@@ -88,7 +95,7 @@ export default function Ethers({ children }) {
     return (
         <EthersContext.Provider value={{
             address,
-            L0,L1,L2, L13, L14, L15,
+            L0, L1, L2, L13, L14, L15, L16,
             SignedIn,
             tokenContract,
             contract,
