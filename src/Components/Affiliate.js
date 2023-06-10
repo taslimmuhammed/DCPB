@@ -69,7 +69,6 @@ function Affiliate() {
                 })
             }
             if (StakeUser) {
-                console.log(StakeUser);
                 setDCclaimed(BigNoToDC(StakeUser.claimed))
             }
             if (_nftClaimable && BigNoToInt(_nftClaimable)>=1) {
@@ -83,7 +82,10 @@ function Affiliate() {
         }
 
     }, [_count, _nftBalance, _stakedNFTs, _DCUser, StakeUser,_nftClaimable])
-
+   useEffect(() => {
+     console.log(Upgradable);
+   }, [Upgradable])
+   
     if (isLoading || L3 || L4 || L0 ) return <Loader />
     else return (
         <div className='text-white'>

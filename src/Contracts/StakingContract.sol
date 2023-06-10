@@ -385,7 +385,7 @@ contract StakingContract {
     function checkUpgradablity(address _user) public view returns (bool) {
         uint8 rank = Users[_user].rank;
         if (rank == 0) {
-            if (Users[msg.sender].indirectStakes >= 40 * decimals) return true;
+            if (Users[_user].indirectStakes >= 10 * decimals) return true;
             else return false;
         } else if(rank>0 && rank<6){
             if(getRefsWithRank(rank, _user) >= 1) return true;

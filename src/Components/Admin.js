@@ -1,12 +1,38 @@
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react'
+import { EthersContext } from '../Contexts/EthersContext'
+import { BigNoToInt, BigNoToUSDT } from '../Utils/Utils'
+import Loader from './Loader'
+import { useContractRead } from '@thirdweb-dev/react'
 
 function Admin() {
+    const { address,
+        L0,
+        contract,
+        NFTStaking,
+        DCManager,
+        NFTRelease } = useContext(EthersContext)
+        const [isLoading, setisLoading] = useState(false)
+        const [TotalDeposite, setTotalDeposite] = useState(0)
+        const [NFTReleased, setNFTReleased] = useState(0)
+        const [DCSold, setDCSold] = useState(0)
+        const [totalClaimed, settotalClaimed] = useState(0)
+    const { data: _totalDeposite } = useContractRead(contract, "totalDeposite", [])
+    const { data: _nftRelease } = useContractRead(NFTRelease, "totalReleased", [])
+    const { data: _totalDCSold } = useContractRead(DCManager, "getTotalSold", [])
+    const { data: _totalClaimed } = useContractRead(DCManager, "totalClaimed", [])
+    useEffect(() => {
+       if(_totalDeposite) setTotalDeposite(BigNoToUSDT(_totalDeposite))
+       if(_nftRelease) setNFTReleased(BigNoToInt(_nftRelease))
+       if(_totalDCSold) setDCSold(BigNoToInt(_totalDCSold))
+       if(_totalClaimed) settotalClaimed(BigNoToInt(_totalClaimed))
+    }, [_nftRelease, _totalDeposite, _totalDCSold, _totalClaimed])
     
-    return (
-        <div className='text-white p-5 mb-32'>
+    if (isLoading || L0) return <Loader />
+    else return (
+            <div className='text-white p-5 mb-32'>
             <div className='flex w-full justify-between'>
                 <div className='py-2 text-lg'> Total Deposite</div>
-                <div className='bg-stone-700 w-32 py-2 px-2'></div>
+                <div className='bg-stone-700 w-32 py-2 px-2'>{TotalDeposite && TotalDeposite} USDT</div>
             </div>
             <div className='flex w-full justify-between mt-6'>
                 <div className='py-2 text-lg'> Total Payout</div>
@@ -30,11 +56,11 @@ function Admin() {
             </div>
             <div className='flex w-full justify-between mt-6'>
                 <div className='py-2 text-lg'> Total DC on sales</div>
-                <div className='bg-stone-700 w-32 py-2 px-2'></div>
+                <div className='bg-stone-700 w-32 py-2 px-2'>{DCSold && DCSold} DC</div>
             </div>
             <div className='flex w-full justify-between mt-6'>
                 <div className='py-2 text-lg'> Total DC Buy in</div>
-                <div className='bg-stone-700 w-32 py-2 px-2'></div>
+                <div className='bg-stone-700 w-32 py-2 px-2'>{totalClaimed && totalClaimed} USDT</div>
             </div>
 
 

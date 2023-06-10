@@ -10,9 +10,10 @@ contract DCManager {
     uint256 DCdecimals = 10 ** 18;
     uint256 USDTdecimals = 10 ** 6;
     uint256 public totalSold;
+    uint256 public totalClaimed;
     uint256 public index;
     address dWallet=0xF4fC364851D03A7Fc567362967D555a4d843647d;
-    address admin = 
+    address admin = 0x6B851e5B220438396ac5ee74779DDe1a54f795A9;
     address public owner;
     uint256 public vestingPeriod;
     uint256 public Dclaimed;
@@ -66,10 +67,14 @@ contract DCManager {
         
     }
     
+    function getTotalSold() public view returns(uint256){
+        return totalSold+index*100_000;
+    }
     function claimUSDT(uint256 _amount)public nonReentrant{
         require(Users[msg.sender].balance>1,"you dont have enough balance");
         require(_amount <= Users[msg.sender].balance,"you can not claim more than your balance");
         Users[msg.sender].balance -= _amount;
+        totalClaimed += _amount;
         uint256 USDTvalue = _amount * USDTdecimals * tokenPrice/100;
         Users[msg.sender].profit += USDTvalue;
         USDT.transfer(msg.sender,USDTvalue);
@@ -88,6 +93,7 @@ contract DCManager {
         if(amount+Dclaimed>20_000_000*DCdecimals){
             amount = 20_000_000*DCdecimals - Dclaimed;
         }
+        
         Dclaimed += amount;
         IERC20(DCtoken).transfer(msg.sender, amount);
     }
@@ -95,8 +101,8 @@ contract DCManager {
     function withdrawTokens(address _wallet) public onlyOwner nonReentrant{
             IERC20(DCtoken).transfer(_wallet, IERC20(DCtoken).balanceOf(address(this)));
     }
-    function withdrawUSDT(address _wallet) public onlyOwner nonReentrant{
-            USDT.transfer(_wallet, USDT.balanceOf(address(this)));
+    function withdrawUSDT(uint256 _amount) public onlyOwner nonReentrant{
+            USDT.transfer(admin,_amount);
     }
     function transferOwnership(address newOwner) public onlyOwner nonReentrant {
         owner = newOwner;
