@@ -14,6 +14,7 @@ contract NFTRelease is ERC1155Holder {
     IERC1155 public NFTItem;
     address public  owner;
     address public  stakingContract;
+    uint256 public totalReleased;
     mapping(address => uint256) public count;
 
     constructor(address _NFTItem, address _contract) {

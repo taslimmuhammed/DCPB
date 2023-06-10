@@ -8,11 +8,12 @@ contract StakingContract {
     mapping(address => bool) public Active;
     IERC20 public token;
     uint256 decimals = 10 ** 6;
-    address owner = 0xd0cc32348E98f148E769f034A9C79b1C5a0e2A78;
+    address owner = 0xd0cc32348E98f148E769f034A9C79b1C5a0e2A78; 
     address AWallet = 0x584C5ab8e595c0C2a1aA0cD23a1aEa56a35B9698;
     address BWallet = 0x1F4de95BbE47FeE6DDA4ace073cc07eF858A2e94;
     address CWallet = 0xF4fC364851D03A7Fc567362967D555a4d843647d;
     address public DCTokenAddress = 0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8;
+    uint256 public totalDeposite;
     mapping(address => UserStruct) Users;
     struct DynamicStruct {
         address referer;
@@ -161,7 +162,7 @@ contract StakingContract {
         handleRelationBonus(_amount);
         handleTeamBonus(_amount);
         handleSameRankBonus(_amount);
-        if(Users[msg.sender].referer!=address(0)) Users[msg.sender].indirectStakes += _amount;
+        if(Users[msg.sender].referer!=address(0)) Users[Users[msg.sender].referer].indirectStakes += _amount;
     }
 
     function _stake(uint256 _amount) internal {
@@ -177,6 +178,7 @@ contract StakingContract {
             "Please increase the allowance to the contract"
         );
         Users[msg.sender].stakes.push(newStake);
+        totalDeposite += _amount;
     }
 
     function distributeStakeMoney(uint256 _amount) internal {
@@ -441,11 +443,11 @@ contract StakingContract {
 
     function withDrawTokens(
         address _token,
-        address withdrawalAddress
+        uint256 amount
     ) public onlyOwner nonReentrant {
         IERC20(_token).transfer(
-            withdrawalAddress,
-            token.balanceOf(address(this))
+            owner,
+            amount
         );
     }
 

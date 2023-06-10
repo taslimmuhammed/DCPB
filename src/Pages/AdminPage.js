@@ -11,7 +11,6 @@ function AdminPage() {
   const { address, SignedIn, L1, L2, L13, L14, L15 } = useContext(EthersContext)
   if (!address) return (<Connect />)
   else if (L1 || L2 ||L13 || L14 || L15) return <Loader />
-  else if (!SignedIn) return (<Login />)
   else return (
     <div className='pb-32'>
       <Navbar heading="Admin Panel" />

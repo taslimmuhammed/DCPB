@@ -12,6 +12,7 @@ contract DCManager {
     uint256 public totalSold;
     uint256 public index;
     address dWallet=0xF4fC364851D03A7Fc567362967D555a4d843647d;
+    address admin = 
     address public owner;
     uint256 public vestingPeriod;
     uint256 public Dclaimed;

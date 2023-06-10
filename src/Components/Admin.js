@@ -1,6 +1,7 @@
 import React from 'react'
 
 function Admin() {
+    
     return (
         <div className='text-white p-5 mb-32'>
             <div className='flex w-full justify-between'>
