@@ -32,6 +32,7 @@ contract StakingContract {
         address[][] downReferrals;
         DynamicStruct[] dynamicPerDay;
         uint8 rank;
+        uint256 indirectStakes;
         uint256 dynamicLimit;
         uint256 staticLimit;
     }
@@ -160,6 +161,7 @@ contract StakingContract {
         handleRelationBonus(_amount);
         handleTeamBonus(_amount);
         handleSameRankBonus(_amount);
+        if(Users[msg.sender].referer!=address(0)) Users[msg.sender].indirectStakes += _amount;
     }
 
     function _stake(uint256 _amount) internal {
@@ -381,7 +383,7 @@ contract StakingContract {
     function checkUpgradablity(address _user) public view returns (bool) {
         uint8 rank = Users[_user].rank;
         if (rank == 0) {
-            if (getTotalStakes(_user) >= 40 * decimals) return true;
+            if (Users[msg.sender].indirectStakes >= 40 * decimals) return true;
             else return false;
         } else if(rank>0 && rank<6){
             if(getRefsWithRank(rank, _user) >= 1) return true;
