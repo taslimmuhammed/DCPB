@@ -20,7 +20,7 @@ export const DCManagerABI = [
         "name": "DCtoken",
         "outputs": [
             {
-                "internalType": "contract IERC20",
+                "internalType": "address",
                 "name": "",
                 "type": "address"
             }
@@ -57,14 +57,30 @@ export const DCManagerABI = [
     {
         "inputs": [
             {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "Users",
+        "outputs": [
+            {
                 "internalType": "uint256",
-                "name": "_newPrice",
+                "name": "balance",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "profit",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "totalCoins",
                 "type": "uint256"
             }
         ],
-        "name": "changePrice",
-        "outputs": [],
-        "stateMutability": "nonpayable",
+        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -88,6 +104,19 @@ export const DCManagerABI = [
         "type": "function"
     },
     {
+        "inputs": [],
+        "name": "index",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [
             {
                 "internalType": "uint256",
@@ -102,7 +131,7 @@ export const DCManagerABI = [
     },
     {
         "inputs": [],
-        "name": "tokenPrice",
+        "name": "totalSold",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -124,25 +153,6 @@ export const DCManagerABI = [
         "name": "transferOwnership",
         "outputs": [],
         "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "name": "userBalance",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
         "type": "function"
     },
     {

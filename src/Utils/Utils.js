@@ -1,33 +1,33 @@
 import { ethers } from "ethers"
 
-export const ContractAddress = "0x3bAe2F2827828a62f1DD29c9ceCb67f4700a7255"
-export const TokenAddress = "0x863aa21721D42B59CCA2a49213780DEc5837D7f1"
-export const NFTReleaseAddres = "0xcB32A9D43CAcCa98B281e9239fb1C1907b864210"
-export const NFTStakingAddress = "0x2D319D136f580306917096eCF3304D623dec27D6"
-export const DCTokenAddress = "0x370bCeA9d726B2d9f6456f90fe832260B9d5e508"
-export const DCManagerAddress = "0x7Beac3a11d6292efdCb0Ed1F137A61d61102c4Ff"
+export const ContractAddress = "0x79CBb2d8f5f1dD1e49F31d35906B846F3AEddf56"
+export const USDTAddress = "0x863aa21721D42B59CCA2a49213780DEc5837D7f1"
+export const NFTReleaseAddres = "0x336C34Fd94a708E1e82d7888c9c220aAca79A81f"
+export const NFTStakingAddress = "0xF1B01d59Fb49A5F934D8871439503E82961F8e50"
+export const DCTokenAddress = "0x8aCbC8607B859Bc2e8c41336E67D695C877E2876"
+export const DCManagerAddress = "0x892ea216e900A75D3e2989b2b78d426dEcf4E03d"
 export const NFTAddress = "0x17A4370CBB1c2F1c1a53532d672AA4967d134735"
-export const BigNoToUSDT = (bigno)=>{
-    try{
-    let amount = bigno.div(10 ** 5 + "")
-    amount = parseInt(amount._hex, 16)
-    amount/=10;
-    return amount
-    }catch(e){
+export const BigNoToUSDT = (bigno) => {
+    try {
+        let amount = bigno.div(10 ** 5 + "")
+        amount = parseInt(amount._hex, 16)
+        amount /= 10;
+        return amount
+    } catch (e) {
         return 0
     }
 
 }
 export const BigNoToInt = (bigno) => {
     try {
-let amount = parseInt(bigno._hex, 16)
-    return amount
+        let amount = parseInt(bigno._hex, 16)
+        return amount
     } catch (e) {
         console.log(e);
         return 0
-    }  
+    }
 }
-export const BigNoToDC= (bigno) => {
+export const BigNoToDC = (bigno) => {
     try {
         let amount = bigno.div(10 ** 18 + "")
         amount = parseInt(amount._hex, 16)
@@ -39,19 +39,29 @@ export const BigNoToDC= (bigno) => {
 }
 export const stringToUSDT = (_amount) => {
     try {
-let amount = parseInt(_amount)
-    amount = ethers.BigNumber.from(amount)
-    amount = amount.mul(10 ** 6 + "")
-    return amount
+        let amount = parseInt(_amount)
+        amount = ethers.BigNumber.from(amount)
+        amount = amount.mul(10 ** 6 + "")
+        return amount
     } catch (e) {
         console.log(e);
         return 0
     }
-    
-}
 
-export const getRankfromUser = (_user)=>{
-    if (_user) return 
+}
+export const stringToBigInt = (_amount) => {
+    try {
+        let amount = parseInt(_amount)
+        amount = ethers.BigNumber.from(amount)
+        return amount
+    } catch (e) {
+        console.log(e);
+        return 0
+    }
+
+}
+export const getRankfromUser = (_user) => {
+    if (_user) return
     return 0
 }
 
@@ -60,11 +70,11 @@ export function shortenAddress(address, startChars = 6, endChars = 4) {
     return `${address.slice(0, startChars)}...${address.slice(-endChars)}`;
 }
 
-export function HexToDateString(timestamp){
+export function HexToDateString(timestamp) {
     try {
-let date = parseInt(timestamp._hex, 16) *1000
-    date = new Date(date)
-    return `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}`
+        let date = parseInt(timestamp._hex, 16) * 1000
+        date = new Date(date)
+        return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
     } catch (e) {
         console.log(e);
         return ''

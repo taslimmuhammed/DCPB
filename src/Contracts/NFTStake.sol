@@ -8,13 +8,13 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 
-contract Staking is ERC1155Holder {
+contract NFTStaking is ERC1155Holder {
 
     IERC1155 public NFTItem;
     using SafeERC20 for IERC20;
     IERC20 private token;
     uint256 decimals = 10**18;   
-    address owner; 
+    address public owner; 
     struct StakeStruct{
         uint256 amount;
         uint256 timestamp;
@@ -59,6 +59,7 @@ contract Staking is ERC1155Holder {
     function getDCToken() public nonReentrant{
         uint256 reward = calculateReward(msg.sender);
         handleTimestamps();
+        users[msg.sender].claimed+= reward;
         token.safeTransfer( msg.sender, reward);
     }
     function getTotalStake(address _user) public view returns(uint256){

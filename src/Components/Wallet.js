@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { EthersContext } from '../Contexts/EthersContext'
-import {  BigNoToUSDT, stringToUSDT } from '../Utils/Utils'
+import {  BigNoToInt, BigNoToUSDT, stringToBigInt, stringToUSDT } from '../Utils/Utils'
 import {  useContractRead, useContractWrite } from '@thirdweb-dev/react'
 import { toast } from 'react-toastify'
 import Loader from './Loader'
@@ -12,14 +12,16 @@ function Wallet() {
     const [DynamicInput, setDynamicInput] = useState("0")
     const [DCInput, setDCInput] = useState("0")
     const [UserBalance, setUserBalance] = useState(0)
+    const [DCProfit, setDCProfit] = useState(0)
     const { data: _dynamic, isLoading: L3 } = useContractRead(contract, "getTotalDynamicRewards", [address])
     const { data: _reward, isLoading: L4 } = useContractRead(contract, "calculateAllReward", [address])
     const { data: _userBalance, isLoading: L5 } = useContractRead(DCManager, "userBalance", [address])
-    const { data: User } = useContractRead(contract, "getUser", [address])
     const { mutateAsync: claimDynamicReward } = useContractWrite(contract, "claimDynamicReward")
     const { mutateAsync: claimStaticReward } = useContractWrite(contract, "claimStaticReward")
     const { mutateAsync: claimUSDT } = useContractWrite(DCManager, "claimUSDT")
     const [Rewards, setRewards] = useState([0, 0])
+    const { data: _DCUser } = useContractRead(DCManager, "Users", [address])
+
     const handleStatic = async () => {
         setisLoading(true)
         try {
@@ -47,8 +49,7 @@ function Wallet() {
     const handleDCReward = async () => {
         setisLoading(true)
         try {
-            let amount = stringToUSDT(DCInput)
-            amount = amount.mul(10**12)
+            let amount = stringToBigInt(DCInput)
             const tx = await claimUSDT({ args: [amount] });
             toast.success("Transaction succeful")
         } catch (e) {
@@ -63,12 +64,14 @@ function Wallet() {
         } else if (index === 1) {
             setDynamicInput(BigNoToUSDT(_reward.dynamicReward))
         } else {
-            setDCInput(UserBalance)
+            setDCInput(DCProfit)
         }
     }
     useEffect(() => {
-        console.log(User);
-    }, [User])
+        if(_DCUser){
+            setDCProfit(BigNoToInt(_DCUser.profit))
+        }
+    }, [_DCUser])
     useEffect(() => {
         if (_reward) {
             let stT = 0;
@@ -164,7 +167,7 @@ function Wallet() {
                         </div>
                     </div>
                     <div className='text-xs text-stone-100 mb-2 mt-1'>
-                        <span className='text-stone-500'>Available:</span>  {UserBalance && UserBalance} USDT
+                        <span className='text-stone-500'>Available:</span>{DCProfit} USDT
                     </div>
                 </div>
                 <div className='flex flex-col justify-center' onClick={handleDCReward}>

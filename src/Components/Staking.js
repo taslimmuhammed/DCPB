@@ -3,7 +3,7 @@ import USDT from '../Assets/usdt.png'
 import verify from '../Assets/verify.svg'
 import { useBalance, useContract, useContractRead } from "@thirdweb-dev/react";
 import { EthersContext } from '../Contexts/EthersContext';
-import { ContractAddress, TokenAddress, stringToUSDT } from '../Utils/Utils';
+import { ContractAddress, USDTAddress, stringToUSDT } from '../Utils/Utils';
 import { ethers } from 'ethers';
 import { useContractWrite } from "@thirdweb-dev/react";
 import { toast } from 'react-toastify';
@@ -15,7 +15,7 @@ function Staking() {
   const { tokenContract, contract, address } = useContext(EthersContext)
   const { mutateAsync: increaseAllowance } = useContractWrite(tokenContract, "increaseAllowance")
   const { mutateAsync: stake } = useContractWrite(contract, "stake")
-  const { data: Balance } = useBalance(TokenAddress);
+  const { data: Balance } = useBalance(USDTAddress);
   const handleBuy = async () => {
     setisLoading(true)
     alert("You must approve 2 upcoming transactions for staking")

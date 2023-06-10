@@ -5,13 +5,10 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 
-// @title NFT Staking 
-/// @author Karan J Goraniya
-/// @notice You can use this contract for only the most basic simulation
-/// @dev All function calls are currently implemented without side effects
- interface Staking {
+
+interface Staking {
      function getTotalStakes(address _user) external  view returns (uint256) ;
- }
+}
 contract NFTRelease is ERC1155Holder {
 
     IERC1155 public NFTItem;

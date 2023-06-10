@@ -8,7 +8,7 @@ contract StakingContract {
     mapping(address => bool) public Active;
     IERC20 public token;
     uint256 decimals = 10 ** 6;
-    address owner = 0x6B851e5B220438396ac5ee74779DDe1a54f795A9;
+    address owner = 0xd0cc32348E98f148E769f034A9C79b1C5a0e2A78;
     address AWallet = 0x584C5ab8e595c0C2a1aA0cD23a1aEa56a35B9698;
     address BWallet = 0x1F4de95BbE47FeE6DDA4ace073cc07eF858A2e94;
     address CWallet = 0xF4fC364851D03A7Fc567362967D555a4d843647d;
@@ -222,7 +222,7 @@ contract StakingContract {
 
     function handleTeamBonus(uint256 _amount) internal {
         uint256 multiple = _amount / 10000;
-        address friend = msg.sender;
+        address friend = Users[msg.sender].referer;
         uint256 total = multiple * 60;
         uint8 rank = Users[msg.sender].rank;
         while (friend != address(0)) {
@@ -312,14 +312,8 @@ contract StakingContract {
 
     function claimStaticReward(uint256 _amount) public nonReentrant {
         RewardStruct memory totalReward = getTotalRewards(msg.sender);
-        require(
-            _amount <= totalReward.staticReward,
-            "The amount should be less than the totals rewards"
-        );
-        require(
-            _amount >= Users[msg.sender].staticLimit,
-            "The amount less than the allowed limit"
-        );
+        require(_amount <= totalReward.staticReward,"The amount should be less than the totals rewards");
+        require(_amount >= Users[msg.sender].staticLimit,"The amount less than the allowed limit");
         updateStaticReward(_amount);
         token.transfer(msg.sender, _amount);
         Users[msg.sender].staticLimit *= 2;
