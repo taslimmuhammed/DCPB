@@ -75,9 +75,9 @@ export const StakingABI = [
                         "type": "uint256"
                     }
                 ],
-                "internalType": "struct StakingContract.RewardStruct[5]",
+                "internalType": "struct StakingContract.RewardStruct[]",
                 "name": "",
-                "type": "tuple[5]"
+                "type": "tuple[]"
             }
         ],
         "stateMutability": "view",
@@ -399,6 +399,11 @@ export const StakingABI = [
                         "internalType": "uint256",
                         "name": "staticLimit",
                         "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "validrefs",
+                        "type": "uint256"
                     }
                 ],
                 "internalType": "struct StakingContract.UserStruct",
@@ -451,6 +456,19 @@ export const StakingABI = [
     {
         "inputs": [],
         "name": "totalDeposite",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "totalUsers",
         "outputs": [
             {
                 "internalType": "uint256",

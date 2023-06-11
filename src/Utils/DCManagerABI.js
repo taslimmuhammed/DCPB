@@ -85,7 +85,7 @@ export const DCManagerABI = [
     },
     {
         "inputs": [],
-        "name": "claimDReward",
+        "name": "claimSReward",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -105,12 +105,38 @@ export const DCManagerABI = [
     },
     {
         "inputs": [],
+        "name": "getTotalSold",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "name": "index",
         "outputs": [
             {
                 "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
             }
         ],
         "stateMutability": "view",
@@ -127,6 +153,19 @@ export const DCManagerABI = [
         "name": "sellTokens",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "totalClaimed",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -184,9 +223,9 @@ export const DCManagerABI = [
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "_wallet",
-                "type": "address"
+                "internalType": "uint256",
+                "name": "_amount",
+                "type": "uint256"
             }
         ],
         "name": "withdrawUSDT",
