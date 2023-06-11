@@ -6,7 +6,8 @@ import { toast } from 'react-toastify'
 import Loader from './Loader'
 import withdraw from '../Assets/withdraw.png'
 function Wallet() {
-    const { tokenContract, contract, address, DCManager } = useContext(EthersContext)
+    const { tokenContract, contract, DCManager, address } = useContext(EthersContext)
+    // const address = "0x1c206F49C462ED3af40a5c368dbbd793278FCaa8"
     const [isLoading, setisLoading] = useState(false)
     const [StaticInput, setStaticInput] = useState("0")
     const [DynamicInput, setDynamicInput] = useState("0")
