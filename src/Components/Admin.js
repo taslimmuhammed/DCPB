@@ -92,7 +92,7 @@ function Admin() {
 
             <div className='flex mt-10'>
                 <input className='bg-stone-700 w-32 py-2 px-3 mr-10' placeholder='0' onChange={(e)=>setDCWithdrawInput(e.target.value)}/>
-                <div className='border border-yellow-300 border-2 py-2 px-5 hover:bg-yellow-600' onClick={()=>handleDCWithdra(DCWithdrawInput)}>
+                <div className='border border-yellow-300 border-2 py-2 px-5 hover:bg-yellow-600' onClick={()=>handleDCWithdraw(DCWithdrawInput)}>
                     Withdraw
                 </div>
             </div>
