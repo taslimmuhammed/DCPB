@@ -15,7 +15,7 @@ function StakingList() {
     else return (<div className='p-3 mb-10'>
           <div className='w-full bg-stone-800 p-5 text-white font-semibold text-sm'>
             {
-                  stakingList.map((stake, index) =>{
+                  stakingList && stakingList.map((stake, index) =>{
                     let amount = BigNoToUSDT(stake.reward)/2
                       let dyReward = BigNoToUSDT(stake.dynamicClaimed)
                       let stReward = BigNoToUSDT(stake.staticClaimed)
@@ -45,7 +45,7 @@ function StakingList() {
             }
 
             {
-                (!stakingList || stakingList.length === 0) && <div className='flex flex-col w-full h-screen justify-center text-white text-center text-xl'>No stakes available</div>
+                (error || !stakingList || stakingList.length === 0) && <div className='flex flex-col w-full h-screen justify-center text-white text-center text-xl'>No stakes available</div>
             }
             
         </div>

@@ -21,7 +21,6 @@ function Wallet() {
     const { mutateAsync: claimUSDT } = useContractWrite(DCManager, "claimUSDT")
     const [Rewards, setRewards] = useState([0, 0])
     const { data: _DCUser } = useContractRead(DCManager, "Users", [address])
-    
     const handleStatic = async () => {
         setisLoading(true)
         try {
