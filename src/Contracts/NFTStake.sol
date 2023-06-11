@@ -76,7 +76,9 @@ contract NFTStaking is ERC1155Holder  {
     using SafeERC20 for IERC20;
     IERC20 private token;
     uint256 decimals = 10**18;   
-    address public owner; 
+    address public owner;
+    uint256 public totalStaked;
+    uint256 public totalReleased;
     struct StakeStruct{
         uint256 amount;
         uint256 timestamp;
@@ -116,6 +118,7 @@ contract NFTStaking is ERC1155Holder  {
         NFTItem.safeTransferFrom(msg.sender, address(this), 0, _amount, "0x00");
         users[msg.sender].stakes.push(StakeStruct( _amount, block.timestamp));
         emit Stake (msg.sender, 0, _amount, block.timestamp);
+        totalStaked += _amount;
     }
  
     function getDCToken() public nonReentrant{
@@ -123,6 +126,7 @@ contract NFTStaking is ERC1155Holder  {
         handleTimestamps();
         users[msg.sender].claimed+= reward;
         token.safeTransfer( msg.sender, reward);
+        totalReleased +=reward;
     }
     function getTotalStake(address _user) public view returns(uint256){
         uint256 total;

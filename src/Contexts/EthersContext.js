@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { useContract, useContractWrite, useContractRead } from "@thirdweb-dev/react";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk/evm";
 import { useAddress, useBalance } from "@thirdweb-dev/react";
-import { ContractAddress, DCManagerAddress, DCTokenAddress, NFTAddress, NFTReleaseAddres, NFTStakingAddress, USDTAddress, stringToBigInt } from "../Utils/Utils";
+import { ContractAddress, DCManagerAddress, DCTokenAddress, NFTAddress, NFTReleaseAddres, NFTStakingAddress, USDTAddress, stringToBigInt, stringToUSDT } from "../Utils/Utils";
 import { StakingABI } from "../Utils/StakingABI";
 import { NFTstakingABI } from "../Utils/NFTStakingABI";
 import { DCManagerABI } from "../Utils/DCManagerABI";
@@ -20,6 +20,7 @@ export default function Ethers({ children }) {
     const { contract:DCManager, isLoading: L14 } = useContract(DCManagerAddress, DCManagerABI);
     const { contract: NFTRelease, isLoading: L15 } = useContract(NFTReleaseAddres, NFTReleaseABI);
     const { contract:NFTContract, isLoading:L16 } = useContract(NFTAddress);
+    const { contract: USDTContract, isLoading: L17 } = useContract(USDTAddress, TokenABI);
     const address = useAddress();
     const { mutateAsync: upgradeLevel } = useContractWrite(contract, "upgradeLevel")
     const { data:SignedIn, isLoading:L2 } = useContractRead(contract, "Active", [address])
@@ -29,6 +30,8 @@ export default function Ethers({ children }) {
     const { mutateAsync: increaseAllowance } = useContractWrite(DCContract, "increaseAllowance")
     const { mutateAsync: sellDC } = useContractWrite(DCManager, "sellTokens")
     const { mutateAsync: setApprovalForAll } = useContractWrite(NFTContract, "setApprovalForAll")
+    const { mutateAsync: _stakingWithdraw } = useContractWrite(contract, "withDrawTokens") //withdrawUSDT
+    const { mutateAsync: _DCwithdraw } = useContractWrite(DCManager, "withdrawUSDT")
     const handleNFTClaim = async () => {
         setL0(true)
         try {
@@ -81,32 +84,58 @@ export default function Ethers({ children }) {
         setL0(true)
         try {
             let amount = stringToBigInt(_amount + "")
-            let amountInDC = amount.mul(10**18+"")
+            let amountInDC = amount.mul(10 ** 18 + "")
             console.log(amountInDC, amount);
-            const data = await increaseAllowance({ args: [DCManagerAddress, amountInDC]});
-            const tx = await sellDC({args: [amount]});
+            const data = await increaseAllowance({ args: [DCManagerAddress, amountInDC] });
+            const tx = await sellDC({ args: [amount] });
             toast.success("Transaction succeful")
+            
         } catch (e) {
             console.log(e);
             toast.error("transaction failed")
         }
         setL0(false)
     }
+    const handleStakingWithdraw = async (_amount) => {
+        setL0(true)
+        try {
+            let amount = stringToUSDT(_amount + "")
+            const tx = await _stakingWithdraw({ args: [USDTAddress, amount] });
+            toast.success("Transaction succeful")
+            
+        } catch (e) {
+            console.log(e);
+            toast.error("transaction failed")
+        }
+        setL0(false)
+    }
+    const handleDCWithdraw = async (_amount) => {
+     try {
+         let amount = stringToUSDT(_amount + "")
+         const tx = await _DCwithdraw({ args: [amount] });
+         toast.success("Transaction succeful")
+     } catch (error) {
+        console.log(error);
+     }
+    }
     return (
         <EthersContext.Provider value={{
             address,
-            L0, L1, L2, L13, L14, L15, L16,
+            L0, L1, L2, L13, L14, L15, L16, L17,
             SignedIn,
             tokenContract,
             contract,
             NFTStaking,
             DCManager,
             NFTRelease,
+            USDTContract,
             handleNFTClaim,
             handleDCClaim,
             handleUpgrade,
             handleNFTStake,
-            handleDCSell
+            handleDCSell,
+            handleStakingWithdraw,
+            handleDCWithdraw
         }}>
             {children}
         </EthersContext.Provider>

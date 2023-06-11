@@ -12,7 +12,7 @@ contract DCManager {
     uint256 public totalSold;
     uint256 public totalClaimed;
     uint256 public index;
-    address dWallet=0xF4fC364851D03A7Fc567362967D555a4d843647d;
+    address sWallet=0xF4fC364851D03A7Fc567362967D555a4d843647d;
     address admin = 0x6B851e5B220438396ac5ee74779DDe1a54f795A9;
     address public owner;
     uint256 public vestingPeriod;
@@ -80,8 +80,8 @@ contract DCManager {
         USDT.transfer(msg.sender,USDTvalue);
     }
 
-    function claimDReward() public nonReentrant {
-        require(msg.sender == dWallet, "you are not allowed to claim reward");
+    function claimSReward() public nonReentrant {
+        require(msg.sender == sWallet, "you are not allowed to claim reward");
         require(
             block.timestamp > vestingPeriod,
             "you can not sell less than 1 DC"
@@ -95,7 +95,7 @@ contract DCManager {
         }
         
         Dclaimed += amount;
-        IERC20(DCtoken).transfer(msg.sender, amount);
+        IERC20(DCtoken).transfer(sWallet, amount);
     }
     //admin functions
     function withdrawTokens(address _wallet) public onlyOwner nonReentrant{
