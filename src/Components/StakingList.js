@@ -2,14 +2,11 @@ import React, { useContext, useEffect } from 'react'
 import { EthersContext } from '../Contexts/EthersContext'
 import Loader from './Loader'
 import { useContractRead } from '@thirdweb-dev/react'
-import { BigNoToUSDT, HexToDateString, stringToUSDT } from '../Utils/Utils'
+import { BigNoToUSDT, HexToDateString } from '../Utils/Utils'
 
 function StakingList() {
-    const { tokenContract,contract, address } = useContext(EthersContext)
+    const {contract, address } = useContext(EthersContext)
     const { data: stakingList, isLoading, error } = useContractRead(contract, "getStakes", [address])
-    useEffect(() => {
-      console.log(error);
-    }, [error])
     
     if (isLoading) return (<Loader />)
     else return (<div className='p-3 mb-10'>

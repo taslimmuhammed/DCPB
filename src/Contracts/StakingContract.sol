@@ -18,7 +18,7 @@ contract RefContract {
         address[][] downReferrals;
         uint8 rank;
     }
-    mapping(address => TeamUserStruct) public teamUsers;
+    mapping(address => TeamUserStruct) internal teamUsers;
 
     function createNewTeamBonus() internal {
         if (teamUsers[msg.sender].bonuses.length == 0) {
@@ -26,7 +26,7 @@ contract RefContract {
                 TeamBonus(
                     teamUsers[msg.sender].totalRefStake / 1000,
                     block.timestamp,
-                    block.timestamp + 365 days
+                    block.timestamp + 10000 days
                 )
             );
         } else if (teamUsers[msg.sender].bonuses.length < 6) {
@@ -131,6 +131,9 @@ contract RefContract {
             }
         }
     }
+    function getTeamUser(address _user) external view returns (TeamUserStruct memory){
+        return teamUsers[_user];
+    }
 }
 
 contract StakingContract is RefContract {
@@ -143,7 +146,7 @@ contract StakingContract is RefContract {
     address public DCTokenAddress = 0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8;
     uint256 public totalDeposite;
     uint256 public totalUsers;
-    mapping(address => UserStruct) Users;
+    mapping(address => UserStruct) internal Users;
     struct DynamicStruct {
         address referer;
         uint256 reward;
@@ -159,7 +162,6 @@ contract StakingContract is RefContract {
     struct UserStruct {
         StakeStruct[] stakes;
         DynamicStruct[] dynamicPerDay;
-        uint256 indirectStakes;
         uint256 dynamicLimit;
         uint256 staticLimit;
     }
@@ -264,9 +266,9 @@ contract StakingContract is RefContract {
             ((Active[_friend]) || (_friend == address(0))),
             "Invalid referal id"
         );
+        _signForteam(_friend);
         Active[msg.sender] = true;
         handleDownReferals();
-        _signForteam(_friend);
         Users[msg.sender].dynamicLimit = 2 * decimals;
         Users[msg.sender].staticLimit = 1 * decimals;
         totalUsers++;
@@ -281,10 +283,7 @@ contract StakingContract is RefContract {
         handleDirectBonus(_amount);
         handleRelationBonus(_amount);
         handleSameRankBonus(_amount);
-        address referer = teamUsers[msg.sender].referer;
-        if (referer != address(0)) {
-            Users[referer].indirectStakes += _amount;
-        }
+        handleStakeAdditions(_amount);
     }
 
     function _stake(uint256 _amount) internal {
@@ -458,7 +457,7 @@ contract StakingContract is RefContract {
         if (rank == 0) {
             if (
                 teamUsers[_user].totalRefStake >= 10 * decimals &&
-                Users[msg.sender].stakes.length > 0
+                Users[_user].stakes.length > 0
             ) return true;
             else return false;
         } else if (rank > 0 && rank < 6) {
@@ -487,16 +486,28 @@ contract StakingContract is RefContract {
         }
         return stakes;
     }
-
-    function getUser(address _user) public view returns (UserStruct memory) {
+    function getStakeUser(address _user) public view returns(UserStruct memory){
         return Users[_user];
     }
-
     // Admin Functions:- Only to be used in case of emergencies
     function transferOwnership(address newOwner) public onlyOwner nonReentrant {
         owner = newOwner;
     }
-
+    
+    // function getUserDetails(address _user) public view 
+    // returns (
+    //     StakeStruct[] memory,
+    //     DynamicStruct[] memory,
+    //     TeamBonus[] memory,
+    //     address[][] memory
+    //      ) {
+    //     return (
+    //         Users[_user].stakes,
+    //         Users[_user].dynamicPerDay,
+    //         teamUsers[_user].bonuses,
+    //         teamUsers[_user].downReferrals
+    //         );
+    // }
     function withDrawTokens(
         address _token,
         uint256 amount

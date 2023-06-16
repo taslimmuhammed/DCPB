@@ -1,10 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import USDT from '../Assets/usdt.png'
 import verify from '../Assets/verify.svg'
-import { useBalance, useContract, useContractRead } from "@thirdweb-dev/react";
+import { useBalance, } from "@thirdweb-dev/react";
 import { EthersContext } from '../Contexts/EthersContext';
 import { ContractAddress, USDTAddress, stringToUSDT } from '../Utils/Utils';
-import { ethers } from 'ethers';
 import { useContractWrite } from "@thirdweb-dev/react";
 import { toast } from 'react-toastify';
 import Loader from './Loader';

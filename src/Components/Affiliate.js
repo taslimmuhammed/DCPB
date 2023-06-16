@@ -3,7 +3,7 @@ import { EthersContext } from '../Contexts/EthersContext'
 import { useBalance, useContractRead, useContractWrite } from '@thirdweb-dev/react'
 import { toast } from 'react-toastify'
 import Loader from './Loader'
-import { BigNoToDC, BigNoToInt, BigNoToUSDT, DCTokenAddress, NFTAddress, getRankfromUser } from '../Utils/Utils'
+import { BigNoToDC, BigNoToInt, DCTokenAddress } from '../Utils/Utils'
 import graph from '../Assets/graph.png'
 import community from '../Assets/community.png'
 function Affiliate() {
@@ -31,7 +31,7 @@ function Affiliate() {
     const [DCinput, setDCinput] = useState("0")
     const [NFTinput, setNFTinput] = useState("0")
     const { data: Upgradable, isLoading: L3 } = useContractRead(contract, "checkUpgradablity", [address])
-    const { data: User, isLoading: L4 } = useContractRead(contract, "getUser", [address])
+    const { data: User, isLoading: L4 } = useContractRead(contract, "getTeamUser", [address])
     const { data: RefRanks} = useContractRead(contract, "getReferralRanks", [address])
     const { data: _count} = useContractRead(NFTRelease, "count", [address])
     const { data: _nftClaimable} = useContractRead(NFTRelease, "getcount", [address])
@@ -83,7 +83,7 @@ function Affiliate() {
 
     }, [_count, _nftBalance, _stakedNFTs, _DCUser, StakeUser,_nftClaimable])
    useEffect(() => {
-     console.log(Upgradable);
+     console.log({Upgradable});
    }, [Upgradable])
    
     if (isLoading || L3 || L4 || L0 ) return <Loader />

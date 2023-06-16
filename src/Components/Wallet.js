@@ -6,14 +6,14 @@ import { toast } from 'react-toastify'
 import Loader from './Loader'
 import withdraw from '../Assets/withdraw.png'
 function Wallet() {
-    const { contract, DCManager, address } = useContext(EthersContext)
+    const {  contract, DCManager, address } = useContext(EthersContext)
     // const address = "0x1c206F49C462ED3af40a5c368dbbd793278FCaa8"
     const [isLoading, setisLoading] = useState(false)
     const [StaticInput, setStaticInput] = useState("0")
     const [DynamicInput, setDynamicInput] = useState("0")
     const [DCInput, setDCInput] = useState("0")
     const [DCUser, setDCUser] = useState(0)
-    const { data: User } = useContractRead(contract, "getUser", [address])
+    const { data: User } = useContractRead(contract, "getTeamUser", [address])
     const { data: _reward, isLoading: L4 } = useContractRead(contract, "calculateAllReward", [address])
     const { mutateAsync: claimDynamicReward } = useContractWrite(contract, "claimDynamicReward")
     const { mutateAsync: claimStaticReward } = useContractWrite(contract, "claimStaticReward")
