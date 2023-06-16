@@ -158,7 +158,6 @@ contract StakingContract is RefContract {
     }
     struct UserStruct {
         StakeStruct[] stakes;
-        address referer;
         DynamicStruct[] dynamicPerDay;
         uint256 indirectStakes;
         uint256 dynamicLimit;
@@ -266,8 +265,8 @@ contract StakingContract is RefContract {
             "Invalid referal id"
         );
         Active[msg.sender] = true;
-        Users[msg.sender].referer = _friend;
         handleDownReferals();
+        _signForteam(_friend);
         Users[msg.sender].dynamicLimit = 2 * decimals;
         Users[msg.sender].staticLimit = 1 * decimals;
         totalUsers++;
@@ -282,7 +281,7 @@ contract StakingContract is RefContract {
         handleDirectBonus(_amount);
         handleRelationBonus(_amount);
         handleSameRankBonus(_amount);
-        address referer = Users[msg.sender].referer;
+        address referer = teamUsers[msg.sender].referer;
         if (referer != address(0)) {
             Users[referer].indirectStakes += _amount;
         }
@@ -312,7 +311,7 @@ contract StakingContract is RefContract {
     }
 
     function handleDirectBonus(uint256 _amount) internal {
-        address _friend = Users[msg.sender].referer;
+        address _friend = teamUsers[msg.sender].referer;
         if (_friend == address(0) || Users[_friend].stakes.length==0) return;
         uint256 total = (_amount * 20) / 100;
         RewardStruct[] memory rewardArr = calculateAllReward(_friend);
