@@ -22,16 +22,16 @@ export default function Ethers({ children }) {
     const { contract:NFTContract, isLoading:L16 } = useContract(NFTAddress);
     const { contract: USDTContract, isLoading: L17 } = useContract(USDTAddress, TokenABI);
     const address = useAddress();
-    const { mutateAsync: upgradeLevel } = useContractWrite(contract, "upgradeLevel")
     const { data:SignedIn, isLoading:L2 } = useContractRead(contract, "Active", [address])
+    const { mutateAsync: upgradeLevel } = useContractWrite(contract, "upgradeLevel")
+    const { mutateAsync: _stakingWithdraw } = useContractWrite(contract, "withDrawTokens") //withdrawUSDT
     const { mutateAsync: claimNFT } = useContractWrite(NFTRelease, "claimNFT")
     const { mutateAsync: claimDC } = useContractWrite(NFTRelease, "getDCToken")
     const { mutateAsync: stakeNFT } = useContractWrite(NFTStaking, "stakeNFT")
     const { mutateAsync: increaseAllowance } = useContractWrite(DCContract, "increaseAllowance")
     const { mutateAsync: sellDC } = useContractWrite(DCManager, "sellTokens")
-    const { mutateAsync: setApprovalForAll } = useContractWrite(NFTContract, "setApprovalForAll")
-    const { mutateAsync: _stakingWithdraw } = useContractWrite(contract, "withDrawTokens") //withdrawUSDT
     const { mutateAsync: _DCwithdraw } = useContractWrite(DCManager, "withdrawUSDT")
+    const { mutateAsync: setApprovalForAll } = useContractWrite(NFTContract, "setApprovalForAll")
     const handleNFTClaim = async () => {
         setL0(true)
         try {

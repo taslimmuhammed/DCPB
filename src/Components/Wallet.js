@@ -6,15 +6,13 @@ import { toast } from 'react-toastify'
 import Loader from './Loader'
 import withdraw from '../Assets/withdraw.png'
 function Wallet() {
-    const { tokenContract, contract, DCManager, address } = useContext(EthersContext)
+    const { contract, DCManager, address } = useContext(EthersContext)
     // const address = "0x1c206F49C462ED3af40a5c368dbbd793278FCaa8"
     const [isLoading, setisLoading] = useState(false)
     const [StaticInput, setStaticInput] = useState("0")
     const [DynamicInput, setDynamicInput] = useState("0")
     const [DCInput, setDCInput] = useState("0")
-    const [UserBalance, setUserBalance] = useState(0)
     const [DCUser, setDCUser] = useState(0)
-    const { data: _dynamic, isLoading: L3 } = useContractRead(contract, "getTotalDynamicRewards", [address])
     const { data: User } = useContractRead(contract, "getUser", [address])
     const { data: _reward, isLoading: L4 } = useContractRead(contract, "calculateAllReward", [address])
     const { mutateAsync: claimDynamicReward } = useContractWrite(contract, "claimDynamicReward")
@@ -96,7 +94,7 @@ useEffect(() => {
 }, [User])
 
    
-    if (isLoading || L3 || L4 ) return <Loader />
+    if (isLoading || L4 ) return <Loader />
     else return (
         <div className='text-white'>
             {/* Intrest */}
@@ -185,10 +183,6 @@ useEffect(() => {
                     <div className='flex justify-between'>
                         <div>Total Intrest Value</div>
                         <div>{_reward && Rewards[0]} USDT</div>
-                    </div>
-                    <div className='flex justify-between'>
-                        <div>Total Booster Value</div>
-                        <div>{BigNoToUSDT(_dynamic)} USDT</div>
                     </div>
                     <div className='flex justify-between'>
                         <div>Claimable Booster Value</div>
