@@ -36,7 +36,7 @@ contract RefContract {
                 .endDate = block.timestamp;
             teamUsers[msg.sender].bonuses.push(
                 TeamBonus(
-                    (teamUsers[msg.sender].totalRefStake) / 1000,
+                    (teamUsers[msg.sender].totalRefStake * teamUsers[msg.sender].rank) / 1000,
                     block.timestamp,
                     block.timestamp + 10000 days
                 )
