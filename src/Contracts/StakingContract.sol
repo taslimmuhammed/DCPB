@@ -428,7 +428,7 @@ contract StakingContract is RefContract {
     function upgradeLevel() external nonReentrant {
         require(checkUpgradablity(msg.sender));
         teamUsers[msg.sender].rank += 1;
-        teamUsers[msg.sender].teamBonus.push(DynamicStruct(msg.sender, teamUsers[msg.sender].totalRefStake*3*teamUsers[msg.sender].rank/10000, block.timestamp));
+        teamUsers[msg.sender].teamBonus.push(DynamicStruct(msg.sender, teamUsers[msg.sender].totalRefStake*3/10000, block.timestamp));
     }
 
     //Reading functions
