@@ -85,6 +85,9 @@ function Affiliate() {
    useEffect(() => {
      console.log({Upgradable});
    }, [Upgradable])
+    useEffect(() => {
+        console.log({ User });
+    }, [User])
    
     if (isLoading || L3 || L4 || L0 ) return <Loader />
     else return (

@@ -24,7 +24,7 @@ contract RefContract {
         if (teamUsers[msg.sender].bonuses.length == 0) {
             teamUsers[msg.sender].bonuses.push(
                 TeamBonus(
-                    teamUsers[msg.sender].totalRefStake / 1000,
+                    teamUsers[msg.sender].totalRefStake *3/ 10000,
                     block.timestamp,
                     block.timestamp + 10000 days
                 )
@@ -36,7 +36,7 @@ contract RefContract {
                 .endDate = block.timestamp;
             teamUsers[msg.sender].bonuses.push(
                 TeamBonus(
-                    (teamUsers[msg.sender].totalRefStake * teamUsers[msg.sender].rank) / 1000,
+                    (teamUsers[msg.sender].totalRefStake * teamUsers[msg.sender].rank *3) / 10000,
                     block.timestamp,
                     block.timestamp + 10000 days
                 )
@@ -150,9 +150,9 @@ contract StakingContract is RefContract {
         uint256 available;
     }
 
-    constructor(address _token, address _dcaddress) {
-        token = IERC20(_token);
-        DCTokenAddress = _dcaddress;
+    constructor(address _usdt, address _dcmanager) {
+        token = IERC20(_usdt);
+        DCTokenAddress = _dcmanager;
     }
 
     modifier signedIn() {
@@ -445,7 +445,7 @@ contract StakingContract is RefContract {
             ) return true;
             else return false;
         } else if (rank > 0 && rank < 6) {
-            if (getRefsWithRank(rank, _user) >= 1) return true;
+            if (getRefsWithRank(rank, _user) >2) return true;
             else return false;
         } else {
             return false;
