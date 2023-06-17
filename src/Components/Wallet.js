@@ -13,7 +13,7 @@ function Wallet() {
     const [DynamicInput, setDynamicInput] = useState("0")
     const [DCInput, setDCInput] = useState("0")
     const [DCUser, setDCUser] = useState(0)
-    const { data: User } = useContractRead(contract, "getTeamUser", [address])
+    const { data: User } = useContractRead(contract, "getStakeUser", [address])
     const { data: _reward, isLoading: L4 } = useContractRead(contract, "calculateAllReward", [address])
     const { mutateAsync: claimDynamicReward } = useContractWrite(contract, "claimDynamicReward")
     const { mutateAsync: claimStaticReward } = useContractWrite(contract, "claimStaticReward")

@@ -81,23 +81,6 @@ contract RefContract {
         }
     }
 
-    function getSameRankList(
-        address _user
-    ) public view returns (address[] memory) {
-        address[] memory sameRankUsers = new address[](10);
-        uint256 count = 0;
-        uint8 rank = teamUsers[_user].rank;
-        address friend = teamUsers[msg.sender].referer;
-        while (friend != address(0) && count < 10) {
-            if (teamUsers[friend].rank == rank) {
-                sameRankUsers[count] = friend;
-                count++;
-            }
-            friend = teamUsers[friend].referer;
-        }
-        return sameRankUsers;
-    }
-
     function getRefsWithRank(
         uint8 _rank,
         address _user
@@ -295,8 +278,7 @@ contract StakingContract is RefContract {
             0
         );
         require(
-            token.transferFrom(msg.sender, address(this), _amount),
-            "Please increase the allowance to the contract"
+            token.transferFrom(msg.sender, address(this), _amount)
         );
         Users[msg.sender].stakes.push(newStake);
         totalDeposite += _amount;
@@ -336,6 +318,7 @@ contract StakingContract is RefContract {
                 address referer = downReferrals[i][j];
                 if (referer == address(0)) break;
                 else {
+                    if(teamUsers[referer].downReferrals[0].length>i)
                         Users[referer].dynamicPerDay.push(
                             DynamicStruct(msg.sender, reward, block.timestamp)
                         );
@@ -346,12 +329,17 @@ contract StakingContract is RefContract {
 
     function handleSameRankBonus(uint256 _amount) internal {
         uint256 reward = _amount / 1000;
-        address[] memory list = getSameRankList(msg.sender);
-        for (uint8 i = 0; i < 10; i++) {
-            if (list[i] == address(0)) break;
-            Users[list[i]].dynamicPerDay.push(
-                DynamicStruct(msg.sender, reward, block.timestamp)
-            );
+        address _friend = teamUsers[msg.sender].referer;
+        uint8 _rank = teamUsers[msg.sender].rank;
+        if(_rank==0) return;
+        while (_friend!=address(0)) {
+            if (teamUsers[_friend].rank == _rank){ 
+                Users[_friend].dynamicPerDay.push(
+                    DynamicStruct(msg.sender, reward, block.timestamp)
+                );
+                _friend = teamUsers[_friend].referer;
+                }
+            else break;
         }
     }
 

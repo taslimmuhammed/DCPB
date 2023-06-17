@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 
-export const ContractAddress = "0xCbd8A7C7756F41F491bb3c391177438115cAC0aF"
+export const ContractAddress = "0x0f7EF254121f55c1e54c3dc0c30466470D5C27a9"
 export const USDTAddress = "0x863aa21721D42B59CCA2a49213780DEc5837D7f1"
 export const NFTReleaseAddres = "0xFA840285ED512F617CBD908C8FB2C0956118Bfd6"
 export const NFTStakingAddress = "0xF1B01d59Fb49A5F934D8871439503E82961F8e50"
