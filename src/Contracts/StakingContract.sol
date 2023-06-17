@@ -31,18 +31,14 @@ contract RefContract {
             );
         } else if (teamUsers[msg.sender].bonuses.length < 6) {
             TeamBonus[] memory bonuses = teamUsers[msg.sender].bonuses;
-            uint256 totalBonus = 0;
-            for (uint i = 0; i < bonuses.length; i++) {
-                totalBonus += bonuses[i].bonus;
-            }
             teamUsers[msg.sender]
                 .bonuses[bonuses.length - 1]
                 .endDate = block.timestamp;
             teamUsers[msg.sender].bonuses.push(
                 TeamBonus(
-                    (teamUsers[msg.sender].totalRefStake-totalBonus) / 1000,
+                    (teamUsers[msg.sender].totalRefStake) / 1000,
                     block.timestamp,
-                    block.timestamp + 1000 days
+                    block.timestamp + 10000 days
                 )
             );
         } else {
