@@ -32,7 +32,7 @@ contract RefContract {
         while (friend != address(0)) {
             teamUsers[friend].totalRefStake += _amount;
             if(teamUsers[friend].rank>rank) teamUsers[friend].teamBonus.push(DynamicStruct(msg.sender, reward*teamUsers[friend].rank, block.timestamp));
-            else break;
+            if(teamUsers[friend].rank<rank) break;
             friend = teamUsers[friend].referer;
         }
     }
