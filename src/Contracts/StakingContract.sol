@@ -26,11 +26,13 @@ contract RefContract {
     }
 
     function _handleStakeAdditions(uint256 _amount) internal {
+        uint8 rank =  teamUsers[msg.sender].rank;
         address friend = teamUsers[msg.sender].referer;
         uint256 reward = _amount * 3 / 10000;
         while (friend != address(0)) {
             teamUsers[friend].totalRefStake += _amount;
-            if(teamUsers[friend].rank!=0) teamUsers[friend].teamBonus.push(DynamicStruct(msg.sender, reward*teamUsers[friend].rank, block.timestamp));
+            if(teamUsers[friend].rank>rank) teamUsers[friend].teamBonus.push(DynamicStruct(msg.sender, reward*teamUsers[friend].rank, block.timestamp));
+            else break;
             friend = teamUsers[friend].referer;
         }
     }
@@ -308,7 +310,6 @@ contract StakingContract is RefContract {
                 );
                 _friend = teamUsers[_friend].referer;
                 }
-            else break;
         }
     }
 
