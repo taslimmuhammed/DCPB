@@ -11,13 +11,22 @@ contract RefContract {
         uint256 reward;
         uint256 timestamp;
     }
+    struct SameRank{
+        uint256 start;
+        uint256 end;
+        uint256 reward;
+        address referer;
+    }
     struct TeamUserStruct {
         uint256 totalRefStake;
         DynamicStruct[] teamBonus;
         address referer;
+        SameRank[] sameBonus;
         address[][] downReferrals;
         uint8 rank;
     }
+
+    
     mapping(address => TeamUserStruct) internal teamUsers;
 
 
@@ -27,12 +36,14 @@ contract RefContract {
 
     function _handleStakeAdditions(uint256 _amount) internal {
         uint8 rank =  teamUsers[msg.sender].rank;
+        uint8 tempRank = rank;
         address friend = teamUsers[msg.sender].referer;
         uint256 reward = _amount * 3 / 10000;
         while (friend != address(0)) {
+            if(teamUsers[friend].rank<=tempRank) break;
+            tempRank = teamUsers[friend].rank;
             teamUsers[friend].totalRefStake += _amount;
-            if(teamUsers[friend].rank>rank) teamUsers[friend].teamBonus.push(DynamicStruct(msg.sender, reward*teamUsers[friend].rank, block.timestamp));
-            if(teamUsers[friend].rank<rank) break;
+            teamUsers[friend].teamBonus.push(DynamicStruct(msg.sender, reward*tempRank, block.timestamp));
             friend = teamUsers[friend].referer;
         }
     }
@@ -126,21 +137,21 @@ contract StakingContract is RefContract {
     modifier signedIn() {
         require(
             Active[msg.sender],
-            "Please sign in before utilising functions"
+            "sign in "
         );
         _;
     }
     modifier onlyOwner() {
         require(
             (msg.sender == owner),
-            "you are not allowed to utilise this function"
+            "admin only"
         );
         _;
     }
 
     bool private locked;
     modifier nonReentrant() {
-        require(!locked, "ReentrancyGuard: reentrant call");
+        require(!locked);
         locked = true;
         _;
         locked = false;
@@ -154,6 +165,7 @@ contract StakingContract is RefContract {
         StakeStruct[] memory stakes = Users[_user].stakes;
         DynamicStruct[] memory dynamicPerDay = Users[_user].dynamicPerDay;
         DynamicStruct[] memory teamBonus = teamUsers[_user].teamBonus;
+        SameRank[] memory sameBonus = teamUsers[_user].sameBonus;
         RewardStruct[] memory rewardStructs = new RewardStruct[](stakes.length);
         uint256[] memory availableArray = new uint256[](stakes.length);
         if (Users[_user].stakes.length == 0) {
@@ -175,6 +187,12 @@ contract StakingContract is RefContract {
             for (uint256 j = 0; j < teamBonus.length; j++) {
                 if (teamBonus[j].timestamp <= i) 
                     dynamicReward += teamBonus[j].reward;
+            }
+
+            //adding same rank bonus
+            for (uint256 j = 0; j < sameBonus.length; j++) {
+                if (sameBonus[j].start <= i && sameBonus[j].end>i) 
+                    dynamicReward += sameBonus[j].reward;
             }
 
             //calculating static
@@ -215,7 +233,7 @@ contract StakingContract is RefContract {
 
     function signIn(address _friend) external nonReentrant {
         require(msg.sender != _friend);
-        require(!Active[msg.sender], "Already signed in");
+        require(!Active[msg.sender]);
         require(
             ((Active[_friend]) || (_friend == address(0))),
             "Invalid referal id"
@@ -305,11 +323,11 @@ contract StakingContract is RefContract {
         if(_rank==0) return;
         while (_friend!=address(0)) {
             if (teamUsers[_friend].rank == _rank){ 
-                Users[_friend].dynamicPerDay.push(
-                    DynamicStruct(msg.sender, reward, block.timestamp)
+                teamUsers[_friend].sameBonus.push(
+                    SameRank(block.timestamp, block.timestamp + 10000 days, reward, msg.sender)
                 );
-                _friend = teamUsers[_friend].referer;
                 }
+            _friend = teamUsers[_friend].referer;
         }
     }
 
@@ -430,6 +448,16 @@ contract StakingContract is RefContract {
         require(checkUpgradablity(msg.sender));
         teamUsers[msg.sender].rank += 1;
         teamUsers[msg.sender].teamBonus.push(DynamicStruct(msg.sender, teamUsers[msg.sender].totalRefStake*3/10000, block.timestamp));
+        address _friend = teamUsers[msg.sender].referer;
+        while (_friend!=address(0)) {
+            SameRank[] memory sameArr = teamUsers[_friend].sameBonus;
+            for(uint256 i=0;i<sameArr.length;i++){
+                if(sameArr[i].referer==msg.sender && sameArr[i].end >block.timestamp){
+                    teamUsers[_friend].sameBonus[i].end = block.timestamp;
+                }
+            }
+        _friend = teamUsers[_friend].referer;
+        }
     }
 
     //Reading functions

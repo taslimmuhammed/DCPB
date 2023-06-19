@@ -424,6 +424,33 @@ export const StakingABI = [
                         "type": "address"
                     },
                     {
+                        "components": [
+                            {
+                                "internalType": "uint256",
+                                "name": "start",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "end",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "reward",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "referer",
+                                "type": "address"
+                            }
+                        ],
+                        "internalType": "struct RefContract.SameRank[]",
+                        "name": "sameBonus",
+                        "type": "tuple[]"
+                    },
+                    {
                         "internalType": "address[][]",
                         "name": "downReferrals",
                         "type": "address[][]"
