@@ -350,9 +350,7 @@ contract StakingContract is RefContract {
     function claimStaticReward(uint256 _amount) external nonReentrant {
         RewardStruct memory totalReward = getTotalRewards(msg.sender);
         require(
-            _amount <= totalReward.staticReward,
-            "The amount should be less than the totals rewards"
-        );
+            _amount <= totalReward.staticReward        );
         require(
             _amount >= Users[msg.sender].staticLimit,
             "The amount less than the allowed limit"
@@ -383,9 +381,7 @@ contract StakingContract is RefContract {
     function claimDynamicReward(uint256 _amount) public nonReentrant {
         RewardStruct memory totalReward = getTotalRewards(msg.sender);
         require(
-            _amount <= totalReward.dynamicReward,
-            "The amount should be less than the totals rewards"
-        );
+            _amount <= totalReward.dynamicReward );
         require(
             _amount >= Users[msg.sender].dynamicLimit,
             "The amount less than the allowed limit"
@@ -458,6 +454,9 @@ contract StakingContract is RefContract {
             }
         _friend = teamUsers[_friend].referer;
         }
+        for (uint i = 0; i < teamUsers[msg.sender].sameBonus.length; i++) 
+            if(teamUsers[msg.sender].sameBonus[i].end>block.timestamp)
+                teamUsers[msg.sender].sameBonus[i].end=block.timestamp;
     }
 
     //Reading functions
