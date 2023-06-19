@@ -40,9 +40,10 @@ contract RefContract {
         while (friend != address(0)) {
             if (teamUsers[friend].rank <= tempRank) break;
             tempRank = teamUsers[friend].rank;
+            if(tempRank != 0) {
             teamUsers[friend].teamBonus.push(
                 DynamicStruct(msg.sender, reward * tempRank, block.timestamp)
-            );
+            );}
             friend = teamUsers[friend].referer;
         }
         friend = teamUsers[msg.sender].referer;
