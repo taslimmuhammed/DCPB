@@ -38,7 +38,7 @@ contract RefContract {
         address friend = teamUsers[msg.sender].referer;
         uint256 reward = (_amount * 3) / 10000;
         while (friend != address(0)) {
-            if (teamUsers[friend].rank <= tempRank) break;
+            if ( tempRank != 0 && teamUsers[friend].rank <= tempRank) break;
             tempRank = teamUsers[friend].rank;
             if(tempRank != 0) {
             teamUsers[friend].teamBonus.push(
