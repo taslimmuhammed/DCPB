@@ -1,9 +1,7 @@
 import { createContext, useState, useEffect } from "react";
-import { ethers } from "ethers";
 import { toast } from 'react-toastify';
 import { useContract, useContractWrite, useContractRead } from "@thirdweb-dev/react";
-import { ThirdwebSDK } from "@thirdweb-dev/sdk/evm";
-import { useAddress, useBalance } from "@thirdweb-dev/react";
+import { useAddress } from "@thirdweb-dev/react";
 import { ContractAddress, DCManagerAddress, DCTokenAddress, NFTAddress, NFTReleaseAddres, NFTStakingAddress, USDTAddress, stringToBigInt, stringToUSDT } from "../Utils/Utils";
 import { StakingABI } from "../Utils/StakingABI";
 import { NFTstakingABI } from "../Utils/NFTStakingABI";
@@ -119,6 +117,10 @@ export default function Ethers({ children }) {
         console.log(error);
      }
     }
+    useEffect(() => {
+        console.log(contract);
+    }, [contract])
+    
     return (
         <EthersContext.Provider value={{
             address,
