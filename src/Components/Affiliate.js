@@ -3,7 +3,7 @@ import { EthersContext } from '../Contexts/EthersContext'
 import { useBalance, useContractRead, useContractWrite } from '@thirdweb-dev/react'
 import { toast } from 'react-toastify'
 import Loader from './Loader'
-import { BigNoToDC, BigNoToInt, DCTokenAddress } from '../Utils/Utils'
+import { BigNoToDC, BigNoToInt, BigNoToUSDT, DCTokenAddress } from '../Utils/Utils'
 import graph from '../Assets/graph.png'
 import community from '../Assets/community.png'
 function Affiliate() {
@@ -86,7 +86,23 @@ function Affiliate() {
      console.log({Upgradable});
    }, [Upgradable])
     useEffect(() => {
-        console.log({ User });
+        let Active = []
+        let Inactive = []
+        if(User){
+            for (let index = 0; index < User.rankBonus.length; index++) {
+                const bonus = User.rankBonus[index];
+                let startDate = new Date(BigNoToInt(bonus.start)*1000);
+                let endDate = new Date(BigNoToInt(bonus.end)*1000);
+                const reward = BigNoToUSDT(bonus.reward)
+                const multiplier = bonus.multiplier
+                let active = true
+                const referer = bonus.referer
+                if(endDate.getTime()<Date.now() || multiplier==0) active = false
+                if(active) Active.push({startDate,endDate,reward,multiplier, referer})
+                else Inactive.push({startDate,endDate,reward,multiplier, referer})
+            }
+            console.log({Active, Inactive});
+        }
     }, [User])
    
     if (isLoading || L3 || L4 || L0 ) return <Loader />

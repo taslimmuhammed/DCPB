@@ -34,33 +34,7 @@ contract RefContract {
         teamUsers[msg.sender].referer = referer;
     }
 
-    function _handleStakeAdditions(uint256 _amount) internal {
-        uint8 rank = teamUsers[msg.sender].rank;
-        uint8 tempRank = rank;
-        address friend = teamUsers[msg.sender].referer;
-        uint256 reward = (_amount) / 10000;
-        while (friend != address(0) ) {
-            if (teamUsers[friend].rank > tempRank) {
-                teamUsers[friend].rankBonus.push(
-                    RankBonus(block.timestamp, block.timestamp + 8640000000 , reward,3*teamUsers[friend].rank, msg.sender)
-                );
-                tempRank = teamUsers[friend].rank;
-            }else if(teamUsers[friend].rank == tempRank && teamUsers[friend].rank == rank){
-                if(tempRank==0) teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp+8640000000 , reward,0, msg.sender));
-                else teamUsers[friend].rankBonus.push(
-                    RankBonus(block.timestamp, block.timestamp+8640000000 , reward,10, msg.sender)
-            );
-            }else break;
-            friend = teamUsers[friend].referer;
-        }
-        // incrementing total additions
-        friend = teamUsers[msg.sender].referer;
-        while (friend != address(0) ) {
-            teamUsers[friend].totalRefStake += _amount;
-            friend = teamUsers[friend].referer;
-        }
-    }
-
+    
     function handleDownReferals() internal {
         for (uint8 i = 0; i < 6; i++)
             teamUsers[msg.sender].downReferrals.push();
@@ -254,7 +228,7 @@ contract StakingContract is RefContract {
         distributeStakeMoney(_amount);
         handleDirectBonus(_amount);
         handleRelationBonus(_amount);
-        _handleStakeAdditions(_amount);
+        reRe();
     }
 
     function _stake(uint256 _amount) internal {
@@ -268,6 +242,12 @@ contract StakingContract is RefContract {
         require(token.transferFrom(msg.sender, address(this), _amount));
         Users[msg.sender].stakes.push(newStake);
         totalDeposite += _amount;
+        // handling stake additions
+        address friend = teamUsers[msg.sender].referer;
+        while (friend != address(0) ) {
+            teamUsers[friend].totalRefStake += _amount;
+            friend = teamUsers[friend].referer;
+        }
     }
 
     function distributeStakeMoney(uint256 _amount) internal {
@@ -313,7 +293,34 @@ contract StakingContract is RefContract {
         }
     }
 
-
+    function reRe() internal{
+        address friend = teamUsers[msg.sender].referer;
+        uint256 reward = getTotalStakes(msg.sender) / 20000;
+        //ending all the rewards
+        while(friend != address(0))
+        for (uint i = 0; i < teamUsers[friend].rankBonus.length; i++)  {
+            if (teamUsers[friend].rankBonus[i].referer == msg.sender && teamUsers[friend].rankBonus[i].end > block.timestamp)
+            teamUsers[friend].rankBonus[i].end = block.timestamp;
+        }
+        // redistributing the reward
+        friend = teamUsers[msg.sender].referer;
+        uint8 rank = teamUsers[msg.sender].rank;
+        uint8 tempRank = rank;
+        while (friend != address(0) ) {
+            if (teamUsers[friend].rank > tempRank) {
+                teamUsers[friend].rankBonus.push(
+                    RankBonus(block.timestamp, block.timestamp + 8640000000 , reward,3*teamUsers[friend].rank, msg.sender)
+                );
+                tempRank = teamUsers[friend].rank;
+            }else if(teamUsers[friend].rank == tempRank && teamUsers[friend].rank == rank){
+                if(tempRank==0) teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp+8640000000 , reward,0, msg.sender));
+                else teamUsers[friend].rankBonus.push(
+                    RankBonus(block.timestamp, block.timestamp + 8640000000 , reward,10, msg.sender)
+            );
+            }else break;
+            friend = teamUsers[friend].referer;
+        }
+    }
     function getTotalRewards(
         address _user
     ) public view returns (RewardStruct memory) {
@@ -419,31 +426,14 @@ contract StakingContract is RefContract {
         uint8 rank = teamUsers[msg.sender].rank + 1;
         teamUsers[msg.sender].rank  = rank;
         address _friend = teamUsers[msg.sender].referer;
-        //correcting raferer's rank bonuses
-        while (_friend != address(0)) {
-            RankBonus[] memory rankArr = teamUsers[_friend].rankBonus;
-            for (uint256 i = 0; i < rankArr.length; i++) {
-                if (
-                    rankArr[i].referer == msg.sender &&
-                    rankArr[i].end > block.timestamp
-                ) {
-                    teamUsers[_friend].rankBonus[i].end = block.timestamp;
-                    rankArr[i].end = block.timestamp+8640000000 ;
-                    rankArr[i].start = block.timestamp;
-                    if( teamUsers[_friend].rank > rank) rankArr[i].multiplier = 3*rank;
-                    else if(teamUsers[msg.sender].rank==teamUsers[rankArr[i].referer].rank) rankArr[i].multiplier = 10;
-                    else rankArr[i].multiplier = 0;
-                    teamUsers[_friend].rankBonus.push(rankArr[i]);
-                }
-            }
-            _friend = teamUsers[_friend].referer;
-        }
+        //correcting rank bonuses
+        reRe();
         //correcting self rank bonuses
-         RankBonus[] memory rankArr1 = teamUsers[msg.sender].rankBonus; 
+        RankBonus[] memory rankArr1 = teamUsers[msg.sender].rankBonus; 
         for (uint i = 0; i < rankArr1.length; i++)
             if (teamUsers[msg.sender].rankBonus[i].end > block.timestamp){
                 teamUsers[msg.sender].rankBonus[i].end = block.timestamp;
-                rankArr1[i].end = block.timestamp+8640000000 ;
+                rankArr1[i].end = block.timestamp + 8640000000;
                 rankArr1[i].start = block.timestamp;
                 if(rank > teamUsers[rankArr1[i].referer].rank) rankArr1[i].multiplier = 3*rank;
                 else if(rank==teamUsers[rankArr1[i].referer].rank) rankArr1[i].multiplier = 10;
@@ -451,7 +441,6 @@ contract StakingContract is RefContract {
                 teamUsers[msg.sender].rankBonus.push(rankArr1[i]);
                 }
     }
-
     //Reading functions
     function getStakes(
         address _user
