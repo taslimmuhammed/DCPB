@@ -88,7 +88,7 @@ function Affiliate() {
     useEffect(() => {
         let Active = []
         let Inactive = []
-        if(User){
+        if(User && User.rankBonus){
             for (let index = 0; index < User.rankBonus.length; index++) {
                 const bonus = User.rankBonus[index];
                 let startDate = new Date(BigNoToInt(bonus.start)*1000);
