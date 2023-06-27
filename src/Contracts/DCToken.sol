@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract MyToken is ERC20, ERC20Burnable, Ownable {
 
     constructor() ERC20("DC Token", "DC") {
-         _mint(msg.sender, 1_000_000_000 *(10**18));
+         _mint(msg.sender, 1_500_000_000 *(10**18));
     }
     // make sure no mint function
     function transfer(address recipient, uint256 amount) public virtual override returns (bool) {

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-interface Burn {
+interface Burnable is IERC20 {
     function burn(uint256 amount) external;
 }
 contract DCManager {
-    address public DCtoken;
+    Burnable public DCtoken;
     IERC20 public USDT;
     uint256 DCdecimals = 10 ** 18;
     uint256 USDTdecimals = 10 ** 6;
@@ -13,13 +13,11 @@ contract DCManager {
     uint256 public totalClaimed;
     uint256 public index;
     address sWallet=0xF4fC364851D03A7Fc567362967D555a4d843647d;
-    address admin = 0x6B851e5B220438396ac5ee74779DDe1a54f795A9;
-    address public owner;
+    address owner;
     uint256 public vestingPeriod;
     uint256 public Dclaimed;
     uint256 tokenPrice = 10;
     mapping(address => UserStruct) public Users;
-    uint256 burnableTokens;
     struct UserStruct{
         uint256 balance;
         uint256 profit;
@@ -43,7 +41,7 @@ contract DCManager {
     }
 
     constructor(address _token, address _usdt) {
-        DCtoken = _token;
+        DCtoken = Burnable(_token);
         USDT = IERC20(_usdt);
         vestingPeriod = block.timestamp + 90 days;
         owner = msg.sender;
@@ -55,16 +53,15 @@ contract DCManager {
             IERC20(DCtoken).transferFrom(msg.sender, address(this), _amount*DCdecimals),
             "please increase the allowance"
         );
-        Burn(DCtoken).burn(_amount*DCdecimals);
         Users[msg.sender].balance += _amount;
         Users[msg.sender].totalCoins += _amount;
         totalSold += _amount;
+        DCtoken.burn(_amount*DCdecimals);
         if(totalSold>100_000){
             tokenPrice ++;
             index++;
             totalSold  = totalSold - 100_000;
         } 
-        
     }
     
     function getTotalSold() public view returns(uint256){
@@ -97,12 +94,12 @@ contract DCManager {
         Dclaimed += amount;
         IERC20(DCtoken).transfer(sWallet, amount);
     }
-    //admin functions
+    //owner functions
     function withdrawTokens(address _wallet) public onlyOwner nonReentrant{
             IERC20(DCtoken).transfer(_wallet, IERC20(DCtoken).balanceOf(address(this)));
     }
     function withdrawUSDT(uint256 _amount) public onlyOwner nonReentrant{
-            USDT.transfer(admin,_amount);
+            USDT.transfer(owner,_amount);
     }
     function transferOwnership(address newOwner) public onlyOwner nonReentrant {
         owner = newOwner;
