@@ -150,7 +150,7 @@ contract StakingContract  {
             //adding team bonus
             for (uint256 j = 0; j < rankBonuses.length; j++) {
                 if (i>=rankBonuses[j].start && i<rankBonuses[j].end)
-                    dynamicReward += rankBonuses[j].reward;
+                    dynamicReward += rankBonuses[j].reward*rankBonuses[j].multiplier;
             }
 
             //calculating static

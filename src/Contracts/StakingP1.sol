@@ -109,7 +109,6 @@ contract RefContract {
                 tempRank = teamUsers[friend].rank;
                 teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, tempRank*3, reward, _user));
             }else break;
-            teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, 10, reward, _user));
             friend = teamUsers[friend].referer;
         }
     }
@@ -210,7 +209,7 @@ contract RefContract {
         for (uint i = 0; i < rankBonus.length; i++) 
             if (rankBonus[i].end > block.timestamp && rankBonus[i].multiplier==10 )
                {
-                 validRankBonuses[i]=rankBonus[x];
+                 validRankBonuses[x]=rankBonus[i];
                  x++;
                 }
 
@@ -247,7 +246,7 @@ contract RefContract {
         for (uint i = 0; i < rankBonus.length; i++) 
             if (rankBonus[i].end > block.timestamp && rankBonus[i].multiplier!=10 )
                {
-                 validRankBonuses[i]=rankBonus[x];
+                 validRankBonuses[x]=rankBonus[i];
                  x++;
                 }
         //distributing up
