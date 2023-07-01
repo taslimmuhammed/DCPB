@@ -241,7 +241,7 @@ contract RefContract {
         RankBonus[] memory validRankBonuses = new RankBonus[](x);
         x=0;
         if(teamUsers[referer].rank==0) {
-            validRankBonuses[0]=RankBonus(block.timestamp, block.timestamp + 8640000000 ,0,teamUsers[referer].totalStake/10000 , address(0));
+            validRankBonuses[0]=RankBonus(block.timestamp, block.timestamp + 8640000000 ,0,teamUsers[referer].totalStake/10000 , referer);
         }
         else
         for (uint i = 0; i < rankBonus.length; i++) 

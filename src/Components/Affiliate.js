@@ -56,7 +56,7 @@ function Affiliate() {
         }
     }, [RefRanks])
     useEffect(() => {
-        console.log({ _count, _nftBalance, _stakedNFTs, _DCUser, StakeUser, _nftClaimable });
+       // console.log({ _count, _nftBalance, _stakedNFTs, _DCUser, StakeUser, _nftClaimable });
         try {
             if(_count)setNFTCount(BigNoToInt(_count))
             if(_nftBalance) setNFTBalance(BigNoToInt(_nftBalance))
@@ -69,7 +69,6 @@ function Affiliate() {
                 })
             }
             if (StakeUser) {
-                console.log({ StakeUser });
                 setDCclaimed(BigNoToDC(StakeUser))
             }
             if (_nftClaimable && BigNoToInt(_nftClaimable)>=1) {
@@ -83,9 +82,6 @@ function Affiliate() {
         }
 
     }, [_count, _nftBalance, _stakedNFTs, _DCUser, StakeUser,_nftClaimable])
-   useEffect(() => {
-     console.log({Upgradable});
-   }, [Upgradable])
     useEffect(() => {
         let Active = []
         let Inactive = []

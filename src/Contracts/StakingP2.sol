@@ -125,6 +125,7 @@ contract StakingContract  {
         address _user
     ) public view returns (RewardStruct[] memory) {
         uint256 baseTime = Users[_user].stakes[0].timestamp;
+        baseTime = baseTime - (baseTime % 60);
         uint256 currentTime = block.timestamp;
         StakeStruct[] memory stakes = Users[_user].stakes;
         RefContract.RelationStruct[] memory relationBonuses = refContract.getRelationBonus(_user);
@@ -143,12 +144,12 @@ contract StakingContract  {
             uint256 dynamicReward = 0;
             // calculating dynamic
             for (uint256 j = 0; j < relationBonuses.length; j++) {
-                if (relationBonuses[j].timestamp <= i)
+                if ( i>= relationBonuses[j].timestamp)
                     dynamicReward += relationBonuses[j].reward;
             }
             //adding team bonus
             for (uint256 j = 0; j < rankBonuses.length; j++) {
-                if (rankBonuses[j].start>i && rankBonuses[j].end <= i)
+                if (i>=rankBonuses[j].start && i<rankBonuses[j].end)
                     dynamicReward += rankBonuses[j].reward;
             }
 
