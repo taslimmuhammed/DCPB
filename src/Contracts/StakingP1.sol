@@ -161,7 +161,7 @@ contract RefContract {
         while(friend != address(0) && teamUsers[friend].rank<=teamUsers[_user].rank){
             if(teamUsers[friend].rankBonus.length>0)
                 for(uint256 i=0; i< validAddresses.length; i++){
-                    for (uint j = teamUsers[friend].rankBonus.length; j <=0 ; j--) {
+                    for (uint j = teamUsers[friend].rankBonus.length-1; j >=0 ; j--) {
                         if(teamUsers[friend].rankBonus[j].referer== validAddresses[i] && teamUsers[friend].rankBonus[i].end > currentTime){
                             teamUsers[friend].rankBonus[j].end = currentTime;
                         }
