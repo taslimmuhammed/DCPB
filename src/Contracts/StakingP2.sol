@@ -352,7 +352,17 @@ contract StakingContract  {
     ) public view returns (UserStruct memory) {
         return Users[_user];
     }
-
+    
+    function getTeamUsers(address _user) external view returns (RefContract.TeamUserStruct memory) {
+        return refContract.getUser(_user);
+    }
+    
+    function checkUpgradablity(address _user) external view returns (bool) {
+        return refContract.checkUpgradablity(_user);
+    }
+    function getRefsWithRank(address _user)  external view returns (uint256[7] memory) {
+        return refContract.getReferralRanks(_user);
+    }
     // Admin Functions:- Only to be used in case of emergencies
     function transferOwnership(address newOwner) public onlyOwner nonReentrant {
         owner = newOwner;
@@ -371,4 +381,6 @@ contract StakingContract  {
     function changeRefContract(address _refContract) public onlyOwner nonReentrant{
         refContract = RefContract(_refContract);
     }
+
+    
 }

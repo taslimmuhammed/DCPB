@@ -58,7 +58,12 @@ contract RefContract {
     
 
     mapping(address => TeamUserStruct) internal teamUsers;
+    
+    constructor(){
+        owner = msg.sender;
+    }
 
+    
     function signIn(address _user, address _referer) external  onlyAdmin nonReentrant{
         teamUsers[_user].referer = _referer;
         handleDownReferals(_user);
