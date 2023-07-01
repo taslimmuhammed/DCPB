@@ -102,12 +102,12 @@ contract RefContract {
         uint8 rank = teamUsers[_user].rank;
         uint8 tempRank = rank;
         while (friend != address(0) ) {
-            if(teamUsers[friend].rank==tempRank && teamUsers[friend].rank==rank){
-                teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, 10, reward, _user));
-            }
-            else if(teamUsers[friend].rank>tempRank){
+            
+            if(teamUsers[friend].rank>tempRank){
                 tempRank = teamUsers[friend].rank;
                 teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, tempRank*3, reward, _user));
+            }else if(rank !=0 && teamUsers[friend].rank==tempRank && teamUsers[friend].rank==rank){
+                teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, 10, reward, _user));
             }else break;
             friend = teamUsers[friend].referer;
         }
@@ -135,7 +135,7 @@ contract RefContract {
     function upgradeUser(address _user) external onlyAdmin nonReentrant{
        require(checkUpgradablity(_user), "User is not upgradable");
        teamUsers[_user].rank++;
-       stopRankBonuses( _user);
+       stopRankBonuses(_user);
        upgradeRankBonus(_user);
     }
 
@@ -194,6 +194,9 @@ contract RefContract {
                 }
             }
         }
+        if(teamUsers[_user].rank==1){
+            distributeUp(_user, teamUsers[_user].totalStake);
+        }
     }
     function distributeSameRankUp(address referer) internal{
         address friend = teamUsers[referer].referer;
@@ -239,9 +242,7 @@ contract RefContract {
         if(teamUsers[referer].rank==0) x=1;
         RankBonus[] memory validRankBonuses = new RankBonus[](x);
         x=0;
-        if(teamUsers[referer].rank==0) {
-            validRankBonuses[0]=RankBonus(block.timestamp, block.timestamp + 8640000000 ,0,teamUsers[referer].totalStake/10000 , referer);
-        }
+        if(teamUsers[referer].rank==0) validRankBonuses[0]=RankBonus(0, 0 ,3, teamUsers[referer].totalStake/10000, referer);
         else
         for (uint i = 0; i < rankBonus.length; i++) 
             if (rankBonus[i].end > block.timestamp && rankBonus[i].multiplier!=10 )

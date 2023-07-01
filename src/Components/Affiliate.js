@@ -98,7 +98,7 @@ function Affiliate() {
                 if(active) Active.push({startDate,endDate,reward,multiplier, referer})
                 else Inactive.push({startDate,endDate,reward,multiplier, referer})
             }
-            console.log({Active, Inactive});
+            console.log({ Active, Inactive, relation: User.relationBonus });
         }
     }, [User])
    
