@@ -34,11 +34,6 @@ contract RefContract {
         owner = _newowner;
     }
 
-    struct DirectStruct{
-        uint256 amount;
-        uint256 start;
-    }
-
     struct RankBonus{
         uint256 start;
         uint256 end;
@@ -80,7 +75,7 @@ contract RefContract {
         }
     }
 
-    function Stake(address _user, uint256 _amount) external onlyAdmin nonReentrant{
+    function stake(address _user, uint256 _amount) external onlyAdmin nonReentrant{
         teamUsers[_user].totalStake += _amount;
         handleStakeAddtions(_user, _amount);
         distributeUp(_user, _amount);
@@ -134,6 +129,7 @@ contract RefContract {
     }
 
     function upgradeUser(address _user) external onlyAdmin nonReentrant{
+       require(checkUpgradablity(_user), "User is not upgradable");
        teamUsers[_user].rank++;
        stopRankBonuses( _user);
        upgradeRankBonus(_user);
@@ -296,6 +292,48 @@ contract RefContract {
     function getReferer(address _user) external view returns(address){
         return teamUsers[_user].referer;
     }
+    function checkUpgradablity(address _user) public view returns (bool) {
+        uint8 rank = teamUsers[_user].rank;
+        if (rank == 0) {
+            if (
+                teamUsers[_user].totalRefStake >= 10 * decimals &&
+                teamUsers[_user].totalStake > 0
+            ) return true;
+            else return false;
+        } else if (rank < 6) {
+            if (getRefsWithRank(rank, _user) > 0) return true;
+            //change
+            else return false;
+        } else {
+            return false;
+        }
+    }
+     
+    function getRefsWithRank(uint8 _rank,address _user) public view returns (uint256) {
+        address[] memory refs = teamUsers[_user].downReferrals[0];
+        uint256 total = 0;
+        for (uint256 i = 0; i < refs.length; i++) {
+            if (teamUsers[refs[i]].rank >= _rank) total++;
+        }
+        return total;
+    }
 
-    
+    function getReferralRanks( address _user) external view returns (uint256[7] memory) {
+        uint256[7] memory rankSet;
+        getRankNos(_user, rankSet);
+        return rankSet;
+    }
+
+    function getRankNos(address _user,uint256[7] memory rankSet) internal view {
+        //count rank of each user
+        address[] memory downReferrals = teamUsers[_user].downReferrals[0];
+        for (uint256 i = 0; i < downReferrals.length; i++) {
+            if (downReferrals[i] == address(0)) break;
+            else {
+                rankSet[teamUsers[downReferrals[i]].rank]++;
+                getRankNos(downReferrals[i], rankSet);
+            }
+        }
+    }
+
 }

@@ -5,40 +5,42 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 interface RefContract {
-    struct DynamicStruct {
-        address referer; // remove this while deploying
+    struct RankBonus{
+        uint256 start;
+        uint256 end;
+        uint8 multiplier;
+        uint256 reward;
+        address referer;
+    }
+    struct RelationStruct {
         uint256 reward;
         uint256 timestamp;
     }
-    struct SameRank {
-        uint256 start;
-        uint256 end;
-        uint256 reward;
-        address referer;
-    }
+    
     struct TeamUserStruct {
         uint256 totalRefStake;
-        DynamicStruct[] teamBonus;
+        uint256 totalStake;
+        RankBonus[] rankBonus;
         address referer;
-        SameRank[] sameBonus;
         address[][] downReferrals;
         uint8 rank;
+        RelationStruct[] relationBonus;
     }
 
-    mapping(address => TeamUserStruct) internal teamUsers;
-
-    function getRefsWithRank(
-        uint8 _rank,
-        address _user
-    ) public view returns (uint256);
-
-    function getReferralRanks(
-        address _user
-    ) external view returns (uint256[7] memory);
-
-    function getTeamUser(
-        address _user
-    ) external view returns (TeamUserStruct memory) ;
+    function signIn(address _user, address _referer) external;
+    function stake(address _user, uint256 _amount) external;
+    function upgradeUser(address _user) external ;
+    function getUser(address _user) external view returns(TeamUserStruct memory);
+    function getUserDownReferrals(address _user, uint8 _level) external view returns(address[] memory);
+    function getRelationBonus( address _user) external view returns(RelationStruct[] memory);
+    function getRankBonus( address _user) external view returns(RankBonus[] memory);
+    function getTotalStake(address _user) external view returns(uint256);
+    function getTotalRefStake(address _user) external view returns(uint256);
+    function getRank(address _user) external view returns(uint8);
+    function getReferer(address _user) external view returns(address);
+    function checkUpgradablity(address _user) external view returns (bool);
+    function getRefsWithRank(uint8 _rank,address _user) external view returns (uint256) ;
+    function getReferralRanks( address _user) external view returns (uint256[7] memory);
 }
 
 contract StakingContract  {
@@ -52,7 +54,30 @@ contract StakingContract  {
     address public DCTokenAddress = 0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8;
     uint256 public totalDeposite;
     uint256 public totalUsers;
+    RefContract private refContract;
     mapping(address => UserStruct) internal Users;
+
+    struct RankBonus{
+        uint256 start;
+        uint256 end;
+        uint8 multiplier;
+        uint256 reward;
+        address referer;
+    }
+    struct RelationStruct {
+        uint256 reward;
+        uint256 timestamp;
+    }
+    
+    struct TeamUserStruct {
+        uint256 totalRefStake;
+        uint256 totalStake;
+        RankBonus[] rankBonus;
+        address referer;
+        address[][] downReferrals;
+        uint8 rank;
+        RelationStruct[] relationBonus;
+    }
 
     struct StakeStruct {
         uint256 reward;
@@ -61,14 +86,8 @@ contract StakingContract  {
         uint256 timestamp;
         uint256 directBonus;
     }
-    struct DynamicStruct {
-        address referer; // remove this while deploying
-        uint256 reward;
-        uint256 timestamp;
-    }
     struct UserStruct {
         StakeStruct[] stakes;
-        DynamicStruct[] dynamicPerDay;
         uint256 dynamicLimit;
         uint256 staticLimit;
     }
@@ -78,9 +97,10 @@ contract StakingContract  {
         uint256 available;
     }
 
-    constructor(address _usdt, address _dcmanager) {
+    constructor(address _usdt, address _dcmanager, address _refContract) {
         token = IERC20(_usdt);
         DCTokenAddress = _dcmanager;
+        refContract = RefContract(_refContract);
     }
 
     modifier signedIn() {
@@ -106,9 +126,9 @@ contract StakingContract  {
         uint256 baseTime = Users[_user].stakes[0].timestamp;
         uint256 currentTime = block.timestamp;
         StakeStruct[] memory stakes = Users[_user].stakes;
-        DynamicStruct[] memory dynamicPerDay = Users[_user].dynamicPerDay;
-        DynamicStruct[] memory teamBonus =  [_user].teamBonus;
-        SameRank[] memory sameBonus = teamUsers[_user].sameBonus;
+        RefContract.RelationStruct[] memory relationBonuses = refContract.getRelationBonus(_user);
+        RefContract.RankBonus[] memory rankBonuses =  refContract.getRankBonus(_user);
+
         RewardStruct[] memory rewardStructs = new RewardStruct[](stakes.length);
         uint256[] memory availableArray = new uint256[](stakes.length);
         if (Users[_user].stakes.length == 0) {
@@ -121,20 +141,14 @@ contract StakingContract  {
         for (uint256 i = baseTime; i < currentTime; i += 60) {
             uint256 dynamicReward = 0;
             // calculating dynamic
-            for (uint256 j = 0; j < dynamicPerDay.length; j++) {
-                if (dynamicPerDay[j].timestamp <= i)
-                    dynamicReward += dynamicPerDay[j].reward;
+            for (uint256 j = 0; j < relationBonuses.length; j++) {
+                if (relationBonuses[j].timestamp <= i)
+                    dynamicReward += relationBonuses[j].reward;
             }
             //adding team bonus
-            for (uint256 j = 0; j < teamBonus.length; j++) {
-                if (teamBonus[j].timestamp <= i)
-                    dynamicReward += teamBonus[j].reward;
-            }
-
-            //adding same rank bonus
-            for (uint256 j = 0; j < sameBonus.length; j++) {
-                if (sameBonus[j].start <= i && sameBonus[j].end > i)
-                    dynamicReward += sameBonus[j].reward;
+            for (uint256 j = 0; j < rankBonuses.length; j++) {
+                if (rankBonuses[j].start>i && rankBonuses[j].end <= i)
+                    dynamicReward += rankBonuses[j].reward;
             }
 
             //calculating static
@@ -180,9 +194,8 @@ contract StakingContract  {
             ((Active[_friend]) || (_friend == address(0))),
             "Invalid ref id"
         );
-        _signForteam(_friend);
         Active[msg.sender] = true;
-        handleDownReferals();
+        refContract.signIn(msg.sender, _friend);
         Users[msg.sender].dynamicLimit = 2 * decimals;
         Users[msg.sender].staticLimit = 1 * decimals;
         totalUsers++;
@@ -193,9 +206,7 @@ contract StakingContract  {
         _stake(_amount);
         distributeStakeMoney(_amount);
         handleDirectBonus(_amount);
-        handleRelationBonus(_amount);
-        handleSameRankBonus(_amount);
-        _handleStakeAdditions(_amount);
+        refContract.stake(msg.sender, _amount);
     }
 
     function _stake(uint256 _amount) internal {
@@ -219,7 +230,7 @@ contract StakingContract  {
     }
 
     function handleDirectBonus(uint256 _amount) internal {
-        address _friend = teamUsers[msg.sender].referer;
+        address _friend = refContract.getReferer(msg.sender);
         if (_friend == address(0) || Users[_friend].stakes.length == 0) return;
         uint256 total = (_amount * 20) / 100;
         RewardStruct[] memory rewardArr = calculateAllReward(_friend);
@@ -235,44 +246,6 @@ contract StakingContract  {
         }
     }
 
-    function handleRelationBonus(uint256 _amount) internal {
-        uint256 reward = (_amount * 5) / 10000;
-        address[][] memory downReferrals = teamUsers[msg.sender].downReferrals;
-
-        for (uint8 i = 0; i < 6; i++) {
-            if (downReferrals[i].length == 0) break;
-            for (uint256 j = 0; j < downReferrals[i].length; j++) {
-                address referer = downReferrals[i][j];
-                if (referer == address(0)) break;
-                else {
-                    if (teamUsers[referer].downReferrals[0].length > i)
-                        Users[referer].dynamicPerDay.push(
-                            DynamicStruct(msg.sender, reward, block.timestamp)
-                        );
-                }
-            }
-        }
-    }
-
-    function handleSameRankBonus(uint256 _amount) internal {
-        uint256 reward = _amount / 100;
-        address _friend = teamUsers[msg.sender].referer;
-        uint8 _rank = teamUsers[msg.sender].rank;
-        while (_friend != address(0)) {
-            if (teamUsers[_friend].rank == _rank) {
-                teamUsers[_friend].sameBonus.push(
-                    SameRank(
-                        block.timestamp,
-                        block.timestamp + 10000 days,
-                        reward*_rank,
-                        msg.sender
-                    )
-                );
-            }else break;
-            _friend = teamUsers[_friend].referer;
-        }
-    }
-
     function getTotalRewards(
         address _user
     ) public view returns (RewardStruct memory) {
@@ -283,7 +256,6 @@ contract StakingContract  {
             staticReward += arr[i].staticReward;
             dynamicReward += arr[i].dynamicReward;
         }
-
         return RewardStruct(staticReward, dynamicReward, 0);
     }
 
@@ -356,49 +328,10 @@ contract StakingContract  {
         return total;
     }
 
-    function checkUpgradablity(address _user) public view returns (bool) {
-        uint8 rank = teamUsers[_user].rank;
-        if (rank == 0) {
-            if (
-                teamUsers[_user].totalRefStake >= 10 * decimals &&
-                Users[_user].stakes.length > 0
-            ) return true;
-            else return false;
-        } else if (rank < 6) {
-            if (getRefsWithRank(rank, _user) > 0) return true;
-            //change
-            else return false;
-        } else {
-            return false;
-        }
-    }
+
 
     function upgradeLevel() external nonReentrant {
-        require(checkUpgradablity(msg.sender));
-        teamUsers[msg.sender].rank += 1;
-        teamUsers[msg.sender].teamBonus.push(
-            DynamicStruct(
-                msg.sender,
-                (teamUsers[msg.sender].totalRefStake * 3) / 10000,
-                block.timestamp
-            )
-        );
-        address _friend = teamUsers[msg.sender].referer;
-        while (_friend != address(0)) {
-            SameRank[] memory sameArr = teamUsers[_friend].sameBonus;
-            for (uint256 i = 0; i < sameArr.length; i++) {
-                if (
-                    sameArr[i].referer == msg.sender &&
-                    sameArr[i].end > block.timestamp
-                ) {
-                    teamUsers[_friend].sameBonus[i].end = block.timestamp;
-                }
-            }
-            _friend = teamUsers[_friend].referer;
-        }
-        for (uint i = 0; i < teamUsers[msg.sender].sameBonus.length; i++)
-            if (teamUsers[msg.sender].sameBonus[i].end > block.timestamp)
-                teamUsers[msg.sender].sameBonus[i].end = block.timestamp;
+        refContract.upgradeUser(msg.sender);
     }
 
     //Reading functions
@@ -432,7 +365,10 @@ contract StakingContract  {
         IERC20(_token).transfer(owner, amount);
     }
 
-    function changeDCTokenAddress(address newAddr) public onlyOwner {
+    function changeDCTokenAddress(address newAddr) public onlyOwner nonReentrant {
         DCTokenAddress = newAddr;
+    }
+    function changeRefContract(address _refContract) public onlyOwner nonReentrant{
+        refContract = RefContract(_refContract);
     }
 }
