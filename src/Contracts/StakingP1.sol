@@ -10,16 +10,16 @@ contract RefContract {
     address public admin_contract;
 
     modifier onlyOwner() {
-        require((msg.sender == owner));
+        require((msg.sender == owner),"The function is reserved for owner");
         _;
     }
     modifier onlyAdmin() {
-        require((msg.sender == owner));
+        require((msg.sender == admin_contract), "The function is reserved for admin");
         _;
     }
     bool private locked;
     modifier nonReentrant() {
-        require(!locked);
+        require(!locked, "say no to reentrance attacks");
         locked = true;
         _;
         locked = false;
@@ -263,7 +263,11 @@ contract RefContract {
             friend = teamUsers[friend].referer;
         }
     }
-
+    
+    bool public test;
+    function  testFunc() external onlyAdmin nonReentrant{
+       test = !test;
+    }
     
     //read functions
     function getUser(address _user) external view returns(TeamUserStruct memory){

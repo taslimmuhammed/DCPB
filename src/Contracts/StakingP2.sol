@@ -41,6 +41,7 @@ interface RefContract {
     function checkUpgradablity(address _user) external view returns (bool);
     function getRefsWithRank(uint8 _rank,address _user) external view returns (uint256) ;
     function getReferralRanks( address _user) external view returns (uint256[7] memory);
+    function  testFunc() external;
 }
 
 contract StakingContract  {
@@ -104,11 +105,11 @@ contract StakingContract  {
     }
 
     modifier signedIn() {
-        require(Active[msg.sender], "sign in ");
+        require(Active[msg.sender], "sign in befpre using this function");
         _;
     }
     modifier onlyOwner() {
-        require((msg.sender == owner));
+        require((msg.sender == owner), "Only owner can utilise this function");
         _;
     }
 
@@ -188,8 +189,8 @@ contract StakingContract  {
     }
 
     function signIn(address _friend) external nonReentrant {
-        require(msg.sender != _friend);
-        require(!Active[msg.sender]);
+        require(msg.sender != _friend, "user cant be same as referer");
+        require(!Active[msg.sender], "already signed in");
         require(
             ((Active[_friend]) || (_friend == address(0))),
             "Invalid ref id"
@@ -333,7 +334,10 @@ contract StakingContract  {
     function upgradeLevel() external nonReentrant {
         refContract.upgradeUser(msg.sender);
     }
-
+    
+    function callTest() external nonReentrant{
+        refContract.testFunc();
+    }
     //Reading functions
     function getStakes(
         address _user
@@ -353,14 +357,18 @@ contract StakingContract  {
         return Users[_user];
     }
     
-    function getTeamUsers(address _user) external view returns (RefContract.TeamUserStruct memory) {
+    function getTeamUser(address _user) external view returns (RefContract.TeamUserStruct memory) {
         return refContract.getUser(_user);
     }
     
     function checkUpgradablity(address _user) external view returns (bool) {
         return refContract.checkUpgradablity(_user);
     }
-    function getRefsWithRank(address _user)  external view returns (uint256[7] memory) {
+    function getRefsWithRank(address _user, uint8 index)  external view returns (uint256) {
+        return refContract.getRefsWithRank(index,_user);
+    }
+
+    function getReferralRanks(address _user)  external view returns (uint256[7] memory) {
         return refContract.getReferralRanks(_user);
     }
     // Admin Functions:- Only to be used in case of emergencies
@@ -381,6 +389,5 @@ contract StakingContract  {
     function changeRefContract(address _refContract) public onlyOwner nonReentrant{
         refContract = RefContract(_refContract);
     }
-
     
 }

@@ -69,7 +69,8 @@ function Affiliate() {
                 })
             }
             if (StakeUser) {
-                setDCclaimed(BigNoToDC(StakeUser.claimed))
+                console.log({ StakeUser });
+                setDCclaimed(BigNoToDC(StakeUser))
             }
             if (_nftClaimable && BigNoToInt(_nftClaimable)>=1) {
                 setNFTClaimable(true)
@@ -137,7 +138,7 @@ function Affiliate() {
             {/* seprator */}
             <div className='mt-3 px-3 w-full h-px bg-stone-500' />
 
-            <div class="buttons">
+            <div className="buttons">
                 <a className={NFTClaimable ? "button":"button disabled"} href="#" onClick={handleNFTClaim}>Claim NFT</a>
                 <a className={DCclaimable ? "button" : "button disabled"} href="#" onClick={handleDCClaim}>Claim DC</a>
             </div>
