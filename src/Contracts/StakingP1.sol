@@ -103,7 +103,7 @@ contract RefContract {
         address referer = _user;
         while (friend != address(0) ) {
             if(teamUsers[friend].rank>tempRank){
-                teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, tempRank*3, reward, referer));
+                teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, teamUsers[friend].rank*3, reward, referer));
             }else if(teamUsers[friend].rank !=0 && teamUsers[friend].rank==tempRank){
                 teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, 10, reward, referer));
             }
