@@ -163,9 +163,9 @@ contract RefContract {
                     netBonus += total;
                     teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, 10, total/10000, downReferrals[i]));
                     }
-                else if(teamUsers[downReferrals[i]].rank<teamUsers[_user].rank){
+                else if(teamUsers[downReferrals[i]].rank < teamUsers[_user].rank){
                     netBonus += total;
-                    teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, teamUsers[downReferrals[i]].rank*3, total/10000, downReferrals[i]));
+                    teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, teamUsers[_user].rank*3, total/10000, downReferrals[i]));
                     }
             }
             return netBonus;
