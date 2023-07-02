@@ -143,7 +143,7 @@ contract RefContract {
     function stopRankBonuses(address _user) internal{
         //stopping the users bonuses
         uint256 currentTime = block.timestamp;
-       
+        address friend = teamUsers[_user].referer;
         RankBonus[] memory rankBonus = teamUsers[_user].rankBonus;
         uint256 x=1;
         //getting the valid bonuses
@@ -152,33 +152,25 @@ contract RefContract {
         x=0;
         for (uint256 i = 0; i < rankBonus.length; i++) if(rankBonus[i].end > currentTime){
             validAddresses[x] = rankBonus[i].referer;
+            teamUsers[_user].rankBonus[i].end = currentTime;
             x++;
         }
         validAddresses[x] = _user;
-
+     
         //ending all the bonuses of the users upline
-        address friend = teamUsers[_user].referer;
-        while(friend != address(0) && teamUsers[friend].rank<=teamUsers[_user].rank){
-            if(teamUsers[friend].rankBonus.length>0)
-                for(uint256 i=0; i< validAddresses.length; i++){
-                    for (uint256 j = teamUsers[friend].rankBonus.length-1; j >=0 ; j--) {
-                        if(teamUsers[friend].rankBonus[j].referer== validAddresses[i] && teamUsers[friend].rankBonus[j].end > currentTime){
-                            teamUsers[friend].rankBonus[j].end = currentTime;
-                        }
+        while(friend!=address(0) && teamUsers[friend].rank<=teamUsers[_user].rank){
+            for(uint256 i=0;i<teamUsers[friend].rankBonus.length;i++){
+                for(uint256 j=0;j<validAddresses.length;j++){
+                    if(teamUsers[friend].rankBonus[i].referer==validAddresses[j] && teamUsers[friend].rankBonus[i].end>currentTime){
+                        teamUsers[friend].rankBonus[i].end = currentTime;
                     }
                 }
-                
+            }
             friend = teamUsers[friend].referer;
         }
         //
 
-        //stopping all the self bonuses
         
-        for (uint256 i=0; i<rankBonus.length; i++) {
-            if (rankBonus[i].end > currentTime) {
-                teamUsers[_user].rankBonus[i].end = currentTime;
-            }
-        }
     }
 
 
