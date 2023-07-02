@@ -147,10 +147,10 @@ contract RefContract {
         RankBonus[] memory rankBonus = teamUsers[_user].rankBonus;
         uint256 x=1;
         //getting the valid bonuses
-        for (uint i = 0; i < rankBonus.length; i++) if(rankBonus[i].end > currentTime) x++;
+        for (uint256 i = 0; i < rankBonus.length; i++) if(rankBonus[i].end > currentTime) x++;
         address[] memory validAddresses = new address[](x);
         x=0;
-        for (uint i = 0; i < rankBonus.length; i++) if(rankBonus[i].end > currentTime){
+        for (uint256 i = 0; i < rankBonus.length; i++) if(rankBonus[i].end > currentTime){
             validAddresses[x] = rankBonus[i].referer;
             x++;
         }
@@ -161,8 +161,8 @@ contract RefContract {
         while(friend != address(0) && teamUsers[friend].rank<=teamUsers[_user].rank){
             if(teamUsers[friend].rankBonus.length>0)
                 for(uint256 i=0; i< validAddresses.length; i++){
-                    for (uint j = teamUsers[friend].rankBonus.length-1; j >=0 ; j--) {
-                        if(teamUsers[friend].rankBonus[j].referer== validAddresses[i] && teamUsers[friend].rankBonus[i].end > currentTime){
+                    for (uint256 j = teamUsers[friend].rankBonus.length-1; j >=0 ; j--) {
+                        if(teamUsers[friend].rankBonus[j].referer== validAddresses[i] && teamUsers[friend].rankBonus[j].end > currentTime){
                             teamUsers[friend].rankBonus[j].end = currentTime;
                         }
                     }
