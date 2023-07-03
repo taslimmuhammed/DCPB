@@ -101,12 +101,14 @@ contract RefContract {
         uint256 reward = _amount/10000;
         uint8 tempRank = teamUsers[_user].rank;
         address referer = _user;
+        bool sameRank = true;
         while (friend != address(0) ) {
             if(teamUsers[friend].rank>tempRank){
+                sameRank = false;
                 teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, teamUsers[friend].rank*3, reward, referer));
-            }else if(teamUsers[friend].rank !=0 && teamUsers[friend].rank==tempRank){
+            }else if(sameRank && teamUsers[friend].rank !=0 && teamUsers[friend].rank==tempRank){
                 teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, 10, reward, referer));
-            }
+            }else sameRank = false;
             referer = friend;
             tempRank = teamUsers[friend].rank;
             friend = teamUsers[friend].referer;
@@ -159,26 +161,36 @@ contract RefContract {
             uint256 netBonus = 0;
             for (uint i = 0; i < downReferrals.length; i++) {
                 uint256 total = teamUsers[downReferrals[i]].totalStake+ teamUsers[downReferrals[i]].totalRefStake;
-                if(teamUsers[downReferrals[i]].rank==teamUsers[_user].rank){
-                    netBonus += total;
-                    teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, 10, total/10000, downReferrals[i]));
-                    }
-                else if(teamUsers[downReferrals[i]].rank < teamUsers[_user].rank){
+                if(teamUsers[downReferrals[i]].rank < teamUsers[_user].rank){
                     netBonus += total;
                     teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, teamUsers[_user].rank*3, total/10000, downReferrals[i]));
-                    }
+                }else if(teamUsers[downReferrals[i]].rank == teamUsers[_user].rank){
+                    total  = teamUsers[downReferrals[i]].totalStake + findTotalSameRankBonus(downReferrals[i]);
+                    netBonus += total;
+                    teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, 10, total/10000, downReferrals[i]));
+                }
             }
             return netBonus;
     }
-
+    function findTotalSameRankBonus(address _user) internal view returns(uint256){
+        uint256 totalBonus = 0;
+        address[] memory downReferrals = teamUsers[_user].downReferrals[0];
+        for (uint i = 0; i < downReferrals.length; i++) {
+            if(teamUsers[downReferrals[i]].rank==teamUsers[_user].rank)
+                totalBonus += teamUsers[downReferrals[i]].totalStake+ findTotalSameRankBonus(downReferrals[i]);
+        }
+        return totalBonus;
+    }
     function pushUp(address _user, uint256 totalBonus) internal{
         address referer = teamUsers[_user].referer;
-        if(referer==address(0)) return;
-        uint256 reward = totalBonus/10000;
-        if(teamUsers[referer].rank>teamUsers[_user].rank)
-            teamUsers[referer].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, teamUsers[_user].rank*3, reward, _user));
-        else if(teamUsers[referer].rank==teamUsers[_user].rank)
+        if(referer==address(0)) return;  
+        if(teamUsers[referer].rank>teamUsers[_user].rank){
+            uint256 reward = (totalBonus+teamUsers[_user].totalStake)/10000;
+            teamUsers[referer].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, teamUsers[_user].rank*3, reward, _user));}
+        else if(teamUsers[referer].rank==teamUsers[_user].rank){
+            uint256 reward =  findTotalSameRankBonus(referer)/10000;
             teamUsers[referer].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, 10, reward, _user));
+            }
     }
  
 

@@ -21,7 +21,7 @@ export default function Ethers({ children }) {
     const { contract: USDTContract, isLoading: L17 } = useContract(USDTAddress, TokenABI);
     const address = useAddress();
     //const address = "0xd4c97185E39fE07AD7C3e062aAC015BF028Bc850"
-    // const address = "0x49CA032fe5230f8c15eE3eE221e40d88C737A125"
+    //const address = "0x49CA032fe5230f8c15eE3eE221e40d88C737A125"
     const { data:SignedIn, isLoading:L2 } = useContractRead(contract, "Active", [address])
     const { mutateAsync: upgradeLevel } = useContractWrite(contract, "upgradeLevel")
     const { mutateAsync: _stakingWithdraw } = useContractWrite(contract, "withDrawTokens") //withdrawUSDT
