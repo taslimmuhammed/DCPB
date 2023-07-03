@@ -168,6 +168,7 @@ contract RefContract {
         }
     }
     function reduceRankBonus(address _user, address referer, uint256 _amount) internal{
+        _amount = _amount / 10000;
         RankBonus[] memory rankBonus = teamUsers[_user].rankBonus;
         uint256 currentTime = block.timestamp;
         for (uint256 i = 0; i < rankBonus.length; i++) if(rankBonus[i].end > currentTime && referer == rankBonus[i].referer){
