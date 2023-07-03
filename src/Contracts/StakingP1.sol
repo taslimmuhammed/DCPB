@@ -146,20 +146,20 @@ contract RefContract {
         address friend = teamUsers[_user].referer;
         uint8 rank = teamUsers[_user].rank;
         uint256 totalStake = teamUsers[_user].totalStake;
-        address referer = _user;
+       // address referer = _user;
         endUserRankBonuses(_user);
         if(friend !=address(0)) {
-            if(teamUsers[friend].rank<=teamUsers[_user].rank)
+            if(teamUsers[friend].rank<=rank)
                 reduceRankBonus(friend, _user, totalStake+teamUsers[_user].totalRefStake);
-            referer = friend;
-            friend = teamUsers[friend].referer;
-            while(friend!=address(0)){
-                if(teamUsers[friend].rank==rank){
-                    reduceRankBonus(friend, referer, totalStake);
-                }
-                referer = friend;
-                friend = teamUsers[friend].referer;
-            }
+            // referer = friend;
+            // friend = teamUsers[friend].referer;
+            // while(friend!=address(0)){
+            //     if(teamUsers[friend].rank==rank){
+            //         reduceRankBonus(friend, referer, totalStake);
+            //     }
+            //     referer = friend;
+            //     friend = teamUsers[friend].referer;
+            // }
         }
     }
     function endUserRankBonuses(address _user) internal{
