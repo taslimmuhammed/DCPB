@@ -133,20 +133,32 @@ contract RefContract {
             }
         }
     }
-
+ 
     function upgradeUser(address _user) external onlyAdmin nonReentrant{
        require(checkUpgradablity(_user), "User is not upgradable");
        teamUsers[_user].rank++;
        stopRankBonuses(_user);
-       uint256 totalBonus = getFromDown(_user);
-       distributeUp(_user, totalBonus);
+       getFromDown(_user);
+       pushUp(_user);
     }
 
     function stopRankBonuses(address _user) internal{
         address friend = teamUsers[_user].referer;
+        uint8 rank = teamUsers[_user].rank;
+        uint256 totalStake = teamUsers[_user].totalStake;
+        address referer = _user;
         endUserRankBonuses(_user);
-        if(friend !=address(0) && teamUsers[friend].rank<=teamUsers[_user].rank)
-            endUserRankBonuses(friend);
+        if(friend !=address(0)) {
+            if(teamUsers[friend].rank<teamUsers[_user].rank)
+                endUserRankBonuses(friend);
+            while(friend!=address(0)){
+                if(teamUsers[friend].rank==rank){
+                    reduceRankBonus(friend, referer, totalStake);
+                }
+                referer = friend;
+                friend = teamUsers[friend].referer;
+            }
+        }
     }
     function endUserRankBonuses(address _user) internal{
         RankBonus[] memory rankBonus = teamUsers[_user].rankBonus;
@@ -155,7 +167,22 @@ contract RefContract {
             teamUsers[_user].rankBonus[i].end = currentTime;
         }
     }
-
+    function reduceRankBonus(address _user, address referer, uint256 _amount) internal{
+        RankBonus[] memory rankBonus = teamUsers[_user].rankBonus;
+        uint256 currentTime = block.timestamp;
+        for (uint256 i = 0; i < rankBonus.length; i++) if(rankBonus[i].end > currentTime && referer == rankBonus[i].referer){
+            teamUsers[_user].rankBonus[i].end = currentTime;
+            if(_amount>rankBonus[i].reward){
+                _amount -= rankBonus[i].reward;
+            }else if(_amount==rankBonus[i].reward){
+                break;
+            }else{
+                uint256 reward = rankBonus[i].reward - _amount;
+                teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, rankBonus[i].multiplier, reward, referer));
+                break;
+            }
+        }
+    }
     function getFromDown(address _user) internal returns(uint256){
             address[] memory downReferrals = teamUsers[_user].downReferrals[0];
             uint256 netBonus = 0;
@@ -181,12 +208,9 @@ contract RefContract {
         }
         return totalBonus;
     }
-    function pushUp(address _user, uint256 totalBonus) internal{
+    function pushUp(address _user) internal{
         address referer = teamUsers[_user].referer;
         if(referer==address(0)) return;  
-        // if(teamUsers[referer].rank>teamUsers[_user].rank){
-        //     uint256 reward = (totalBonus+teamUsers[_user].totalStake)/10000;
-        //     teamUsers[referer].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, teamUsers[_user].rank*3, reward, _user));}
         if(teamUsers[referer].rank==teamUsers[_user].rank){
             uint256 reward =  findTotalSameRankBonus(referer)/10000;
             teamUsers[referer].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, 10, reward, _user));
