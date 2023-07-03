@@ -184,10 +184,10 @@ contract RefContract {
     function pushUp(address _user, uint256 totalBonus) internal{
         address referer = teamUsers[_user].referer;
         if(referer==address(0)) return;  
-        if(teamUsers[referer].rank>teamUsers[_user].rank){
-            uint256 reward = (totalBonus+teamUsers[_user].totalStake)/10000;
-            teamUsers[referer].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, teamUsers[_user].rank*3, reward, _user));}
-        else if(teamUsers[referer].rank==teamUsers[_user].rank){
+        // if(teamUsers[referer].rank>teamUsers[_user].rank){
+        //     uint256 reward = (totalBonus+teamUsers[_user].totalStake)/10000;
+        //     teamUsers[referer].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, teamUsers[_user].rank*3, reward, _user));}
+        if(teamUsers[referer].rank==teamUsers[_user].rank){
             uint256 reward =  findTotalSameRankBonus(referer)/10000;
             teamUsers[referer].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, 10, reward, _user));
             }
