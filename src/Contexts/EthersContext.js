@@ -19,8 +19,8 @@ export default function Ethers({ children }) {
     const { contract: NFTRelease, isLoading: L15 } = useContract(NFTReleaseAddres, NFTReleaseABI);
     const { contract:NFTContract, isLoading:L16 } = useContract(NFTAddress);
     const { contract: USDTContract, isLoading: L17 } = useContract(USDTAddress, TokenABI);
-    //const address = useAddress();
-    const address = "0xe8E1aeFA0f8006E7D60094599867D95D4130a5D0"
+    const address = useAddress();
+  //  const address = "0xe8E1aeFA0f8006E7D60094599867D95D4130a5D0"
     //const address = "0x49CA032fe5230f8c15eE3eE221e40d88C737A125"
 //     D wallet
 //     0x39f8859e9e2B7ee617f55280595F4857E7c257dE
