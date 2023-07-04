@@ -106,7 +106,7 @@ function Affiliate() {
     useEffect(() => {
         try {
           //  console.log(stakeUser);
-        calculateAllReward(stakeUser, User.relationBonus, User.rankBonus)
+       // calculateAllReward(stakeUser, User.relationBonus, User.rankBonus)
         } catch (error) {
             //console.log(error);
         }
