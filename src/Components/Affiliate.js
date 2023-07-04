@@ -6,6 +6,7 @@ import Loader from './Loader'
 import { BigNoToDC, BigNoToInt, BigNoToUSDT, DCTokenAddress } from '../Utils/Utils'
 import graph from '../Assets/graph.png'
 import community from '../Assets/community.png'
+import { calculateAllReward } from '../Utils/test.js'
 function Affiliate() {
     const { address,
         L0,
@@ -32,16 +33,17 @@ function Affiliate() {
     const [NFTinput, setNFTinput] = useState("0")
     const { data: Upgradable, isLoading: L3 } = useContractRead(contract, "checkUpgradablity", [address])
     const { data: User, isLoading: L4 } = useContractRead(contract, "getTeamUser", [address])
-    const { data: RefRanks} = useContractRead(contract, "getReferralRanks", [address])
-    const { data: _count} = useContractRead(NFTRelease, "count", [address])
-    const { data: _nftClaimable} = useContractRead(NFTRelease, "getcount", [address])
-    const { data: _nftBalance} = useContractRead(NFTRelease, "getBalance", [address])
-    const { data: _stakedNFTs} = useContractRead(NFTStaking, "getTotalStake", [address])
-    const { data: _DCReward} = useContractRead(NFTStaking, "calculateReward", [address])
+    const { data: stakeUser } = useContractRead(contract, "getStakeUser", [address])
+    const { data: RefRanks } = useContractRead(contract, "getReferralRanks", [address])
+    const { data: _count } = useContractRead(NFTRelease, "count", [address])
+    const { data: _nftClaimable } = useContractRead(NFTRelease, "getcount", [address])
+    const { data: _nftBalance } = useContractRead(NFTRelease, "getBalance", [address])
+    const { data: _stakedNFTs } = useContractRead(NFTStaking, "getTotalStake", [address])
+    const { data: _DCReward } = useContractRead(NFTStaking, "calculateReward", [address])
     const { data: StakeUser } = useContractRead(NFTStaking, "users", [address])
     const { data: _DCUser } = useContractRead(DCManager, "Users", [address])
     const { data: Balance } = useBalance(DCTokenAddress);
-    
+
     useEffect(() => {
         let total = 0;
         let tempArr = []
@@ -56,12 +58,12 @@ function Affiliate() {
         }
     }, [RefRanks])
     useEffect(() => {
-       // console.log({ _count, _nftBalance, _stakedNFTs, _DCUser, StakeUser, _nftClaimable });
+        // console.log({ _count, _nftBalance, _stakedNFTs, _DCUser, StakeUser, _nftClaimable });
         try {
-            if(_count)setNFTCount(BigNoToInt(_count))
-            if(_nftBalance) setNFTBalance(BigNoToInt(_nftBalance))
-            if(_stakedNFTs) setStakedNFTs(BigNoToInt(_stakedNFTs))
-           if (_DCUser) {
+            if (_count) setNFTCount(BigNoToInt(_count))
+            if (_nftBalance) setNFTBalance(BigNoToInt(_nftBalance))
+            if (_stakedNFTs) setStakedNFTs(BigNoToInt(_stakedNFTs))
+            if (_DCUser) {
                 setDCUser({
                     profit: BigNoToInt(_DCUser.profit),
                     totalCoins: BigNoToInt(_DCUser.totalCoins),
@@ -71,38 +73,47 @@ function Affiliate() {
             if (StakeUser) {
                 setDCclaimed(BigNoToDC(StakeUser))
             }
-            if (_nftClaimable && BigNoToInt(_nftClaimable)>=1) {
+            if (_nftClaimable && BigNoToInt(_nftClaimable) >= 1) {
                 setNFTClaimable(true)
             }
-            if(_DCReward && BigNoToDC(_DCReward)>1){
+            if (_DCReward && BigNoToDC(_DCReward) > 1) {
                 setDCclaimable(true)
             }
         } catch (error) {
             console.log(error);
         }
 
-    }, [_count, _nftBalance, _stakedNFTs, _DCUser, StakeUser,_nftClaimable])
+    }, [_count, _nftBalance, _stakedNFTs, _DCUser, StakeUser, _nftClaimable])
+    // useEffect(() => {
+    //     let Active = []
+    //     let Inactive = []
+    //     if(User && User.rankBonus){
+    //         for (let index = 0; index < User.rankBonus.length; index++) {
+    //             const bonus = User.rankBonus[index];
+    //             let startDate = new Date(BigNoToInt(bonus.start)*1000);
+    //             let endDate = new Date(BigNoToInt(bonus.end)*1000);
+    //             const reward = BigNoToUSDT(bonus.reward)
+    //             const multiplier = bonus.multiplier
+    //             let active = true
+    //             const referer = bonus.referer
+    //             if(endDate.getTime()<Date.now() || multiplier==0) active = false
+    //             if(active) Active.push({startDate,endDate,reward,multiplier, referer})
+    //             else Inactive.push({startDate,endDate,reward,multiplier, referer})
+    //         }
+    //         console.log({ Active, Inactive, relation: User.relationBonus });
+    //     }
+    // }, [User])
     useEffect(() => {
-        let Active = []
-        let Inactive = []
-        if(User && User.rankBonus){
-            for (let index = 0; index < User.rankBonus.length; index++) {
-                const bonus = User.rankBonus[index];
-                let startDate = new Date(BigNoToInt(bonus.start)*1000);
-                let endDate = new Date(BigNoToInt(bonus.end)*1000);
-                const reward = BigNoToUSDT(bonus.reward)
-                const multiplier = bonus.multiplier
-                let active = true
-                const referer = bonus.referer
-                if(endDate.getTime()<Date.now() || multiplier==0) active = false
-                if(active) Active.push({startDate,endDate,reward,multiplier, referer})
-                else Inactive.push({startDate,endDate,reward,multiplier, referer})
-            }
-            console.log({ Active, Inactive, relation: User.relationBonus });
+        try {
+          //  console.log(stakeUser);
+        calculateAllReward(stakeUser, User.relationBonus, User.rankBonus)
+        } catch (error) {
+            //console.log(error);
         }
-    }, [User])
-   
-    if (isLoading || L3 || L4 || L0 ) return <Loader />
+        
+    }, [stakeUser, User])
+
+    if (isLoading || L3 || L4 || L0) return <Loader />
     else return (
         <div className='text-white'>
             <div className='ml-5 my-10'>
@@ -135,7 +146,7 @@ function Affiliate() {
             <div className='mt-3 px-3 w-full h-px bg-stone-500' />
 
             <div className="buttons">
-                <a className={NFTClaimable ? "button":"button disabled"} href="#" onClick={handleNFTClaim}>Claim NFT</a>
+                <a className={NFTClaimable ? "button" : "button disabled"} href="#" onClick={handleNFTClaim}>Claim NFT</a>
                 <a className={DCclaimable ? "button" : "button disabled"} href="#" onClick={handleDCClaim}>Claim DC</a>
             </div>
             {/*Bottom Box  */}
@@ -168,7 +179,7 @@ function Affiliate() {
                 <div>
                     <div className='flex mt-6'>
                         <input className='bg-stone-700 w-32 py-2 px-3 mr-10' placeholder='0' onChange={(e) => setNFTinput(e.target.value)} />
-                        <div className='border border-yellow-300 border-2 p-2 hover:bg-yellow-600' onClick={()=>handleNFTStake(NFTinput)}>
+                        <div className='border border-yellow-300 border-2 p-2 hover:bg-yellow-600' onClick={() => handleNFTStake(NFTinput)}>
                             NFT Staking
                         </div>
                     </div>
@@ -176,7 +187,7 @@ function Affiliate() {
 
 
                     <div className='flex mt-6'>
-                        <input className='bg-stone-700 w-32 py-2 px-3 mr-10' placeholder='0' onChange={(e)=>setDCinput(e.target.value)}/>
+                        <input className='bg-stone-700 w-32 py-2 px-3 mr-10' placeholder='0' onChange={(e) => setDCinput(e.target.value)} />
                         <div className='border border-yellow-300 border-2 p-2 hover:bg-yellow-600 px-6' onClick={() => handleDCSell(DCinput)}>
                             DC Sell
                         </div>

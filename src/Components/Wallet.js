@@ -58,9 +58,9 @@ function Wallet() {
     }
     const setMax = (index) => {
         if (index === 0) {
-            setStaticInput(BigNoToUSDT(_reward.staticReward))
+            setStaticInput(Rewards? Rewards[0]:"0")
         } else if (index === 1) {
-            setDynamicInput(BigNoToUSDT(_reward.dynamicReward))
+            setDynamicInput(Rewards ? Rewards[1] : "0")
         } else {
             setDCInput(DCUser.balance)
         }
@@ -90,8 +90,8 @@ function Wallet() {
         }
     }, [_reward])
 useEffect(() => {
-  console.log(User);
-}, [User])
+  console.log(_reward);
+}, [_reward])
 
    
     if (isLoading || L4 ) return <Loader />

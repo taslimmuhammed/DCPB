@@ -13,6 +13,7 @@ function StakingList() {
           <div className='w-full bg-stone-800 p-5 text-white font-semibold text-sm'>
             {
                   stakingList && stakingList.map((stake, index) =>{
+                    console.log(stake);
                     let amount = BigNoToUSDT(stake.reward)/2
                       let dyReward = BigNoToUSDT(stake.dynamicClaimed)
                       let stReward = BigNoToUSDT(stake.staticClaimed)
@@ -36,7 +37,7 @@ function StakingList() {
                             </div>
                       <div className='flex justify-between'>
                           <div className=''>Total Profit</div>
-                              <div>{stReward+dyReward} | {amount*2} <span className='text-yellow-300 font-normal'>Max</span></div>
+                                <div>{stReward + dyReward} | {amount*2} <span className='text-yellow-300 font-normal'>Max</span></div>
                       </div>
                   </div>)})
             }
