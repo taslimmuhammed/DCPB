@@ -296,6 +296,16 @@ export const StakingABI = [
                     },
                     {
                         "internalType": "uint256",
+                        "name": "staticReward",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "dynamicReward",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
                         "name": "staticClaimed",
                         "type": "uint256"
                     },
@@ -308,19 +318,9 @@ export const StakingABI = [
                         "internalType": "uint256",
                         "name": "timestamp",
                         "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "directBonus",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "directClaimed",
-                        "type": "uint256"
                     }
                 ],
-                "internalType": "struct StakingContract.StakeStruct[]",
+                "internalType": "struct StakingContract.StakeListStruct[]",
                 "name": "",
                 "type": "tuple[]"
             }

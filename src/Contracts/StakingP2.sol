@@ -76,7 +76,15 @@ contract StakingContract  {
         uint256 dynamicReward;
         uint256 available;
     }
-
+    
+    struct StakeListStruct{
+        uint256 reward;
+        uint256 staticReward;
+        uint256 dynamicReward;
+        uint256 staticClaimed;
+        uint256 dynamicClaimed;
+        uint256 timestamp;
+    }
     constructor(address _usdt, address _dcmanager, address _refContract) {
         token = IERC20(_usdt);
         DCTokenAddress = _dcmanager;
@@ -304,14 +312,19 @@ contract StakingContract  {
     //Reading functions
     function getStakes(
         address _user
-    ) external view returns (StakeStruct[] memory) {
+    ) external view returns (StakeListStruct[] memory) {
         StakeStruct[] memory stakes = Users[_user].stakes;
         RewardStruct[] memory rewardArr = calculateAllReward(_user);
+        StakeListStruct[] memory stakeList  = new StakeListStruct[](stakes.length);
         for (uint i = 0; i < stakes.length; i++) {
-            stakes[i].dynamicClaimed += rewardArr[i].dynamicReward;
-            stakes[i].staticClaimed += rewardArr[i].staticReward;
+            stakeList[i].dynamicReward = rewardArr[i].dynamicReward+stakes[i].directBonus;
+            stakeList[i].staticReward = rewardArr[i].staticReward;
+            stakeList[i].staticClaimed = stakes[i].staticClaimed;
+            stakeList[i].dynamicClaimed = stakes[i].dynamicClaimed+stakes[i].directClaimed ;
+            stakeList[i].timestamp = stakes[i].timestamp;
+            stakeList[i].reward = stakes[i].reward;
         }
-        return stakes;
+        return stakeList;
     }
 
     function getStakeUser(

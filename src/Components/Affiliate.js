@@ -6,7 +6,6 @@ import Loader from './Loader'
 import { BigNoToDC, BigNoToInt, BigNoToUSDT, DCTokenAddress } from '../Utils/Utils'
 import graph from '../Assets/graph.png'
 import community from '../Assets/community.png'
-import { calculateAllReward } from '../Utils/test.js'
 function Affiliate() {
     const { address,
         L0,
