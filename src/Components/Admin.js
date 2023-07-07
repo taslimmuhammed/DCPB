@@ -41,7 +41,8 @@ function Admin() {
        if(_totalClaimed) settotalClaimed(BigNoToInt(_totalClaimed))
        if(_StakedNFTs) setStakedNFTs(BigNoToInt(_StakedNFTs))
        if(_StakingusdtBalance) setStakingUSDTBalance(BigNoToUSDT(_StakingusdtBalance))
-        if (_totalUsers) settotalUsers(BigNoToInt(_totalUsers))
+       if (_totalUsers) settotalUsers(BigNoToInt(_totalUsers))
+       console.log(NFTReleased);
     }, [_nftRelease, _totalDeposite, _totalDCSold, _totalClaimed, _StakedNFTs, _StakingusdtBalance, _totalUsers, _totalReleased])
     
     if (isLoading || L0) return <Loader />
@@ -61,7 +62,7 @@ function Admin() {
             </div>
             <div className='flex w-full justify-between mt-6'>
                 <div className='py-2 text-lg'> Total NFT Release</div>
-                <div className='bg-stone-700 w-32 py-2 px-2'>{NFTRelease && NFTRelease} NFT</div>
+                <div className='bg-stone-700 w-32 py-2 px-2'>{NFTReleased && NFTReleased} NFT</div>
             </div>
             <div className='flex w-full justify-between mt-6'>
                 <div className='py-2 text-lg'> Total DC Release</div>
