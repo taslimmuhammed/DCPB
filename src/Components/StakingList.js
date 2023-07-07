@@ -13,18 +13,14 @@ function StakingList() {
           <div className='w-full bg-stone-800 p-5 text-white font-semibold text-sm'>
             {
                   stakingList && stakingList.map((stake, index) =>{
-                    console.log(stake);
-                    const amount = BigNoToUSDT(stake?.reward)/2
-                      const dyReward = BigNoToUSDT(stake?.dynamicReward)
-                      const stReward = BigNoToUSDT(stake?.staticReward)
-                    const staticClaimed = BigNoToUSDT(stake?.staticClaimed)
-                    const dynamicClaimed = BigNoToUSDT(stake?.dynamicClaimed)
-                    const timeStamp = HexToDateString(stake?.timestamp)
+                    let amount = BigNoToUSDT(stake.reward)/2
+                      let dyReward = BigNoToUSDT(stake.dynamicReward)
+                      let stReward = BigNoToUSDT(stake.staticReward)
                     return (
                   <div className='bg-stone-700 p-3 mb-3' key={index}>
                       <div className='flex justify-between'>
                           <div className=''>Staking Date:</div>
-                                <div>{timeStamp}</div>
+                                <div>{HexToDateString(stake?.timestamp)}</div>
                       </div>
                       <div className='flex justify-between'>
                           <div className=''>Staking Amount:</div>
@@ -40,7 +36,7 @@ function StakingList() {
                             </div>
                       <div className='flex justify-between'>
                           <div className=''>Total Profit</div>
-                                <div>{staticClaimed + dynamicClaimed} | {amount*2} <span className='text-yellow-300 font-normal'>Max</span></div>
+                              <div>{stReward+dyReward} | {amount*2} <span className='text-yellow-300 font-normal'>Max</span></div>
                       </div>
                   </div>)})
             }
