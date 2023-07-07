@@ -38,7 +38,7 @@ function StakingList() {
                             </div>
                       <div className='flex justify-between'>
                           <div className=''>Total Profit</div>
-                              <div>{staticClaimed+dynamicClaimed} | {amount*2} <span className='text-yellow-300 font-normal'>Max</span></div>
+                              <div>{dyReward+stReward} | {amount*2} <span className='text-yellow-300 font-normal'>Max</span></div>
                       </div>
                   </div>)})
             }
