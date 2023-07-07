@@ -106,7 +106,7 @@ contract RefContract {
             if(teamUsers[friend].rank>tempRank){
                 teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, teamUsers[friend].rank*3, reward, referer));
             }else if(sameRank && teamUsers[friend].rank !=0 && teamUsers[friend].rank==tempRank){
-                teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, 10, reward, referer));
+                teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, 100*teamUsers[referer].rank, reward, referer));
             }
             sameRank = false;
             referer = friend;
@@ -192,7 +192,7 @@ contract RefContract {
                     teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, teamUsers[_user].rank*3, total/10000, downReferrals[i]));
                 }else if(teamUsers[downReferrals[i]].rank == teamUsers[_user].rank){
                     uint256 total  = teamUsers[downReferrals[i]].totalStake ;
-                    teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, 10, total/10000, downReferrals[i]));
+                    teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, 100*teamUsers[_user].rank, total/10000, downReferrals[i]));
                 }
             }
     }
@@ -210,7 +210,7 @@ contract RefContract {
         // while(referer!=address(0) && teamUsers[referer].rank==teamUsers[_user].rank) { 
         if(referer!=address(0) && teamUsers[referer].rank==teamUsers[_user].rank){
                 // uint256 reward =  findTotalSameRankBonus(referer)/10000;
-                teamUsers[referer].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, 10, teamUsers[_user].totalStake/10000, _user));
+                teamUsers[referer].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, 100*teamUsers[referer].rank, teamUsers[_user].totalStake/10000, _user));
             // _user = referer;
             // referer = teamUsers[referer].referer;
         }

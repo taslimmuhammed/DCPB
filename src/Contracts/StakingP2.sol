@@ -310,14 +310,12 @@ contract StakingContract  {
         refContract.testFunc();
     }
     //Reading functions
-    function getStakes(
-        address _user
-    ) external view returns (StakeListStruct[] memory) {
+    function getStakes(address _user) external view returns (StakeListStruct[] memory) {
         StakeStruct[] memory stakes = Users[_user].stakes;
         RewardStruct[] memory rewardArr = calculateAllReward(_user);
         StakeListStruct[] memory stakeList  = new StakeListStruct[](stakes.length);
         for (uint i = 0; i < stakes.length; i++) {
-            stakeList[i].dynamicReward = rewardArr[i].dynamicReward+stakes[i].directBonus;
+            stakeList[i].dynamicReward = rewardArr[i].dynamicReward;
             stakeList[i].staticReward = rewardArr[i].staticReward;
             stakeList[i].staticClaimed = stakes[i].staticClaimed;
             stakeList[i].dynamicClaimed = stakes[i].dynamicClaimed+stakes[i].directClaimed ;
@@ -326,6 +324,7 @@ contract StakingContract  {
         }
         return stakeList;
     }
+
 
     function getStakeUser(
         address _user
