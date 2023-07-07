@@ -14,12 +14,12 @@ function StakingList() {
             {
                   stakingList && stakingList.map((stake, index) =>{
                     console.log(stake);
-                    let amount = BigNoToUSDT(stake.reward)/2
-                      const dyReward = BigNoToUSDT(stake.dynamicClaimed)
-                      const stReward = BigNoToUSDT(stake.staticClaimed)
-                      const staticClaimed = BigNoToUSDT(stake.staticClaimed)
-                      const dynamicClaimed = BigNoToUSDT(stake.dynamicClaimed)
-                      const timeStamp = HexToDateString(stake?.timestamp)
+                    const amount = BigNoToUSDT(stake?.reward)/2
+                    const dyReward = BigNoToUSDT(stake?.dynamicBonus)
+                    const stReward = BigNoToUSDT(stake?.staticBonus)
+                    const staticClaimed = BigNoToUSDT(stake?.staticClaimed)
+                    const dynamicClaimed = BigNoToUSDT(stake?.dynamicClaimed)
+                    const timeStamp = HexToDateString(stake?.timestamp)
                     return (
                   <div className='bg-stone-700 p-3 mb-3' key={index}>
                       <div className='flex justify-between'>
