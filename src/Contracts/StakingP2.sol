@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 interface RefContract {
-    struct RankBonus{
+    struct RankBonus {
         uint256 start;
         uint256 end;
         uint8 multiplier;
@@ -16,7 +16,7 @@ interface RefContract {
         uint256 reward;
         uint256 timestamp;
     }
-    
+
     struct TeamUserStruct {
         uint256 totalRefStake;
         uint256 totalStake;
@@ -28,23 +28,51 @@ interface RefContract {
     }
 
     function signIn(address _user, address _referer) external;
+
     function stake(address _user, uint256 _amount) external;
-    function upgradeUser(address _user) external ;
-    function getUser(address _user) external view returns(TeamUserStruct memory);
-    function getUserDownReferrals(address _user, uint8 _level) external view returns(address[] memory);
-    function getRelationBonus( address _user) external view returns(RelationStruct[] memory);
-    function getRankBonus( address _user) external view returns(RankBonus[] memory);
-    function getTotalStake(address _user) external view returns(uint256);
-    function getTotalRefStake(address _user) external view returns(uint256);
-    function getRank(address _user) external view returns(uint8);
-    function getReferer(address _user) external view returns(address);
+
+    function upgradeUser(address _user) external;
+
+    function getUser(
+        address _user
+    ) external view returns (TeamUserStruct memory);
+
+    function getUserDownReferrals(
+        address _user,
+        uint8 _level
+    ) external view returns (address[] memory);
+
+    function getRelationBonus(
+        address _user
+    ) external view returns (RelationStruct[] memory);
+
+    function getRankBonus(
+        address _user
+    ) external view returns (RankBonus[] memory);
+
+    function getTotalStake(address _user) external view returns (uint256);
+
+    function getTotalRefStake(address _user) external view returns (uint256);
+
+    function getRank(address _user) external view returns (uint8);
+
+    function getReferer(address _user) external view returns (address);
+
     function checkUpgradablity(address _user) external view returns (bool);
-    function getRefsWithRank(uint8 _rank,address _user) external view returns (uint256) ;
-    function getReferralRanks( address _user) external view returns (uint256[7] memory);
-    function  testFunc() external;
+
+    function getRefsWithRank(
+        uint8 _rank,
+        address _user
+    ) external view returns (uint256);
+
+    function getReferralRanks(
+        address _user
+    ) external view returns (uint256[7] memory);
+
+    function testFunc() external;
 }
 
-contract StakingContract  {
+contract StakingContract {
     mapping(address => bool) public Active;
     uint256 decimals = 10 ** 6;
     IERC20 public token;
@@ -68,16 +96,14 @@ contract StakingContract  {
     }
     struct UserStruct {
         StakeStruct[] stakes;
-        uint256 dynamicLimit;
-        uint256 staticLimit;
     }
     struct RewardStruct {
         uint256 staticReward;
         uint256 dynamicReward;
         uint256 available;
     }
-    
-    struct StakeListStruct{
+
+    struct StakeListStruct {
         uint256 reward;
         uint256 staticReward;
         uint256 dynamicReward;
@@ -85,6 +111,7 @@ contract StakingContract  {
         uint256 dynamicClaimed;
         uint256 timestamp;
     }
+
     constructor(address _usdt, address _dcmanager, address _refContract) {
         token = IERC20(_usdt);
         DCTokenAddress = _dcmanager;
@@ -92,7 +119,7 @@ contract StakingContract  {
     }
 
     modifier signedIn() {
-        require(Active[msg.sender], "sign in befpre using this function");
+        require(Active[msg.sender], "sign in before using this function");
         _;
     }
     modifier onlyOwner() {
@@ -108,14 +135,18 @@ contract StakingContract  {
         locked = false;
     }
 
-    function calculateAllReward(address _user
+    function calculateAllReward(
+        address _user
     ) public view returns (RewardStruct[] memory) {
         uint256 baseTime = Users[_user].stakes[0].timestamp;
         baseTime = baseTime - (baseTime % 60);
         uint256 currentTime = block.timestamp;
         StakeStruct[] memory stakes = Users[_user].stakes;
-        RefContract.RelationStruct[] memory relationBonuses = refContract.getRelationBonus(_user);
-        RefContract.RankBonus[] memory rankBonuses =  refContract.getRankBonus(_user);
+        RefContract.RelationStruct[] memory relationBonuses = refContract
+            .getRelationBonus(_user);
+        RefContract.RankBonus[] memory rankBonuses = refContract.getRankBonus(
+            _user
+        );
 
         RewardStruct[] memory rewardStructs = new RewardStruct[](stakes.length);
         uint256[] memory availableArray = new uint256[](stakes.length);
@@ -123,43 +154,46 @@ contract StakingContract  {
             return rewardStructs;
         }
         for (uint256 i = 0; i < stakes.length; i++)
-            availableArray[i] = stakes[i].reward - stakes[i].directBonus - stakes[i].directClaimed;
+            availableArray[i] =
+                stakes[i].reward -
+                stakes[i].directBonus -
+                stakes[i].directClaimed;
 
         //interpreting and allocating all rewards day by day
         for (uint256 i = baseTime; i < currentTime; i += 60) {
             uint256 dynamicReward = 0;
             // calculating dynamic
             for (uint256 j = 0; j < relationBonuses.length; j++) {
-                if ( i> relationBonuses[j].timestamp)
+                if (i > relationBonuses[j].timestamp)
                     dynamicReward += relationBonuses[j].reward;
             }
             //adding team bonus
             for (uint256 j = 0; j < rankBonuses.length; j++) {
-                if (i>rankBonuses[j].start && i<=rankBonuses[j].end)
-                    dynamicReward += rankBonuses[j].reward*rankBonuses[j].multiplier;
+                if (i > rankBonuses[j].start && i <= rankBonuses[j].end)
+                    dynamicReward +=
+                        rankBonuses[j].reward *
+                        rankBonuses[j].multiplier;
             }
 
             //calculating static
             for (uint8 j = 0; j < stakes.length; j++) {
                 if (availableArray[j] != 0 && stakes[j].timestamp < i) {
-                    uint256 staticReward=(stakes[j].reward) / 200;
-                        if(availableArray[j] <= staticReward){
-                             rewardStructs[j].staticReward += availableArray[j];
-                             availableArray[j] = 0;
-                             continue;
-                             }
-                        else{
-                         rewardStructs[j].staticReward += staticReward;   
-                         availableArray[j] -= staticReward;
-                        if(availableArray[j]>dynamicReward){
+                    uint256 staticReward = (stakes[j].reward) / 200;
+                    if (availableArray[j] <= staticReward) {
+                        rewardStructs[j].staticReward += availableArray[j];
+                        availableArray[j] = 0;
+                        continue;
+                    } else {
+                        rewardStructs[j].staticReward += staticReward;
+                        availableArray[j] -= staticReward;
+                        if (availableArray[j] > dynamicReward) {
                             rewardStructs[j].dynamicReward += dynamicReward;
                             availableArray[j] -= dynamicReward;
-                        }
-                        else{
+                        } else {
                             rewardStructs[j].dynamicReward += availableArray[j];
                             availableArray[j] = 0;
                         }
-                        }
+                    }
                 }
             }
         }
@@ -176,11 +210,12 @@ contract StakingContract  {
     function signIn(address _friend) external nonReentrant {
         require(msg.sender != _friend, "user cant be same as referer");
         require(!Active[msg.sender], "already signed in");
-        require(((Active[_friend]) || (_friend == address(0))),"Invalid ref id");
+        require(
+            ((Active[_friend]) || (_friend == address(0))),
+            "Invalid ref id"
+        );
         Active[msg.sender] = true;
         refContract.signIn(msg.sender, _friend);
-        Users[msg.sender].dynamicLimit = 2 * decimals;
-        Users[msg.sender].staticLimit = 1 * decimals;
         totalUsers++;
     }
 
@@ -193,7 +228,14 @@ contract StakingContract  {
     }
 
     function _stake(uint256 _amount) internal {
-        StakeStruct memory newStake = StakeStruct(_amount * 2,0,0,block.timestamp,0,0);
+        StakeStruct memory newStake = StakeStruct(
+            _amount * 2,
+            0,
+            0,
+            block.timestamp,
+            0,
+            0
+        );
         require(token.transferFrom(msg.sender, address(this), _amount));
         Users[msg.sender].stakes.push(newStake);
         totalDeposite += _amount;
@@ -239,10 +281,9 @@ contract StakingContract  {
     function claimStaticReward(uint256 _amount) external nonReentrant {
         RewardStruct memory totalReward = getTotalRewards(msg.sender);
         require(_amount <= totalReward.staticReward);
-        require(_amount >= Users[msg.sender].staticLimit);
+        require(_amount >= 10 ** decimals, "minimum 10 usdt");
         updateStaticReward(_amount);
         token.transfer(msg.sender, _amount);
-        Users[msg.sender].staticLimit *= 2;
     }
 
     function updateStaticReward(uint256 _amount) internal {
@@ -255,7 +296,8 @@ contract StakingContract  {
                 return;
             } else {
                 total -= rewardArr[i].staticReward;
-                Users[msg.sender].stakes[i].staticClaimed += rewardArr[i].staticReward;
+                Users[msg.sender].stakes[i].staticClaimed += rewardArr[i]
+                    .staticReward;
             }
         }
     }
@@ -263,10 +305,9 @@ contract StakingContract  {
     function claimDynamicReward(uint256 _amount) public nonReentrant {
         RewardStruct memory totalReward = getTotalRewards(msg.sender);
         require(_amount <= totalReward.dynamicReward);
-        require(_amount >= Users[msg.sender].dynamicLimit);
+        require(_amount >= 10 ** decimals, "minimum 10 usdt");
         updateDynamicStakes(_amount);
         token.transfer(msg.sender, _amount);
-        Users[msg.sender].dynamicLimit *= 2;
     }
 
     function updateDynamicStakes(uint256 _amount) internal {
@@ -276,7 +317,8 @@ contract StakingContract  {
         for (uint256 i = 0; i < stakes.length; i++) {
             if (total > stakes[i].directBonus) {
                 total -= stakes[i].directBonus;
-                Users[msg.sender].stakes[i].directClaimed += stakes[i].directBonus;
+                Users[msg.sender].stakes[i].directClaimed += stakes[i]
+                    .directBonus;
                 Users[msg.sender].stakes[i].directBonus = 0;
             } else {
                 Users[msg.sender].stakes[i].directClaimed += total;
@@ -284,7 +326,8 @@ contract StakingContract  {
                 return;
             }
             if (total > allocArray[i].dynamicReward) {
-                Users[msg.sender].stakes[i].dynamicClaimed += allocArray[i].dynamicReward;
+                Users[msg.sender].stakes[i].dynamicClaimed += allocArray[i]
+                    .dynamicReward;
                 total -= allocArray[i].dynamicReward;
             } else {
                 Users[msg.sender].stakes[i].dynamicClaimed += total;
@@ -300,52 +343,65 @@ contract StakingContract  {
         return total;
     }
 
-
-
     function upgradeLevel() external nonReentrant {
         refContract.upgradeUser(msg.sender);
     }
-    
-    function callTest() external nonReentrant{
+
+    function callTest() external nonReentrant {
         refContract.testFunc();
     }
+
     //Reading functions
-    function getStakes(address _user) external view returns (StakeListStruct[] memory) {
+    function getStakes(
+        address _user
+    ) external view returns (StakeListStruct[] memory) {
         StakeStruct[] memory stakes = Users[_user].stakes;
         RewardStruct[] memory rewardArr = calculateAllReward(_user);
-        StakeListStruct[] memory stakeList  = new StakeListStruct[](stakes.length);
+        StakeListStruct[] memory stakeList = new StakeListStruct[](
+            stakes.length
+        );
         for (uint i = 0; i < stakes.length; i++) {
             stakeList[i].dynamicReward = rewardArr[i].dynamicReward;
             stakeList[i].staticReward = rewardArr[i].staticReward;
             stakeList[i].staticClaimed = stakes[i].staticClaimed;
-            stakeList[i].dynamicClaimed = stakes[i].dynamicClaimed+stakes[i].directClaimed ;
+            stakeList[i].dynamicClaimed =
+                stakes[i].dynamicClaimed +
+                stakes[i].directClaimed;
             stakeList[i].timestamp = stakes[i].timestamp;
             stakeList[i].reward = stakes[i].reward;
         }
         return stakeList;
     }
 
-
     function getStakeUser(
         address _user
     ) public view returns (UserStruct memory) {
         return Users[_user];
     }
-    
-    function getTeamUser(address _user) external view returns (RefContract.TeamUserStruct memory) {
+
+    function getTeamUser(
+        address _user
+    ) external view returns (RefContract.TeamUserStruct memory) {
         return refContract.getUser(_user);
     }
-    
+
     function checkUpgradablity(address _user) external view returns (bool) {
         return refContract.checkUpgradablity(_user);
     }
-    function getRefsWithRank(address _user, uint8 index)  external view returns (uint256) {
-        return refContract.getRefsWithRank(index,_user);
+
+    function getRefsWithRank(
+        address _user,
+        uint8 index
+    ) external view returns (uint256) {
+        return refContract.getRefsWithRank(index, _user);
     }
 
-    function getReferralRanks(address _user)  external view returns (uint256[7] memory) {
+    function getReferralRanks(
+        address _user
+    ) external view returns (uint256[7] memory) {
         return refContract.getReferralRanks(_user);
     }
+
     // Admin Functions:- Only to be used in case of emergencies
     function transferOwnership(address newOwner) public onlyOwner nonReentrant {
         owner = newOwner;
@@ -358,11 +414,15 @@ contract StakingContract  {
         IERC20(_token).transfer(owner, amount);
     }
 
-    function changeDCTokenAddress(address newAddr) public onlyOwner nonReentrant {
+    function changeDCTokenAddress(
+        address newAddr
+    ) public onlyOwner nonReentrant {
         DCTokenAddress = newAddr;
     }
-    function changeRefContract(address _refContract) public onlyOwner nonReentrant{
+
+    function changeRefContract(
+        address _refContract
+    ) public onlyOwner nonReentrant {
         refContract = RefContract(_refContract);
     }
-    
 }
