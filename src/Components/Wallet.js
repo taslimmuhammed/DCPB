@@ -24,6 +24,7 @@ function Wallet() {
         setisLoading(true)
         try {
             let amount = stringToUSDT(StaticInput)
+            if(amount<10) return toast.error("Minimum amount is 10 USDT")
             const tx = await claimStaticReward({ args: [amount] });
             toast.success("Transaction succeful")
         } catch (e) {
@@ -36,6 +37,7 @@ function Wallet() {
         setisLoading(true)
         try {
             let amount = stringToUSDT(DynamicInput)
+            if(amount<10) return toast.error("Minimum amount is 10 USDT")
             const tx = await claimDynamicReward({ args: [amount] });
             toast.success("Transaction succeful")
         } catch (e) {
@@ -115,8 +117,13 @@ useEffect(() => {
                             <div className=' border border-yellow-300 border-2 px-2 hover:bg-yellow-600 mt-2' onClick={() => setMax(0)}>max</div>
                         </div>
                     </div>
-                    <div className='text-xs text-stone-100 mb-2 mt-1'>
+                    <div className='text-xs text-stone-100 mb-2 mt-1 flex justify-between'>
+                        <div>
                         <span className='text-stone-500'>Available:</span>  {Rewards && Rewards[0]} USDT
+                        </div>
+                        <div>
+                        <span className='text-stone-500'>Min:</span> 10 USDT
+                        </div>
                     </div>
                 </div>
                 <div className='flex flex-col justify-center' onClick={handleStatic}>
@@ -142,8 +149,13 @@ useEffect(() => {
                             <div className=' border border-yellow-300 border-2 px-2 hover:bg-yellow-600 mt-2' onClick={() => setMax(1)}>max</div>
                         </div>
                     </div>
-                    <div className='text-xs text-stone-100 mb-2 mt-1'>
+                    <div className='text-xs text-stone-100 mb-2 mt-1 flex justify-between'>
+                        <div>
                         <span className='text-stone-500'>Available:</span>  {Rewards && Rewards[1]} USDT
+                        </div>
+                        <div>
+                        <span className='text-stone-500'>Min:</span> 10 USDT
+                        </div>
                     </div>
                 </div>
                 <div className='flex flex-col justify-center' onClick={handleDynamic}>
@@ -171,6 +183,7 @@ useEffect(() => {
                     <div className='text-xs text-stone-100 mb-2 mt-1'>
                         <span className='text-stone-500'>Available:</span>{DCUser.balance} USDT
                     </div>
+                    
                 </div>
                 <div className='flex flex-col justify-center' onClick={handleDCReward}>
                     <img src={withdraw} className='w-14 hover:w-12' />
