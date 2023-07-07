@@ -37,7 +37,7 @@ contract RefContract {
     struct RankBonus{
         uint256 start;
         uint256 end;
-        uint8 multiplier;
+        uint256 multiplier;
         uint256 reward;
         address referer;
     }
@@ -148,9 +148,8 @@ contract RefContract {
         uint256 totalStake = teamUsers[_user].totalStake;
        // address referer = _user;
         endUserRankBonuses(_user);
-        if(friend !=address(0)) {
-            if(teamUsers[friend].rank<=rank)
-                reduceRankBonus(friend, _user, totalStake+teamUsers[_user].totalRefStake);
+        if(friend !=address(0) && teamUsers[friend].rank<=rank)
+            reduceRankBonus(friend, _user, totalStake+teamUsers[_user].totalRefStake);
             // referer = friend;
             // friend = teamUsers[friend].referer;
             // while(friend!=address(0)){
@@ -160,7 +159,6 @@ contract RefContract {
             //     referer = friend;
             //     friend = teamUsers[friend].referer;
             // }
-        }
     }
     function endUserRankBonuses(address _user) internal{
         RankBonus[] memory rankBonus = teamUsers[_user].rankBonus;

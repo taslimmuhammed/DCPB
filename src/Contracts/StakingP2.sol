@@ -8,7 +8,7 @@ interface RefContract {
     struct RankBonus {
         uint256 start;
         uint256 end;
-        uint8 multiplier;
+        uint256 multiplier;
         uint256 reward;
         address referer;
     }
