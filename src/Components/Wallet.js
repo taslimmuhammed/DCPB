@@ -13,8 +13,8 @@ function Wallet() {
     const [DynamicInput, setDynamicInput] = useState("0")
     const [DCInput, setDCInput] = useState("0")
     const [DCUser, setDCUser] = useState(0)
-    const { data: User } = useContractRead(contract, "getStakeUser", [address])
-    const { data: _reward, isLoading: L4 } = useContractRead(contract, "calculateAllReward", [address])
+    //const { data: User } = useContractRead(contract, "getStakeUser", [address])
+    const { data: _reward, isLoading: L4 } = useContractRead(contract, "getStakes", [address])
     const { mutateAsync: claimDynamicReward } = useContractWrite(contract, "claimDynamicReward")
     const { mutateAsync: claimStaticReward } = useContractWrite(contract, "claimStaticReward")
     const { mutateAsync: claimUSDT } = useContractWrite(DCManager, "claimUSDT")
@@ -82,13 +82,13 @@ function Wallet() {
         if (_reward) {
             let stT = 0;
             let dyT = 0;
+            let TC = 0;
             for (let index = 0; index < _reward.length; index++) {
-                let st = BigNoToUSDT(_reward[index].staticReward)
-                let dy = BigNoToUSDT(_reward[index].dynamicReward)
-                stT += st;
-                dyT += dy;
+                stT += BigNoToUSDT(_reward[index].staticReward);
+                dyT += BigNoToUSDT(_reward[index].dynamicReward);
+                TC += BigNoToUSDT(_reward[index].staticClaimed) + BigNoToUSDT(_reward[index].dynamicClaimed);
             }
-            setRewards([stT, dyT])
+            setRewards([stT, dyT, TC])
         }
     }, [_reward])
 useEffect(() => {
@@ -206,8 +206,8 @@ useEffect(() => {
                         <div>0 USDT</div>
                     </div>
                     <div className='flex justify-between'>
-                        <div>Total Withdrawal Value</div>
-                        <div>{Rewards && Rewards[0] + Rewards[1]} USDT</div>
+                        <div>Total Claimed Value</div>
+                        <div>{Rewards && Rewards[2]} USDT</div>
                     </div>
 
                 </div>
