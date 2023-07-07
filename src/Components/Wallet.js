@@ -62,7 +62,7 @@ function Wallet() {
         if (index === 0) {
             setStaticInput(Rewards? Rewards[0]:"0")
         } else if (index === 1) {
-            setDynamicInput(Rewards ? Rewards[1] : "0")
+            setDynamicInput(Rewards ? Rewards[1]:"0")
         } else {
             setDCInput(DCUser.balance)
         }
@@ -82,18 +82,17 @@ function Wallet() {
         if (_reward) {
             let stT = 0;
             let dyT = 0;
-            let TC = 0;
+            let dyC = 0;
+            let stC = 0;
             for (let index = 0; index < _reward.length; index++) {
-                stT += BigNoToUSDT(_reward[index].staticReward);
-                dyT += BigNoToUSDT(_reward[index].dynamicReward);
-                TC += BigNoToUSDT(_reward[index].staticClaimed) + BigNoToUSDT(_reward[index].dynamicClaimed);
+                stT += BigNoToUSDT(_reward[index].staticClaimed);
+                dyT += BigNoToUSDT(_reward[index].dynamicClaimed);
+                stC += BigNoToUSDT(_reward[index].staticReward);
+                dyC += BigNoToUSDT(_reward[index].dynamicReward);
             }
-            setRewards([stT, dyT, TC])
+            setRewards([stT, dyT, stC, dyC])
         }
     }, [_reward])
-useEffect(() => {
-  console.log(_reward);
-}, [_reward])
 
    
     if (isLoading || L4 ) return <Loader />
@@ -119,7 +118,7 @@ useEffect(() => {
                     </div>
                     <div className='text-xs text-stone-100 mb-2 mt-1 flex justify-between'>
                         <div>
-                        <span className='text-stone-500'>Available:</span>  {Rewards && Rewards[0]} USDT
+                            <span className='text-stone-500'>Available:</span>  {Rewards ? Rewards[2] : "0"} USDT
                         </div>
                         <div>
                         <span className='text-stone-500'>Min:</span> 10 USDT
@@ -151,7 +150,7 @@ useEffect(() => {
                     </div>
                     <div className='text-xs text-stone-100 mb-2 mt-1 flex justify-between'>
                         <div>
-                        <span className='text-stone-500'>Available:</span>  {Rewards && Rewards[1]} USDT
+                            <span className='text-stone-500'>Available:</span>  {Rewards ? Rewards[3] : "0"} USDT
                         </div>
                         <div>
                         <span className='text-stone-500'>Min:</span> 10 USDT
@@ -194,20 +193,16 @@ useEffect(() => {
             <div className='flex w-full justify-center mt-20'>
                 <div className='border border-yellow-300 border-2 p-2 w-96'>
                     <div className='flex justify-between'>
-                        <div>Total Intrest Value</div>
-                        <div>{_reward && Rewards[0]} USDT</div>
+                        <div>Total Claimed Interest Value</div>
+                        <div>{_reward ? Rewards[0]:"0"} USDT</div>
                     </div>
                     <div className='flex justify-between'>
-                        <div>Claimable Booster Value</div>
-                        <div>{Rewards && Rewards[1]} USDT</div>
+                        <div>Total Claimed Booster Value</div>
+                        <div>{Rewards ? Rewards[1] : "0"} USDT</div>
                     </div>
                     <div className='flex justify-between'>
-                        <div>Total DC Value</div>
-                        <div>0 USDT</div>
-                    </div>
-                    <div className='flex justify-between'>
-                        <div>Total Claimed Value</div>
-                        <div>{Rewards && Rewards[2]} USDT</div>
+                        <div>Total Claimed DC Profit Value</div>
+                        <div>{DCUser ? DCUser.profit : "0"} USDT</div>
                     </div>
 
                 </div>
