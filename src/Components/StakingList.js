@@ -15,8 +15,8 @@ function StakingList() {
                   stakingList && stakingList.map((stake, index) =>{
                     console.log(stake);
                     const amount = BigNoToUSDT(stake?.reward)/2
-                    const dyReward = BigNoToUSDT(stake?.dynamicBonus)
-                    const stReward = BigNoToUSDT(stake?.staticBonus)
+                      const dyReward = BigNoToUSDT(stake?.dynamicReward)
+                      const stReward = BigNoToUSDT(stake?.staticReward)
                     const staticClaimed = BigNoToUSDT(stake?.staticClaimed)
                     const dynamicClaimed = BigNoToUSDT(stake?.dynamicClaimed)
                     const timeStamp = HexToDateString(stake?.timestamp)
