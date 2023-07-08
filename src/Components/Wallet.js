@@ -60,9 +60,9 @@ function Wallet() {
     }
     const setMax = (index) => {
         if (index === 0) {
-            setStaticInput(Rewards? Rewards[0]:"0")
+            setStaticInput(Rewards? Rewards[2]:"0")
         } else if (index === 1) {
-            setDynamicInput(Rewards ? Rewards[1]:"0")
+            setDynamicInput(Rewards ? Rewards[3]:"0")
         } else {
             setDCInput(DCUser.balance)
         }
