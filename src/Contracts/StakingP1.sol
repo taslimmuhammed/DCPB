@@ -146,20 +146,9 @@ contract RefContract {
     function stopRankBonuses(address _user) internal{
         address friend = teamUsers[_user].referer;
         uint8 rank = teamUsers[_user].rank;
-        uint256 totalStake = teamUsers[_user].totalStake;
-       // address referer = _user;
         endUserRankBonuses(_user);
         if(friend !=address(0) && teamUsers[friend].rank<=rank)
-            reduceRankBonus(friend, _user, totalStake+teamUsers[_user].totalRefStake);
-            // referer = friend;
-            // friend = teamUsers[friend].referer;
-            // while(friend!=address(0)){
-            //     if(teamUsers[friend].rank==rank){
-            //         reduceRankBonus(friend, referer, totalStake);
-            //     }
-            //     referer = friend;
-            //     friend = teamUsers[friend].referer;
-            // }
+            reduceRankBonus(friend, _user);
     }
     function endUserRankBonuses(address _user) internal{
         RankBonus[] memory rankBonus = teamUsers[_user].rankBonus;
@@ -168,19 +157,11 @@ contract RefContract {
             teamUsers[_user].rankBonus[i].end = currentTime;
         }
     }
-    function reduceRankBonus(address _user, address referer, uint256 _amount) internal{
-        _amount = _amount / 10000;
+    function reduceRankBonus(address _user, address referer) internal{
         RankBonus[] memory rankBonus = teamUsers[_user].rankBonus;
         uint256 currentTime = block.timestamp;
         for (uint256 i = 0; i < rankBonus.length; i++) if(rankBonus[i].end > currentTime && referer == rankBonus[i].referer){
             teamUsers[_user].rankBonus[i].end = currentTime;
-            if(_amount>rankBonus[i].reward) _amount -= rankBonus[i].reward;
-            else if(_amount==rankBonus[i].reward) break;
-            else{
-                uint256 reward = rankBonus[i].reward - _amount;
-                teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, teamUsers[_user].rank*3, reward, referer));
-                break;
-            }
         }
     }
     function getFromDown(address _user) internal {

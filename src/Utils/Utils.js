@@ -7,7 +7,7 @@ export const NFTStakingAddress = "0x4dFeFcc2CB48a0F58FF8E2b1894937DF1D183964"
 export const DCTokenAddress = "0x8aCbC8607B859Bc2e8c41336E67D695C877E2876"
 export const DCManagerAddress = "0xfa14180838444D5D731Af8c77Dbd709DaB57146A"
 export const NFTAddress = "0x17A4370CBB1c2F1c1a53532d672AA4967d134735"
-export const refContract = "0x538AB1015395A5482498760Db6A74233204b8f9c"
+export const refContract = "0x515412E73b9Ea2Ac7b7181A718263776bdFd3b6D"
 export const BigNoToUSDT = (bigno) => {
     try {
         let amount = bigno.div(10 ** 5 + "")
