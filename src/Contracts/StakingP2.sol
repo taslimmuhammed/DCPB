@@ -281,21 +281,20 @@ contract StakingContract {
     function claimStaticReward(uint256 _amount) external nonReentrant {
         RewardStruct memory totalReward = getTotalRewards(msg.sender);
         require(_amount <= totalReward.staticReward);
-        require(_amount >= 10 ** decimals, "minimum 10 usdt");
+        require(_amount >= 10 * decimals, "minimum 10 usdt");
         updateStaticReward(_amount);
         token.transfer(msg.sender, _amount);
     }
 
     function updateStaticReward(uint256 _amount) internal {
         StakeStruct[] memory stakes = Users[msg.sender].stakes;
-        uint256 total = _amount;
         RewardStruct[] memory rewardArr = calculateAllReward(msg.sender);
         for (uint256 i = 0; i < stakes.length; i++) {
-            if (total <= rewardArr[i].staticReward) {
-                Users[msg.sender].stakes[i].staticClaimed += total;
-                return;
+            if (_amount <= rewardArr[i].staticReward) {
+                Users[msg.sender].stakes[i].staticClaimed += _amount;
+                break;
             } else {
-                total -= rewardArr[i].staticReward;
+                _amount -= rewardArr[i].staticReward;
                 Users[msg.sender].stakes[i].staticClaimed += rewardArr[i]
                     .staticReward;
             }
@@ -305,7 +304,7 @@ contract StakingContract {
     function claimDynamicReward(uint256 _amount) public nonReentrant {
         RewardStruct memory totalReward = getTotalRewards(msg.sender);
         require(_amount <= totalReward.dynamicReward);
-        require(_amount >= 10 ** decimals, "minimum 10 usdt");
+        require(_amount >= 10 * decimals, "minimum 10 usdt");
         updateDynamicStakes(_amount);
         token.transfer(msg.sender, _amount);
     }
