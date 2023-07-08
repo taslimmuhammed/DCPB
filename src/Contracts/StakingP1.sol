@@ -106,7 +106,8 @@ contract RefContract {
             if(teamUsers[friend].rank>tempRank){
                 teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, teamUsers[friend].rank*3, reward, referer));
             }else if(sameRank && teamUsers[friend].rank !=0 && teamUsers[friend].rank==tempRank){
-                teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, 100*teamUsers[referer].rank, reward, referer));
+                uint256 multiplier = 1000*teamUsers[referer].rank/10;
+                teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, multiplier, reward, referer));
             }
             sameRank = false;
             referer = friend;
@@ -177,7 +178,7 @@ contract RefContract {
             else if(_amount==rankBonus[i].reward) break;
             else{
                 uint256 reward = rankBonus[i].reward - _amount;
-                teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, rankBonus[i].multiplier, reward, referer));
+                teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, teamUsers[_user].rank*3, reward, referer));
                 break;
             }
         }
@@ -190,7 +191,8 @@ contract RefContract {
                     teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, teamUsers[_user].rank*3, total/10000, downReferrals[i]));
                 }else if(teamUsers[downReferrals[i]].rank == teamUsers[_user].rank){
                     uint256 total  = teamUsers[downReferrals[i]].totalStake ;
-                    teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000, 100*teamUsers[_user].rank, total/10000, downReferrals[i]));
+                    uint256 multiplier = 1000*teamUsers[_user].rank/10;
+                    teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 8640000000,multiplier, total/10000, downReferrals[i]));
                 }
             }
     }
