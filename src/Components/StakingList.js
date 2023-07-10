@@ -30,11 +30,11 @@ function StakingList() {
                       </div>
                       <div className='flex justify-between'>
                           <div className=''>Staking Intrest:</div>
-                                <div>{stReward} USDT</div>
+                                <div>{stReward+ staticClaimed} USDT</div>
                       </div>
                             <div className='flex justify-between'>
                                 <div className=''>Booster Value:</div>
-                                <div>{dyReward} USDT</div>
+                                <div>{dyReward+ dynamicClaimed} USDT</div>
                             </div>
                       <div className='flex justify-between'>
                           <div className=''>Total Profit</div>
