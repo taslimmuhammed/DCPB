@@ -70,7 +70,6 @@ interface RefContract {
         address _user
     ) external view returns (uint256[7] memory);
 
-    function testFunc() external;
 }
 
 contract StakingContract {
@@ -223,6 +222,7 @@ contract StakingContract {
 
     function stake(uint256 _amount) external signedIn {
         require(_amount >= 1 * decimals, ">100usdt");
+        require(checkStakablity(msg.sender), "You cant stake before the previous stake is completed");
         _stake(_amount);
         distributeStakeMoney(_amount);
         handleDirectBonus(_amount);
@@ -235,7 +235,7 @@ contract StakingContract {
         for (uint i = 0; i < stakes.length; i++) {
             if(stakes[i].available!=0) return false;
         }
-        
+
         return true;
     }
     function _stake(uint256 _amount) internal {
@@ -357,10 +357,6 @@ contract StakingContract {
 
     function upgradeLevel() external nonReentrant {
         refContract.upgradeUser(msg.sender);
-    }
-
-    function callTest() external nonReentrant {
-        refContract.testFunc();
     }
 
     //Reading functions

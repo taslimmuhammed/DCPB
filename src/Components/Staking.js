@@ -4,17 +4,20 @@ import verify from '../Assets/verify.svg'
 import { useBalance, } from "@thirdweb-dev/react";
 import { EthersContext } from '../Contexts/EthersContext';
 import { ContractAddress, USDTAddress, stringToUSDT } from '../Utils/Utils';
-import { useContractWrite } from "@thirdweb-dev/react";
+import { useContractWrite, useContractRead } from "@thirdweb-dev/react";
 import { toast } from 'react-toastify';
 import Loader from './Loader';
+import { useNavigate } from 'react-router-dom'
 
 function Staking() {
   const [TokenInput, setTokenInput] = useState('1000')
   const [isLoading, setisLoading] = useState(false)
   const { tokenContract, contract, address } = useContext(EthersContext)
+  const { data: Stakablity } = useContractRead(contract, "checkStakablity", [address])
   const { mutateAsync: increaseAllowance } = useContractWrite(tokenContract, "increaseAllowance")
   const { mutateAsync: stake } = useContractWrite(contract, "stake")
   const { data: Balance } = useBalance(USDTAddress);
+  const navigate = useNavigate()
   const handleBuy = async () => {
     setisLoading(true)
     alert("You must approve 2 upcoming transactions for staking")
@@ -34,7 +37,8 @@ function Staking() {
   else
     return (
       <div className='text-white font-mono'>
-        <div className="flex flex-col relative mt-10">
+        {
+          Stakablity ?<div><div className="flex flex-col relative mt-10">
           <label className="text-sm text-stone-500 mb-2" >
             Staking Amount
           </label>
@@ -89,9 +93,27 @@ function Staking() {
             onClick={handleBuy}>
             Confirm
           </div>
-
-
         </div>
+        </div>:
+        <div className='flex justify-center align-center text-center h-screen mt-20'>
+          <div className='bg-stone-800 text-center p-5 w-72 h-80 rounded-lg'>
+          <div className='text-white text-center text-3xl'>
+            You have already staked
+        </div>
+        <div className='text-gray-400 text-center text-lg mt-5'>
+          You wont be able to stake again, until the current stake is over.
+        </div>
+
+        {/* Veiw stakes button */}
+        <div className='mt-10 w-full text-center bg-stone-600 text-yellow-400 font-bold text-2xl p-2 hover:bg-stone-700'
+        onClick={()=>navigate('/list')}
+        >
+          View Stakes
+        </div>
+       </div>
+         </div>
+        }
+        
       </div>
     )
 }

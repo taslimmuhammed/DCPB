@@ -182,6 +182,12 @@ contract RefContract {
                             teamUsers[_user].rankBonus.push(RankBonus(block.timestamp,rankBonus[i].end , teamUsers[_user].rank*3, rankBonus[i].reward , downReferrals[i]));
                         }
                     }
+                    Stake[] memory stakes = teamUsers[downReferrals[i]].stakes;
+                    for (uint j = 0; j < stakes.length; j++) {
+                        if (stakes[j].end>block.timestamp) {
+                            teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, stakes[i].end, teamUsers[_user].rank*3, stakes[i].amount/10000, downReferrals[i]));
+                        }
+                    }
                     
                 }else if(teamUsers[downReferrals[i]].rank == teamUsers[_user].rank){
                     uint256 multiplier = 1000*teamUsers[_user].rank/10;

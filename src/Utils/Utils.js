@@ -1,13 +1,13 @@
 import { ethers } from "ethers"
 
-export const ContractAddress = "0x15fA7E80ecC504725590b547588b8Ef56A0d20de" 
+export const ContractAddress = "0x1c168c452337f5bAca2041b245625E5F10D324Ca" 
 export const USDTAddress = "0x863aa21721D42B59CCA2a49213780DEc5837D7f1"
 export const NFTReleaseAddres = "0x23b933594E9222E0C59A71f50224a9003baB54b5"
 export const NFTStakingAddress = "0x4dFeFcc2CB48a0F58FF8E2b1894937DF1D183964"
 export const DCTokenAddress = "0x8aCbC8607B859Bc2e8c41336E67D695C877E2876"
 export const DCManagerAddress = "0xfa14180838444D5D731Af8c77Dbd709DaB57146A"
 export const NFTAddress = "0x17A4370CBB1c2F1c1a53532d672AA4967d134735"
-export const refContract = "0x8C8bD0f7c7837EEB66Ef5f5F95b28cf635E97556"
+export const refContract = "0x0F9b24CD595295c1e7cf2dF9ac58E2dAB419f568"
 export const BigNoToUSDT = (bigno) => {
     try {
         let amount = bigno.div(10 ** 5 + "")
