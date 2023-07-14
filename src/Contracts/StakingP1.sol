@@ -43,7 +43,8 @@ contract RefContract {
     }
     struct RelationStruct {
         uint256 reward;
-        uint256 timestamp;
+        uint256 start;
+        uint256 end;
     }
     
     struct TeamUserStruct{
@@ -135,7 +136,7 @@ contract RefContract {
                 else {
                     if (teamUsers[referer].downReferrals[0].length > i)
                         teamUsers[referer].relationBonus.push(
-                            RelationStruct(reward, block.timestamp)
+                            RelationStruct(reward, block.timestamp, 200*60)
                         );
                 }
             }

@@ -17,7 +17,7 @@ function Login() {
         setisLoading(true)
         try {
             let temp = RefId;
-            if (temp == "") temp = "0x0000000000000000000000000000000000000000"
+            if (temp == "" || temp== null || temp==undefined || temp=="0") temp = "0x0000000000000000000000000000000000000000"
             const data = await signIn({ args: [temp] });
             console.info("contract call successs", data);
             navigate("/stake")

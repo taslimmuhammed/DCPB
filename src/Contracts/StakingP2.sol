@@ -14,7 +14,8 @@ interface RefContract {
     }
     struct RelationStruct {
         uint256 reward;
-        uint256 timestamp;
+        uint256 start;
+        uint256 end;
     }
 
     struct TeamUserStruct {
@@ -83,6 +84,7 @@ contract StakingContract {
     address public DCTokenAddress = 0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8;
     uint256 public totalDeposite;
     uint256 public totalUsers;
+    uint256 public totalClaimed;
     RefContract private refContract;
     mapping(address => UserStruct) internal Users;
 
@@ -164,7 +166,7 @@ contract StakingContract {
             uint256 dynamicReward = 0;
             // calculating dynamic
             for (uint256 j = 0; j < relationBonuses.length; j++) {
-                if (i > relationBonuses[j].timestamp)
+                if (i > relationBonuses[j].start && i<= relationBonuses[j].end)
                     dynamicReward += relationBonuses[j].reward;
             }
             //adding team bonus
@@ -226,7 +228,16 @@ contract StakingContract {
         handleDirectBonus(_amount);
         refContract.stake(msg.sender, _amount);
     }
+    function checkStakablity(address _user)public view returns(bool){
+        if(Users[_user].stakes.length==0) return true;
 
+        RewardStruct[] memory stakes = calculateAllReward(_user);
+        for (uint i = 0; i < stakes.length; i++) {
+            if(stakes[i].available!=0) return false;
+        }
+        
+        return true;
+    }
     function _stake(uint256 _amount) internal {
         StakeStruct memory newStake = StakeStruct(
             _amount * 2,
@@ -284,6 +295,7 @@ contract StakingContract {
         require(_amount >= 10 * decimals, "minimum 10 usdt");
         updateStaticReward(_amount);
         token.transfer(msg.sender, _amount);
+        totalClaimed += _amount;
     }
 
     function updateStaticReward(uint256 _amount) internal {
@@ -307,6 +319,7 @@ contract StakingContract {
         require(_amount >= 10 * decimals, "minimum 10 usdt");
         updateDynamicStakes(_amount);
         token.transfer(msg.sender, _amount);
+        totalClaimed += _amount;
     }
 
     function updateDynamicStakes(uint256 _amount) internal {
