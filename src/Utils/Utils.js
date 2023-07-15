@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 
-export const ContractAddress = "0x89936BA6B8d435E5d623cAC324630e07862D9569" 
+export const ContractAddress = "0xC92075fB82C45BF8789b21c931Fc65bB52E09Ee1" 
 export const USDTAddress = "0x863aa21721D42B59CCA2a49213780DEc5837D7f1"
 export const NFTReleaseAddres = "0x23b933594E9222E0C59A71f50224a9003baB54b5"
 export const NFTStakingAddress = "0x4dFeFcc2CB48a0F58FF8E2b1894937DF1D183964"
@@ -81,14 +81,6 @@ export function HexToDateString(timestamp) {
         return ''
     }
 }  
-
-//1 - 0xd0cc32348E98f148E769f034A9C79b1C5a0e2A78
-//2 - 0x8FC715eF0A42940aD52bA6E52460CCbcAb8776E7
-//3 - 0xB79aE39d8eFd1210fe6302FbFA337b5F7b9B3204
-//4 - 0xbdA06E37fb0266D9F29f05265C34efd885874443
-//5 - 0xc966233a657C94016ef87dca320204E89D81B1C7
-
-
 export const hexTimeToUnix = (hexTime) => {
     try {
         let date = parseInt(hexTime._hex, 16) * 1000
@@ -99,3 +91,10 @@ export const hexTimeToUnix = (hexTime) => {
         return 0
     }
 }
+//1 - 0xd0cc32348E98f148E769f034A9C79b1C5a0e2A78
+//2 - 0x8FC715eF0A42940aD52bA6E52460CCbcAb8776E7
+//3 - 0xB79aE39d8eFd1210fe6302FbFA337b5F7b9B3204
+//4 - 0xbdA06E37fb0266D9F29f05265C34efd885874443
+//5 - 0xc966233a657C94016ef87dca320204E89D81B1C7
+
+

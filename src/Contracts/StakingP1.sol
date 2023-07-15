@@ -207,7 +207,7 @@ contract RefContract {
             //this is done to identify the path that the rank bonus came from
             address ref = referer;
             if(referer==address(0)) ref = teamUsers[_user].downReferrals[0][i];
-            if(teamUsers[teamUsers[_user].downReferrals[0][i]].rank<teamUsers[_user].rank){
+            if(teamUsers[teamUsers[_user].downReferrals[0][i]].rank<teamUsers[_user].rank || teamUsers[teamUsers[_user].downReferrals[0][i]].rank==0){
                 Stake[] memory stakes = teamUsers[teamUsers[_user].downReferrals[0][i]].stakes;
                 if(referer==address(0))
                 for (uint j = 0; j < stakes.length; j++) {
