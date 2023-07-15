@@ -83,25 +83,25 @@ function Affiliate() {
         }
 
     }, [_count, _nftBalance, _stakedNFTs, _DCUser, StakeUser, _nftClaimable])
-    // useEffect(() => {
-    //     let Active = []
-    //     let Inactive = []
-    //     if(User && User.rankBonus){
-    //         for (let index = 0; index < User.rankBonus.length; index++) {
-    //             const bonus = User.rankBonus[index];
-    //             let startDate = new Date(BigNoToInt(bonus.start)*1000);
-    //             let endDate = new Date(BigNoToInt(bonus.end)*1000);
-    //             const reward = BigNoToUSDT(bonus.reward)
-    //             const multiplier = bonus.multiplier
-    //             let active = true
-    //             const referer = bonus.referer
-    //             if(endDate.getTime()<Date.now() || multiplier==0) active = false
-    //             if(active) Active.push({startDate,endDate,reward,multiplier, referer})
-    //             else Inactive.push({startDate,endDate,reward,multiplier, referer})
-    //         }
-    //         console.log({ Active, Inactive, relation: User.relationBonus });
-    //     }
-    // }, [User])
+    useEffect(() => {
+        let Active = []
+        let Inactive = []
+        if(User && User.rankBonus){
+            for (let index = 0; index < User.rankBonus.length; index++) {
+                const bonus = User.rankBonus[index];
+                let startDate = new Date(BigNoToInt(bonus.start)*1000);
+                let endDate = new Date(BigNoToInt(bonus.end)*1000);
+                const reward = BigNoToUSDT(bonus.reward)
+                const multiplier =BigNoToInt(bonus.multiplier)
+                let active = true
+                const referer = bonus.referer
+                if(endDate.getTime()<Date.now() || multiplier==0) active = false
+                if(active) Active.push({startDate,endDate,reward,multiplier, referer})
+                else Inactive.push({startDate,endDate,reward,multiplier, referer})
+            }
+            console.log({ Active, Inactive, relation: User.relationBonus });
+        }
+    }, [User])
     useEffect(() => {
         try {
           //  console.log(stakeUser);

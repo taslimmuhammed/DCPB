@@ -1,13 +1,13 @@
 import { ethers } from "ethers"
 
-export const ContractAddress = "0x1c168c452337f5bAca2041b245625E5F10D324Ca" 
+export const ContractAddress = "0x527eFFac027E46694b255Ce1cA508d1FF89D2C70" 
 export const USDTAddress = "0x863aa21721D42B59CCA2a49213780DEc5837D7f1"
 export const NFTReleaseAddres = "0x23b933594E9222E0C59A71f50224a9003baB54b5"
 export const NFTStakingAddress = "0x4dFeFcc2CB48a0F58FF8E2b1894937DF1D183964"
 export const DCTokenAddress = "0x8aCbC8607B859Bc2e8c41336E67D695C877E2876"
 export const DCManagerAddress = "0xfa14180838444D5D731Af8c77Dbd709DaB57146A"
 export const NFTAddress = "0x17A4370CBB1c2F1c1a53532d672AA4967d134735"
-export const refContract = "0x0F9b24CD595295c1e7cf2dF9ac58E2dAB419f568"
+export const refContract = "0xBE6C25084727a17f4D2074ef31bd92a92d1f287E"
 export const BigNoToUSDT = (bigno) => {
     try {
         let amount = bigno.div(10 ** 5 + "")
@@ -80,7 +80,13 @@ export function HexToDateString(timestamp) {
         console.log(e);
         return ''
     }
-}    
+}  
+
+//1 - 0xd0cc32348E98f148E769f034A9C79b1C5a0e2A78
+//2 - 0x8FC715eF0A42940aD52bA6E52460CCbcAb8776E7
+//3 - 0xB79aE39d8eFd1210fe6302FbFA337b5F7b9B3204
+//4 - 0xbdA06E37fb0266D9F29f05265C34efd885874443
+//5 - 0xc966233a657C94016ef87dca320204E89D81B1C7
 
 
 export const hexTimeToUnix = (hexTime) => {

@@ -22,7 +22,8 @@ function Login() {
             console.info("contract call successs", data);
             navigate("/stake")
         } catch (e) {
-            toast.error("Something went wrong try again after refreshing")
+            if(e?.data?.message) toast.error(e.data.message)
+            else toast.error("Something went wrong try again after refreshing")
         }
         setisLoading(false)
     }

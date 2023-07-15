@@ -29,7 +29,8 @@ function Wallet() {
             toast.success("Transaction succeful")
         } catch (e) {
             console.log(e);
-            toast.error("transaction failed")
+            if (e?.data?.message) toast.error(e.data.message)
+            else toast.error("transaction failed")
         }
         setisLoading(false)
     }
@@ -42,7 +43,8 @@ function Wallet() {
             toast.success("Transaction succeful")
         } catch (e) {
             console.log(e);
-            toast.error("transaction failed")
+            if (e?.data?.message) toast.error(e.data.message)
+            else toast.error("transaction failed")
         }
         setisLoading(false)
     }
@@ -54,7 +56,8 @@ function Wallet() {
             toast.success("Transaction succeful")
         } catch (e) {
             console.log(e);
-            toast.error("transaction failed")
+            if (e?.data?.message) toast.error(e.data.message)
+            else toast.error("transaction failed")
         }
         setisLoading(false)
     }

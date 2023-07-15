@@ -145,9 +145,7 @@ contract StakingContract {
         StakeStruct[] memory stakes = Users[_user].stakes;
         RefContract.RelationStruct[] memory relationBonuses = refContract
             .getRelationBonus(_user);
-        RefContract.RankBonus[] memory rankBonuses = refContract.getRankBonus(
-            _user
-        );
+        RefContract.RankBonus[] memory rankBonuses = refContract.getRankBonus(_user);
 
         RewardStruct[] memory rewardStructs = new RewardStruct[](stakes.length);
         uint256[] memory availableArray = new uint256[](stakes.length);
@@ -155,10 +153,7 @@ contract StakingContract {
             return rewardStructs;
         }
         for (uint256 i = 0; i < stakes.length; i++)
-            availableArray[i] =
-                stakes[i].reward -
-                stakes[i].directBonus -
-                stakes[i].directClaimed;
+            availableArray[i] =stakes[i].reward - stakes[i].directBonus - stakes[i].directClaimed;
 
         //interpreting and allocating all rewards day by day
         for (uint256 i = baseTime; i < currentTime; i += 60) {
@@ -368,6 +363,7 @@ contract StakingContract {
         StakeListStruct[] memory stakeList = new StakeListStruct[](
             stakes.length
         );
+        if(stakes.length == 0) return stakeList;
         for (uint i = 0; i < stakes.length; i++) {
             stakeList[i].dynamicReward = rewardArr[i].dynamicReward;
             stakeList[i].staticReward = rewardArr[i].staticReward;

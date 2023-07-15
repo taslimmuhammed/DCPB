@@ -26,9 +26,10 @@ function Staking() {
       const data = await increaseAllowance({ args: [ContractAddress, amount] });
       const tx = await stake({ args: [amount] });
       toast.success("Transaction succeful")
+      navigate('/list')
     } catch (e) {
-      console.log(e);
-      toast.error("transaction failed")
+      if (e?.data?.message) toast.error(e.data.message)
+      else toast.error("transaction failed")
     }
     setisLoading(false)
   }
