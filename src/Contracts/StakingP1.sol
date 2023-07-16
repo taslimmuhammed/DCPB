@@ -135,9 +135,7 @@ contract RefContract {
                 if (referer == address(0)) break;
                 else {
                     if (teamUsers[referer].downReferrals[0].length > i)
-                        teamUsers[referer].relationBonus.push(
-                            RelationStruct(reward, block.timestamp, 200*60)
-                        );
+                        teamUsers[referer].relationBonus.push(RelationStruct(reward, block.timestamp, block.timestamp + 200*60));
                 }
             }
         }

@@ -143,8 +143,7 @@ contract StakingContract {
         baseTime = baseTime - (baseTime % 60);
         uint256 currentTime = block.timestamp;
         StakeStruct[] memory stakes = Users[_user].stakes;
-        RefContract.RelationStruct[] memory relationBonuses = refContract
-            .getRelationBonus(_user);
+        RefContract.RelationStruct[] memory relationBonuses = refContract.getRelationBonus(_user);
         RefContract.RankBonus[] memory rankBonuses = refContract.getRankBonus(_user);
 
         RewardStruct[] memory rewardStructs = new RewardStruct[](stakes.length);
