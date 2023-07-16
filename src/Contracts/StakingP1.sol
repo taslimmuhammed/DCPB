@@ -147,8 +147,7 @@ contract RefContract {
        require(checkUpgradablity(_user), "User is not upgradable");
        teamUsers[_user].rank++;
        stopRankBonuses(_user);
-       //getFromDown(_user);
-       getValidStakes(_user, _user,address(0));
+       getFromDown(_user);
        pushUp(_user);
     }
 
@@ -173,50 +172,41 @@ contract RefContract {
             teamUsers[_user].rankBonus[i].end = currentTime;
         }
     }
-    // function getFromDown(address _user) internal {
-    //         address[] memory downReferrals = teamUsers[_user].downReferrals[0];
-    //         for (uint i = 0; i < downReferrals.length; i++) {
-    //             if(teamUsers[downReferrals[i]].rank < teamUsers[_user].rank){
-    //                 RankBonus[] memory rankBonus = teamUsers[downReferrals[i]].rankBonus;
-    //                 for (uint j = 0; j < rankBonus.length; j++) {
-    //                     if (rankBonus[j].end>block.timestamp) {
-    //                         teamUsers[_user].rankBonus.push(RankBonus(block.timestamp,rankBonus[i].end , teamUsers[_user].rank*3, rankBonus[i].reward , downReferrals[i]));
-    //                     }
-    //                 }
-    //                 Stake[] memory stakes = teamUsers[downReferrals[i]].stakes;
-    //                 for (uint j = 0; j < stakes.length; j++) {
-    //                     if (stakes[j].end>block.timestamp) {
-    //                         teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, stakes[i].end, teamUsers[_user].rank*3, stakes[i].amount/10000, downReferrals[i]));
-    //                     }
-    //                 }
-                    
-    //             }else if(teamUsers[downReferrals[i]].rank == teamUsers[_user].rank){
-    //                 uint256 multiplier = 1000*teamUsers[_user].rank/10;
-    //                 Stake[] memory stakes = teamUsers[downReferrals[i]].stakes;
-    //                 for (uint j = 0; j < stakes.length; j++) {
-    //                     if (stakes[j].end>block.timestamp) {
-    //                         teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, stakes[i].end, multiplier, stakes[i].amount/10000, downReferrals[i]));
-    //                     }
-    //                 }
-    //             }
-    //         }
-    // }
-    
-    function getValidStakes(address intitiator,address _user, address referer) internal{
-        for(uint256 i=0; i<teamUsers[_user].downReferrals[0].length; i++){ 
-            //this is done to identify the path that the rank bonus came from
-            address friend = teamUsers[_user].downReferrals[0][i];
-            address ref = referer;
-            if(referer==address(0)) ref = friend;
-            if(teamUsers[friend].rank<teamUsers[_user].rank || teamUsers[friend].rank==0){
-                Stake[] memory stakes = teamUsers[friend].stakes;
-                for (uint j = 0; j < stakes.length; j++) {
-                    if(stakes[j].end>block.timestamp){
-                        teamUsers[intitiator].rankBonus.push(RankBonus(block.timestamp, stakes[j].end, teamUsers[intitiator].rank*3, stakes[j].amount/10000, ref));
+    function getFromDown(address _user) internal {
+            address[] memory downReferrals = teamUsers[_user].downReferrals[0];
+            for (uint i = 0; i < downReferrals.length; i++) {
+                if(teamUsers[downReferrals[i]].rank < teamUsers[_user].rank){
+                    Stake[] memory stakes = teamUsers[downReferrals[i]].stakes;
+                    for (uint j = 0; j < stakes.length; j++) {
+                        if (stakes[j].end>block.timestamp) {
+                            teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, stakes[i].end, teamUsers[_user].rank*3, stakes[i].amount/10000, downReferrals[i]));
+                        }
+                    }
+                    getValidStakes(_user, downReferrals[i], downReferrals[i], teamUsers[_user].rank);
+                }else if(teamUsers[downReferrals[i]].rank == teamUsers[_user].rank){
+                    uint256 multiplier = 1000*teamUsers[_user].rank/10;
+                    Stake[] memory stakes = teamUsers[downReferrals[i]].stakes;
+                    for (uint j = 0; j < stakes.length; j++) {
+                        if (stakes[j].end>block.timestamp) {
+                            teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, stakes[i].end, multiplier, stakes[i].amount/10000, downReferrals[i]));
+                        }
                     }
                 }
             }
-            getValidStakes(intitiator, friend, ref);
+    }
+    
+    function getValidStakes(address intitiator,address _user, address referer, uint8 rank) internal{
+        for(uint256 i=0; i<teamUsers[_user].downReferrals[0].length; i++){ 
+            address friend = teamUsers[_user].downReferrals[0][i];
+            if(rank>teamUsers[friend].rank){
+                Stake[] memory stakes = teamUsers[friend].stakes;
+                for (uint j = 0; j < stakes.length; j++) {
+                    if(stakes[j].end>block.timestamp){
+                        teamUsers[intitiator].rankBonus.push(RankBonus(block.timestamp, stakes[j].end, rank*3, stakes[j].amount/10000, referer));
+                    }
+                }
+            }
+            getValidStakes(intitiator, friend, referer, rank);
         }
     }
 
