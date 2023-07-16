@@ -22,6 +22,7 @@ function Login() {
             console.info("contract call successs", data);
             navigate("/stake")
         } catch (e) {
+            console.log("Error ", e.Reason);
             if(e?.data?.message) toast.error(e.data.message)
             else toast.error("Something went wrong try again after refreshing")
         }

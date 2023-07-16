@@ -148,7 +148,7 @@ contract RefContract {
        teamUsers[_user].rank++;
        stopRankBonuses(_user);
        //getFromDown(_user);
-       getValidStakes(_user,address(0), _user);
+       getValidStakes(_user, _user,address(0));
        pushUp(_user);
     }
 
@@ -202,23 +202,24 @@ contract RefContract {
     //         }
     // }
     
-    function getValidStakes(address intitiator, address referer, address _user) internal{
+    function getValidStakes(address intitiator,address _user, address referer) internal{
         for(uint256 i=0; i<teamUsers[_user].downReferrals[0].length; i++){ 
             //this is done to identify the path that the rank bonus came from
+            address friend = teamUsers[_user].downReferrals[0][i];
             address ref = referer;
-            if(referer==address(0)) ref = teamUsers[_user].downReferrals[0][i];
-            if(teamUsers[teamUsers[_user].downReferrals[0][i]].rank<teamUsers[_user].rank || teamUsers[teamUsers[_user].downReferrals[0][i]].rank==0){
-                Stake[] memory stakes = teamUsers[teamUsers[_user].downReferrals[0][i]].stakes;
-                if(referer==address(0))
+            if(referer==address(0)) ref = friend;
+            if(teamUsers[friend].rank<teamUsers[_user].rank || teamUsers[friend].rank==0){
+                Stake[] memory stakes = teamUsers[friend].stakes;
                 for (uint j = 0; j < stakes.length; j++) {
                     if(stakes[j].end>block.timestamp){
-                        teamUsers[intitiator].rankBonus.push(RankBonus(block.timestamp, stakes[j].end, teamUsers[intitiator].rank*3, stakes[j].amount/10000, teamUsers[_user].downReferrals[0][i]));
+                        teamUsers[intitiator].rankBonus.push(RankBonus(block.timestamp, stakes[j].end, teamUsers[intitiator].rank*3, stakes[j].amount/10000, ref));
                     }
                 }
             }
-            getValidStakes(intitiator,ref, teamUsers[_user].downReferrals[0][i]);
+            getValidStakes(intitiator, friend, ref);
         }
     }
+
     function pushUp(address _user) internal{
         address referer = teamUsers[_user].referer;
         if(referer!=address(0) && teamUsers[referer].rank==teamUsers[_user].rank){
