@@ -15,7 +15,7 @@ function AdminPage() {
     <div className='pb-32'>
       <Navbar heading="Admin Panel" />
       <Admin/>
-      <Footer />
+      <Footer />   
     </div>
   )
 }

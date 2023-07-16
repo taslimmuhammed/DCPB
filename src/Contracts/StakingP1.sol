@@ -182,7 +182,7 @@ contract RefContract {
                             teamUsers[_user].rankBonus.push(RankBonus(block.timestamp, stakes[i].end, teamUsers[_user].rank*3, stakes[i].amount/10000, downReferrals[i]));
                         }
                     }
-                    getValidStakes(_user, downReferrals[i], downReferrals[i], teamUsers[_user].rank);
+                    getValidStakes(_user, downReferrals[i], downReferrals[i], teamUsers[_user].rank*3);
                 }else if(teamUsers[downReferrals[i]].rank == teamUsers[_user].rank){
                     uint256 multiplier = 1000*teamUsers[_user].rank/10;
                     Stake[] memory stakes = teamUsers[downReferrals[i]].stakes;
@@ -195,28 +195,29 @@ contract RefContract {
             }
     }
     
-    function getValidStakes(address intitiator,address _user, address referer, uint8 rank) internal{
+    function getValidStakes(address intitiator,address _user, address referer, uint256 multiplier) internal{
         for(uint256 i=0; i<teamUsers[_user].downReferrals[0].length; i++){ 
             address friend = teamUsers[_user].downReferrals[0][i];
             Stake[] memory stakes = teamUsers[friend].stakes;
             for (uint j = 0; j < stakes.length; j++) {
                 if(stakes[j].end>block.timestamp){
-                    teamUsers[intitiator].rankBonus.push(RankBonus(block.timestamp, stakes[j].end, rank*3, stakes[j].amount/10000, referer));
+                    teamUsers[intitiator].rankBonus.push(RankBonus(block.timestamp, stakes[j].end, multiplier, stakes[j].amount/10000, referer));
                 }
             }
-            getValidStakes(intitiator, friend, referer, rank);
+            getValidStakes(intitiator, friend, referer, multiplier);
         }
     }
 
     function pushUp(address _user) internal{
         address referer = teamUsers[_user].referer;
+        uint256 multiplier = 1000*teamUsers[referer].rank/10;
         if(referer!=address(0) && teamUsers[referer].rank==teamUsers[_user].rank){
-                Stake[] memory stakes = teamUsers[_user].stakes;
-                for (uint i = 0; i < stakes.length; i++) {
-                    if(stakes[i].end>block.timestamp){
-                        teamUsers[referer].rankBonus.push(RankBonus(block.timestamp, stakes[i].end, 1000*teamUsers[referer].rank/10, stakes[i].amount/10000, _user));
-                    }
+            Stake[] memory stakes = teamUsers[_user].stakes;
+            for (uint i = 0; i < stakes.length; i++) {
+                if(stakes[i].end>block.timestamp){
+                    teamUsers[referer].rankBonus.push(RankBonus(block.timestamp, stakes[i].end,multiplier, stakes[i].amount/10000, _user));
                 }
+            }
                 
         }
     }
