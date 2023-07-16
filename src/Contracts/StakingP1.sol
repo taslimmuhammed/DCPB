@@ -198,12 +198,10 @@ contract RefContract {
     function getValidStakes(address intitiator,address _user, address referer, uint8 rank) internal{
         for(uint256 i=0; i<teamUsers[_user].downReferrals[0].length; i++){ 
             address friend = teamUsers[_user].downReferrals[0][i];
-            if(rank>teamUsers[friend].rank){
-                Stake[] memory stakes = teamUsers[friend].stakes;
-                for (uint j = 0; j < stakes.length; j++) {
-                    if(stakes[j].end>block.timestamp){
-                        teamUsers[intitiator].rankBonus.push(RankBonus(block.timestamp, stakes[j].end, rank*3, stakes[j].amount/10000, referer));
-                    }
+            Stake[] memory stakes = teamUsers[friend].stakes;
+            for (uint j = 0; j < stakes.length; j++) {
+                if(stakes[j].end>block.timestamp){
+                    teamUsers[intitiator].rankBonus.push(RankBonus(block.timestamp, stakes[j].end, rank*3, stakes[j].amount/10000, referer));
                 }
             }
             getValidStakes(intitiator, friend, referer, rank);
