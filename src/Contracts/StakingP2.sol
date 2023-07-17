@@ -76,7 +76,7 @@ contract StakingContract {
     mapping(address => bool) public Active;
     uint256 decimals = 10 ** 6;
     IERC20 public token;
-    address owner = 0xd0cc32348E98f148E769f034A9C79b1C5a0e2A78;
+    address owner = 0x6B851e5B220438396ac5ee74779DDe1a54f795A9;
     address AWallet = 0x584C5ab8e595c0C2a1aA0cD23a1aEa56a35B9698;
     address BWallet = 0x1F4de95BbE47FeE6DDA4ace073cc07eF858A2e94;
     address CWallet = 0xF4fC364851D03A7Fc567362967D555a4d843647d;

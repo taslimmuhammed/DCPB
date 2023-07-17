@@ -114,7 +114,7 @@ contract RefContract {
             if(teamUsers[friend].rank>tempRank){
                 teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 200*60, teamUsers[friend].rank*3, reward, referer));
             }else if(sameRank && teamUsers[friend].rank !=0 && teamUsers[friend].rank==tempRank){
-                uint256 multiplier = 1000*teamUsers[referer].rank/10;
+                uint256 multiplier = 500*teamUsers[referer].rank/10;
                 teamUsers[friend].rankBonus.push(RankBonus(block.timestamp, block.timestamp + 200*60, multiplier, reward, referer));
             }
             sameRank = false;
@@ -182,7 +182,7 @@ contract RefContract {
                     }
                     getValidStakes(_user, downReferrals[i], downReferrals[i], teamUsers[_user].rank*3);
                 }else if(teamUsers[downReferrals[i]].rank == teamUsers[_user].rank){
-                    uint256 multiplier = 1000*teamUsers[_user].rank/10;
+                    uint256 multiplier = 500*teamUsers[_user].rank/10;
                     Stake[] memory stakes = teamUsers[downReferrals[i]].stakes;
                     for (uint j = 0; j < stakes.length; j++) {
                         if (stakes[j].end>block.timestamp) {
@@ -208,7 +208,7 @@ contract RefContract {
 
     function pushUp(address _user) internal{
         address referer = teamUsers[_user].referer;
-        uint256 multiplier = 1000*teamUsers[referer].rank/10;
+        uint256 multiplier = 500*teamUsers[referer].rank/10;
         if(referer!=address(0) && teamUsers[referer].rank==teamUsers[_user].rank){
             Stake[] memory stakes = teamUsers[_user].stakes;
             for (uint i = 0; i < stakes.length; i++) {
