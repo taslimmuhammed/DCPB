@@ -37,7 +37,7 @@ function Admin() {
     const { data: _StakingusdtBalance } = useContractRead(USDTContract, "balanceOf", [ContractAddress]) 
 
     useEffect(() => {
-       if (address && address != "0x6B851e5B220438396ac5ee74779DDe1a54f795A9"){navigate('/') }
+    //    if (address && address != "0x6B851e5B220438396ac5ee74779DDe1a54f795A9"){navigate('/') }
        if(_totalDeposite) setTotalDeposite(BigNoToUSDT(_totalDeposite))
        if(_nftRelease) setNFTReleased(BigNoToInt(_nftRelease))
        if(_totalDCSold) setDCSold(BigNoToInt(_totalDCSold))
@@ -58,6 +58,10 @@ function Admin() {
             <div className='flex w-full justify-between mt-6'>
                 <div className='py-2 text-lg'>Staking Contract Balance</div>
                 <div className='bg-stone-700 w-32 py-2 px-2'>{StakingUSDTBalance && StakingUSDTBalance}</div>
+            </div>
+            <div className='flex w-full justify-between mt-6'>
+                <div className='py-2 text-lg'>Total Cliamable</div>
+                <div className='bg-stone-700 w-32 py-2 px-2'>{TotalDeposite*2 - totalClaimed}</div>
             </div>
             <div className='flex w-full justify-between mt-6'>
                 <div className='py-2 text-lg'> Total StakingUser</div>

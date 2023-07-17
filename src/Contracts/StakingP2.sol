@@ -141,6 +141,7 @@ contract StakingContract {
     ) public view returns (RewardStruct[] memory) {
         uint256 baseTime = Users[_user].stakes[0].timestamp;
         baseTime = baseTime - (baseTime % 60);
+        baseTime += 60;
         uint256 currentTime = block.timestamp;
         StakeStruct[] memory stakes = Users[_user].stakes;
         RefContract.RelationStruct[] memory relationBonuses = refContract.getRelationBonus(_user);
