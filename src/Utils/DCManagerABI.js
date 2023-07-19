@@ -20,7 +20,7 @@ export const DCManagerABI = [
         "name": "DCtoken",
         "outputs": [
             {
-                "internalType": "address",
+                "internalType": "contract Burnable",
                 "name": "",
                 "type": "address"
             }
@@ -130,19 +130,6 @@ export const DCManagerABI = [
         "type": "function"
     },
     {
-        "inputs": [],
-        "name": "owner",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [
             {
                 "internalType": "uint256",
@@ -153,6 +140,19 @@ export const DCManagerABI = [
         "name": "sellTokens",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "tokenPrice",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     },
     {

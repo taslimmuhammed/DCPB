@@ -30,6 +30,7 @@ function Affiliate() {
     const [DCclaimed, setDCclaimed] = useState(0)
     const [DCinput, setDCinput] = useState("0")
     const [NFTinput, setNFTinput] = useState("0")
+    const [tokenPrice, settokenPrice] = useState(0)
     const { data: Upgradable, isLoading: L3 } = useContractRead(contract, "checkUpgradablity", [address])
     const { data: User, isLoading: L4 } = useContractRead(contract, "getTeamUser", [address])
     const { data: stakeUser } = useContractRead(contract, "getStakeUser", [address])
@@ -41,6 +42,7 @@ function Affiliate() {
     const { data: _DCReward } = useContractRead(NFTStaking, "calculateReward", [address])
     const { data: StakeUser } = useContractRead(NFTStaking, "users", [address])
     const { data: _DCUser } = useContractRead(DCManager, "Users", [address])
+    const { data: _tokenPrice } = useContractRead(DCManager, "tokenPrice", [])
     const { data: Balance } = useBalance(DCTokenAddress);
 
     useEffect(() => {
@@ -77,6 +79,9 @@ function Affiliate() {
             }
             if (_DCReward && BigNoToDC(_DCReward) > 1) {
                 setDCclaimable(true)
+            }
+            if (_tokenPrice) {
+                settokenPrice(BigNoToInt(_tokenPrice)/100)
             }
         } catch (error) {
             console.log(error);
@@ -154,11 +159,18 @@ function Affiliate() {
                 <div className='bg-stone-800 w-24 h-10 p-1 px-3  flex justify-between'><span className=''>V2</span><span className='text-yellow-500'>{Refs && Refs[2]}</span></div>
                 <div className='bg-stone-800 w-24 h-10 p-1 px-3  flex justify-between'><span className=''>V1</span><span className='text-yellow-500'>{Refs && Refs[1]}</span></div>
             </div>
-
-            <div className=' flex p-5'>
-                <img src={community} className='w-14'></img>
-                <div className='bg-stone-800 w-20 h-10 p-1 px-3  flex justify-between mt-2 ml-3'>{Total && Total}</div>
+            <div className='flex justify-between'>
+                <div className='flex p-5'>
+                    <img src={community} className='w-14'></img>
+                    <div className='bg-stone-800 w-20 h-10 p-1 px-3  flex justify-between mt-2 ml-3'>{Total && Total}</div>
+                </div>
+                 
+                <div className='border border-yellow-300 border-2  text-center p-2  m-5'>
+                   <div> DC/USDT: </div>
+                   <div>{tokenPrice && tokenPrice}</div>
+                </div>
             </div>
+            
             {/* seprator */}
             <div className='mt-3 px-3 w-full h-px bg-stone-500' />
 
