@@ -169,7 +169,7 @@ contract NFTStaking is ERC1155Holder {
         uint256 totalCount = 0;
         for (uint i = 0; i < array.length; i++) {
             uint256 timeDiff = block.timestamp - array[i].timestamp;
-            timeDiff = timeDiff / 1 days;
+            timeDiff = timeDiff / 60;
             reward += array[i].amount * timeDiff * 2;
             totalCount += array[i].amount;
         }

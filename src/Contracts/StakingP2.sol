@@ -225,12 +225,12 @@ contract StakingContract {
     }
     function checkStakablity(address _user)public view returns(bool){
         if(Users[_user].stakes.length==0) return true;
-
         RewardStruct[] memory stakes = calculateAllReward(_user);
         for (uint i = 0; i < stakes.length; i++) {
-            if(stakes[i].available!=0) return false;
+            uint256 totalGained = stakes[i].staticReward + stakes[i].dynamicReward;
+            uint256 percent = (totalGained * 100) / Users[_user].stakes[i].reward;
+            if(percent<80) return false;
         }
-
         return true;
     }
     function _stake(uint256 _amount) internal {

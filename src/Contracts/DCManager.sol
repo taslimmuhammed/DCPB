@@ -16,7 +16,7 @@ contract DCManager {
     address owner;
     uint256 public vestingPeriod;
     uint256 public Dclaimed;
-    uint256 tokenPrice = 10;
+    uint256 public tokenPrice = 10;
     mapping(address => UserStruct) public Users;
     struct UserStruct{
         uint256 balance;
@@ -43,7 +43,7 @@ contract DCManager {
     constructor(address _token, address _usdt) {
         DCtoken = Burnable(_token);
         USDT = IERC20(_usdt);
-        vestingPeriod = block.timestamp + 90 days;
+        vestingPeriod = block.timestamp ;
         owner = msg.sender;
     }
 
@@ -57,7 +57,7 @@ contract DCManager {
         Users[msg.sender].totalCoins += _amount;
         totalSold += _amount;
         DCtoken.burn(_amount*DCdecimals);
-        if(totalSold>100_000){
+        if(totalSold>=100_000){
             tokenPrice ++;
             index++;
             totalSold  = totalSold - 100_000;
@@ -84,7 +84,7 @@ contract DCManager {
             "you can not sell less than 1 DC"
         );
         uint256 timeDiff = block.timestamp - vestingPeriod;
-        timeDiff = timeDiff / (1 days);
+        timeDiff = timeDiff / (60);
         uint256 total = timeDiff * DCdecimals;
         uint256 amount = total - Dclaimed;
         if(amount+Dclaimed>20_000_000*DCdecimals){
