@@ -58,7 +58,7 @@ function Staking() {
     return (
       <div className='text-white font-mono'>
         {
-          !Stakablity ? <div><div className="flex flex-col relative mt-10">
+          Stakablity ? <div><div className="flex flex-col relative mt-10">
             <label className="text-sm text-stone-500 mb-2" >
               Allowance Amount
             </label>
