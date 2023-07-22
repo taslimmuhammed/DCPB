@@ -86,7 +86,7 @@ contract StakingContract {
     uint256 public totalClaimed;
     address[] public userlist;
     RefContract private refContract;
-    mapping(address => UserStruct) internal Users;
+    mapping(address => UserStruct) private Users;
 
     struct StakeStruct {
         uint256 reward;
@@ -235,28 +235,21 @@ contract StakingContract {
         }
         return true;
     }
-    function _stake(uint256 _amount) internal {
-        StakeStruct memory newStake = StakeStruct(
-            _amount * 2,
-            0,
-            0,
-            block.timestamp,
-            0,
-            0
-        );
+    function _stake(uint256 _amount) private {
+        StakeStruct memory newStake = StakeStruct(_amount * 2,0,0,block.timestamp,0,0);
         require(token.transferFrom(msg.sender, address(this), _amount));
         Users[msg.sender].stakes.push(newStake);
         totalDeposite += _amount;
     }
 
-    function distributeStakeMoney(uint256 _amount) internal {
+    function distributeStakeMoney(uint256 _amount) private {
         token.transfer(DCTokenAddress, (_amount * 5) / 100);
         token.transfer(AWallet, (_amount * 14) / 100);
         token.transfer(BWallet, (_amount * 14) / 100);
         token.transfer(CWallet, (_amount * 2) / 100);
     }
 
-    function handleDirectBonus(uint256 _amount) internal {
+    function handleDirectBonus(uint256 _amount) private {
         address _friend = refContract.getReferer(msg.sender);
         if (_friend == address(0) || Users[_friend].stakes.length == 0) return;
         uint256 total = (_amount * 20) / 100;
@@ -295,7 +288,7 @@ contract StakingContract {
         totalClaimed += _amount;
     }
 
-    function updateStaticReward(uint256 _amount) internal {
+    function updateStaticReward(uint256 _amount) private {
         StakeStruct[] memory stakes = Users[msg.sender].stakes;
         RewardStruct[] memory rewardArr = calculateAllReward(msg.sender);
         for (uint256 i = 0; i < stakes.length; i++) {
@@ -319,7 +312,7 @@ contract StakingContract {
         totalClaimed += _amount;
     }
 
-    function updateDynamicStakes(uint256 _amount) internal {
+    function updateDynamicStakes(uint256 _amount) private {
         RewardStruct[] memory allocArray = calculateAllReward(msg.sender);
         StakeStruct[] memory stakes = Users[msg.sender].stakes;
         uint256 total = _amount;

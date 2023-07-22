@@ -32,7 +32,7 @@ function Staking() {
       navigate('/list')
     } catch (e) {
       if (e?.data?.message) toast.error(e.data.message)
-      else toast.error("transaction failed")
+      else toast.error("transaction failed, please re-try after few minutes")
     }
     setisLoading(false)
   }

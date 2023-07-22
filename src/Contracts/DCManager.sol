@@ -57,15 +57,15 @@ contract DCManager {
         Users[msg.sender].totalCoins += _amount;
         totalSold += _amount;
         DCtoken.burn(_amount*DCdecimals);
-        if(totalSold>=100_000){
+        if(totalSold>=1000){
             tokenPrice ++;
             index++;
-            totalSold  = totalSold - 100_000;
+            totalSold  = totalSold - 1000;
         } 
     }
     
     function getTotalSold() public view returns(uint256){
-        return totalSold+index*100_000;
+        return totalSold+index*1000;
     }
     function claimUSDT(uint256 _amount)public nonReentrant{
         require(Users[msg.sender].balance>1,"you dont have enough balance");

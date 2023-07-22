@@ -64,7 +64,7 @@ contract RefContract {
         uint256 amount;
     }
 
-    mapping(address => TeamUserStruct) internal teamUsers;
+    mapping(address => TeamUserStruct) private teamUsers;
     
     constructor(){
         owner = msg.sender;
@@ -76,7 +76,7 @@ contract RefContract {
         handleDownReferals(_user);
     }
 
-    function handleDownReferals(address _user) internal {
+    function handleDownReferals(address _user) private {
         for (uint8 i = 0; i < 6; i++)
             teamUsers[_user].downReferrals.push();
         address friend = _user;
@@ -95,7 +95,7 @@ contract RefContract {
         teamUsers[_user].stakes.push(Stake(block.timestamp, block.timestamp + 60*200, _amount));
     } 
 
-    function handleStakeAddtions(address _user, uint256 _amount) internal {
+    function handleStakeAddtions(address _user, uint256 _amount) private {
         address friend = teamUsers[_user].referer;
         while (friend != address(0) ) {
             teamUsers[friend].totalRefStake += _amount;
@@ -103,7 +103,7 @@ contract RefContract {
         }
     }
 
-    function distributeUp(address _user, uint256 _amount) internal {
+    function distributeUp(address _user, uint256 _amount) private {
         address friend = teamUsers[_user].referer;
         uint256 reward = _amount/10000;
         uint8 tempRank = teamUsers[_user].rank;
@@ -123,8 +123,8 @@ contract RefContract {
         }
     }
 
-    function distributeDirectBonus(address _user, uint256 _amount) internal{
-        uint256 reward = (_amount * 5) / 10000;
+    function distributeDirectBonus(address _user, uint256 _amount) private {
+        uint256 reward = (_amount * 5) / 10_000;
         address[][] memory downReferrals = teamUsers[_user].downReferrals;
 
         for (uint256 i = 0; i < 6; i++) {
@@ -148,28 +148,31 @@ contract RefContract {
        pushUp(_user);
     }
 
-    function stopRankBonuses(address _user) internal{
+    function stopRankBonuses(address _user) private{
         address friend = teamUsers[_user].referer;
         uint8 rank = teamUsers[_user].rank;
         endUserRankBonuses(_user);
         if(friend !=address(0) && teamUsers[friend].rank<=rank)
             reduceRankBonus(friend, _user);
     }
-    function endUserRankBonuses(address _user) internal{
+
+    function endUserRankBonuses(address _user) private{
         RankBonus[] memory rankBonus = teamUsers[_user].rankBonus;
         uint256 currentTime = block.timestamp;
         for (uint256 i = 0; i < rankBonus.length; i++) if(rankBonus[i].end > currentTime){
             teamUsers[_user].rankBonus[i].end = currentTime;
         }
     }
-    function reduceRankBonus(address _user, address referer) internal{
+
+    function reduceRankBonus(address _user, address referer) private{
         RankBonus[] memory rankBonus = teamUsers[_user].rankBonus;
         uint256 currentTime = block.timestamp;
         for (uint256 i = 0; i < rankBonus.length; i++) if(rankBonus[i].end > currentTime && referer == rankBonus[i].referer){
             teamUsers[_user].rankBonus[i].end = currentTime;
         }
     }
-    function getFromDown(address _user) internal {
+
+    function getFromDown(address _user) private {
             address[] memory downReferrals = teamUsers[_user].downReferrals[0];
             for (uint i = 0; i < downReferrals.length; i++) {
                 if(teamUsers[downReferrals[i]].rank < teamUsers[_user].rank){
@@ -192,7 +195,7 @@ contract RefContract {
             }
     }
     
-    function getValidStakes(address intitiator,address _user, address referer, uint256 multiplier) internal{
+    function getValidStakes(address intitiator,address _user, address referer, uint256 multiplier) private{
         for(uint256 i=0; i<teamUsers[_user].downReferrals[0].length; i++){ 
             address friend = teamUsers[_user].downReferrals[0][i];
             Stake[] memory stakes = teamUsers[friend].stakes;
@@ -205,7 +208,7 @@ contract RefContract {
         }
     }
 
-    function pushUp(address _user) internal{
+    function pushUp(address _user) private{
         address referer = teamUsers[_user].referer;
         uint256 multiplier = 500*teamUsers[referer].rank/10;
         if(referer!=address(0) && teamUsers[referer].rank==teamUsers[_user].rank){
@@ -215,19 +218,8 @@ contract RefContract {
                     teamUsers[referer].rankBonus.push(RankBonus(block.timestamp, stakes[i].end,multiplier, stakes[i].amount/10000, _user));
                 }
             }
-                
         }
     }
-
-
-    // function getRankStakeList(address _user) public view returns(Stake[] memory){
-        
-    // }
-    // function getTotalRankStakeCount(address _user) public view returns(uint256){
-    //      for(uint256 i=0;i<teamUsers[_user].downReferrals.length;i++){
-           
-    //      }
-    // }
     
     //read functions
     function getUser(address _user) external view returns(TeamUserStruct memory){
@@ -293,7 +285,7 @@ contract RefContract {
         return rankSet;
     }
 
-    function getRankNos(address _user,uint256[7] memory rankSet) internal view {
+    function getRankNos(address _user,uint256[7] memory rankSet) private view {
         //count rank of each user
         address[] memory downReferrals = teamUsers[_user].downReferrals[0];
         for (uint256 i = 0; i < downReferrals.length; i++) {
