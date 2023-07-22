@@ -36,7 +36,7 @@ export default function Ethers({ children }) {
     const { mutateAsync: upgradeLevel } = useContractWrite(contract, "upgradeLevel")
     const { mutateAsync: _stakingWithdraw } = useContractWrite(contract, "withDrawTokens") //withdrawUSDT
     const { mutateAsync: claimNFT } = useContractWrite(NFTRelease, "claimNFT")
-    const { mutateAsync: claimDC } = useContractWrite(NFTRelease, "getDCToken")
+    const { mutateAsync: claimDC } = useContractWrite(NFTStaking, "getDCToken")
     const { mutateAsync: stakeNFT } = useContractWrite(NFTStaking, "stakeNFT")
     const { mutateAsync: increaseAllowance } = useContractWrite(DCContract, "increaseAllowance")
     const { mutateAsync: sellDC } = useContractWrite(DCManager, "sellTokens")
@@ -48,6 +48,7 @@ export default function Ethers({ children }) {
             console.log("claiming");
             await claimNFT({args:[]})
             toast.success("Transaction succeful")
+            window.location.reload()
         } catch (e) {
             console.log(e);
             if (e?.data?.message) toast.error(e.data.message)
@@ -60,6 +61,7 @@ export default function Ethers({ children }) {
         try {
             await claimDC({ args: [] })
             toast.success("Transaction succeful")
+            window.location.reload()
         } catch (e) {
             console.log(e);
             if (e?.data?.message) toast.error(e.data.message)
