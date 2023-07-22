@@ -150,7 +150,7 @@ function Staking() {
                 </div>
 
                 {/* Veiw stakes button */}
-                <div className='mt-10 w-full text-center bg-stone-600 text-yellow-400 font-bold text-2xl p-2 hover:bg-stone-700'
+                <div className='mt-10 w-full text-center bg-stone-600 text-yellow-400 font-bold text-2xl p-2 hover:bg-stone-700 rounded-md cursor-pointer'
                   onClick={() => navigate('/list')}
                 >
                   View Stakes
