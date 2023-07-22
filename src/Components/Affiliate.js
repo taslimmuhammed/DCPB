@@ -87,7 +87,7 @@ function Affiliate() {
             console.log(error);
         }
 
-    }, [_count, _nftBalance, _stakedNFTs, _DCUser, StakeUser, _nftClaimable])
+    }, [_count, _nftBalance, _stakedNFTs, _DCUser, StakeUser, _nftClaimable,_DCReward,_tokenPrice])
     // useEffect(() => {
     //     let Active = []
     //     let Inactive = []

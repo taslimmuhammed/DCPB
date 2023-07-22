@@ -84,6 +84,7 @@ contract StakingContract {
     uint256 public totalDeposite;
     uint256 public totalUsers;
     uint256 public totalClaimed;
+    address[] public userlist;
     RefContract private refContract;
     mapping(address => UserStruct) internal Users;
 
@@ -222,6 +223,7 @@ contract StakingContract {
         distributeStakeMoney(_amount);
         handleDirectBonus(_amount);
         refContract.stake(msg.sender, _amount);
+        if (Users[msg.sender].stakes.length == 1) userlist.push(msg.sender);
     }
     function checkStakablity(address _user)public view returns(bool){
         if(Users[_user].stakes.length==0) return true;
@@ -271,17 +273,17 @@ contract StakingContract {
         }
     }
 
-    function getTotalRewards(
-        address _user
-    ) public view returns (RewardStruct memory) {
-        uint256 staticReward = 0;
-        uint256 dynamicReward = 0;
+    function getTotalRewards(address _user) public view returns (RewardStruct memory) {
+        uint256 staticReward;
+        uint256 dynamicReward;
+        uint256 balance;
         RewardStruct[] memory arr = calculateAllReward(_user);
         for (uint256 i = 0; i < arr.length; i++) {
             staticReward += arr[i].staticReward;
             dynamicReward += arr[i].dynamicReward;
+            balance += arr[i].available;
         }
-        return RewardStruct(staticReward, dynamicReward, 0);
+        return RewardStruct(staticReward, dynamicReward, balance);
     }
 
     function claimStaticReward(uint256 _amount) external nonReentrant {
@@ -355,9 +357,7 @@ contract StakingContract {
     }
 
     //Reading functions
-    function getStakes(
-        address _user
-    ) external view returns (StakeListStruct[] memory) {
+    function getStakes(address _user) external view returns (StakeListStruct[] memory) {
         StakeStruct[] memory stakes = Users[_user].stakes;
         RewardStruct[] memory rewardArr = calculateAllReward(_user);
         StakeListStruct[] memory stakeList = new StakeListStruct[](
@@ -377,15 +377,11 @@ contract StakingContract {
         return stakeList;
     }
 
-    function getStakeUser(
-        address _user
-    ) public view returns (UserStruct memory) {
+    function getStakeUser(address _user) public view returns (UserStruct memory) {
         return Users[_user];
     }
 
-    function getTeamUser(
-        address _user
-    ) external view returns (RefContract.TeamUserStruct memory) {
+    function getTeamUser(address _user) external view returns (RefContract.TeamUserStruct memory) {
         return refContract.getUser(_user);
     }
 
@@ -393,17 +389,23 @@ contract StakingContract {
         return refContract.checkUpgradablity(_user);
     }
 
-    function getRefsWithRank(
-        address _user,
-        uint8 index
-    ) external view returns (uint256) {
+    function getRefsWithRank(address _user,uint8 index) external view returns (uint256) {
         return refContract.getRefsWithRank(index, _user);
     }
 
-    function getReferralRanks(
-        address _user
-    ) external view returns (uint256[7] memory) {
+    function getReferralRanks(address _user) external view returns (uint256[7] memory) {
         return refContract.getReferralRanks(_user);
+    }
+
+    function calculateTotalClaimableReward() public view returns (RewardStruct memory){
+        RewardStruct memory totalReward = getTotalRewards(msg.sender);
+        for (uint i = 0; i < userlist.length; i++) {
+            RewardStruct memory userRewards = getTotalRewards(userlist[i]);
+            totalReward.staticReward += userRewards.staticReward;
+            totalReward.dynamicReward += userRewards.dynamicReward;
+            totalReward.available +=  userRewards.available;
+        }
+        return totalReward;
     }
 
     // Admin Functions:- Only to be used in case of emergencies

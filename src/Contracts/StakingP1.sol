@@ -96,7 +96,6 @@ contract RefContract {
     } 
 
     function handleStakeAddtions(address _user, uint256 _amount) internal {
-         // incrementing total additions
         address friend = teamUsers[_user].referer;
         while (friend != address(0) ) {
             teamUsers[friend].totalRefStake += _amount;
@@ -128,7 +127,7 @@ contract RefContract {
         uint256 reward = (_amount * 5) / 10000;
         address[][] memory downReferrals = teamUsers[_user].downReferrals;
 
-        for (uint8 i = 0; i < 6; i++) {
+        for (uint256 i = 0; i < 6; i++) {
             if (downReferrals[i].length == 0) break;
             for (uint256 j = 0; j < downReferrals[i].length; j++) {
                 address referer = downReferrals[i][j];
