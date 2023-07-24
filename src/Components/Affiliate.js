@@ -23,14 +23,16 @@ function Affiliate() {
     const [DCclaimable, setDCclaimable] = useState(false)
     const [Total, setTotal] = useState("0")
     const [Refs, setRefs] = useState(null)
-    const [NFTCount, setNFTCount] = useState(0)
+    const [ClaimableNFTs, setClaimableNFTs] = useState(0)
     const [NFTBalance, setNFTBalance] = useState(0)
     const [StakedNFTs, setStakedNFTs] = useState(0)
     const [DCUser, setDCUser] = useState(null)
     const [DCclaimed, setDCclaimed] = useState(0)
+    const [DCtokens, setDCtokens] = useState(0)
     const [DCinput, setDCinput] = useState("0")
     const [NFTinput, setNFTinput] = useState("0")
     const [tokenPrice, settokenPrice] = useState(0)
+    const [NFTCount, setNFTCount] = useState(0)
     const { data: Upgradable, isLoading: L3 } = useContractRead(contract, "checkUpgradablity", [address])
     const { data: User, isLoading: L4 } = useContractRead(contract, "getTeamUser", [address])
     const { data: stakeUser } = useContractRead(contract, "getStakeUser", [address])
@@ -72,10 +74,12 @@ function Affiliate() {
                 })
             }
             if (StakeUser) {
-                setDCclaimed(BigNoToDC(StakeUser))
+                setDCclaimed(BigNoToDC(StakeUser.claimed))
+                if (_DCReward) setDCtokens(BigNoToDC(_DCReward) - BigNoToDC(DCclaimed))
             }
             if (_nftClaimable && BigNoToInt(_nftClaimable) >= 1) {
                 setNFTClaimable(true)
+                setClaimableNFTs(BigNoToInt(_nftClaimable))
             }
             if (_DCReward && BigNoToDC(_DCReward) > 1) {
                 setDCclaimable(true)
@@ -175,8 +179,17 @@ function Affiliate() {
             <div className='mt-3 px-3 w-full h-px bg-stone-500' />
 
             <div className="buttons">
-                <a className={NFTClaimable ? "button" : "button disabled"} href="#" onClick={handleNFTClaim}>Claim NFT</a>
-                <a className={DCclaimable ? "button" : "button disabled"} href="#" onClick={handleDCClaim}>Claim DC</a>
+                <div>
+                    <a className={NFTClaimable ? "button" : "button disabled"} href="#" onClick={handleNFTClaim}>Claim NFT</a>
+                    <div className='text-sm text-center -mt-3 text-stone-500'>Avaliable:</div>
+                    <div className='text-sm text-center '>{ClaimableNFTs && ClaimableNFTs} NFTs</div>
+                </div>
+                
+                <div>
+                    <a className={DCclaimable ? "button" : "button disabled"} href="#" onClick={handleDCClaim}>Claim DC</a>
+                    <div className='text-sm text-center -mt-3 text-stone-500'>Avaliable:</div>
+                    <div className='text-sm text-center '>{DCtokens && DCtokens} DC</div>
+                </div>
             </div>
             {/*Bottom Box  */}
             <div className='p-3 my-5 border border-yellow-300 border-2'>
