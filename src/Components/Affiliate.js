@@ -180,13 +180,13 @@ function Affiliate() {
 
             <div className="buttons">
                 <div>
-                    <a className={NFTClaimable ? "button" : "button disabled"} href="#" onClick={handleNFTClaim}>Claim NFT</a>
+                    <a className={NFTClaimable ? "button" : "button disabled"} href="#" onClick={async()=>{await handleNFTClaim(); setNFTClaimable(false)}}>Claim NFT</a>
                     <div className='text-sm text-center -mt-3 text-stone-500'>Avaliable:</div>
                     <div className='text-sm text-center '>{ClaimableNFTs && ClaimableNFTs} NFTs</div>
                 </div>
                 
                 <div>
-                    <a className={DCclaimable ? "button" : "button disabled"} href="#" onClick={handleDCClaim}>Claim DC</a>
+                    <a className={DCclaimable ? "button" : "button disabled"} href="#" onClick={async () => {await handleDCClaim();setDCclaimable(false)}}>Claim DC</a>
                     <div className='text-sm text-center -mt-3 text-stone-500'>Avaliable:</div>
                     <div className='text-sm text-center '>{DCtokens && DCtokens} DC</div>
                 </div>

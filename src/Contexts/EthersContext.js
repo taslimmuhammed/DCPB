@@ -48,7 +48,6 @@ export default function Ethers({ children }) {
             console.log("claiming");
             await claimNFT({args:[]})
             toast.success("Transaction succeful")
-            window.location.reload()
         } catch (e) {
             console.log(e);
             if (e?.data?.message) toast.error(e.data.message)
@@ -61,7 +60,6 @@ export default function Ethers({ children }) {
         try {
             await claimDC({ args: [] })
             toast.success("Transaction succeful")
-            window.location.reload()
         } catch (e) {
             console.log(e);
             if (e?.data?.message) toast.error(e.data.message)
