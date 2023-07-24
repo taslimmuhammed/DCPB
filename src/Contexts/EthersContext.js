@@ -128,7 +128,7 @@ export default function Ethers({ children }) {
     const handleDCWithdraw = async (_amount) => {
      try {
          let amount = stringToUSDT(_amount + "")
-         const tx = await _DCwithdraw({ args: [USDTAddress,amount] });
+         const tx = await _DCwithdraw({ args: [amount] });
          toast.success("Transaction succeful")
      } catch (e) {
         console.log(e);
