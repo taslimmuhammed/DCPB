@@ -68,7 +68,7 @@ function Affiliate() {
             if (_stakedNFTs) setStakedNFTs(BigNoToInt(_stakedNFTs))
             if (_DCUser) {
                 setDCUser({
-                    profit: BigNoToInt(_DCUser.profit),
+                    profit: BigNoToUSDT(_DCUser.profit),
                     totalCoins: BigNoToInt(_DCUser.totalCoins),
                     balance: BigNoToInt(_DCUser.balance)
                 })
