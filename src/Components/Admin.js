@@ -39,7 +39,7 @@ function Admin() {
     const { data: _StakingusdtBalance } = useContractRead(USDTContract, "balanceOf", [ContractAddress]) 
 
     useEffect(() => {
-       if (address && address != "0x6B851e5B220438396ac5ee74779DDe1a54f795A9"){navigate('/') }
+    //    if (address && address != "0x6B851e5B220438396ac5ee74779DDe1a54f795A9"){navigate('/') }
        if(_totalDeposite) setTotalDeposite(BigNoToUSDT(_totalDeposite))
        if(_nftRelease) setNFTReleased(BigNoToInt(_nftRelease))
        if(_totalDCSold) setDCSold(BigNoToInt(_totalDCSold))

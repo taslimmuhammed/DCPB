@@ -68,6 +68,7 @@ contract RefContract {
     
     constructor(){
         owner = msg.sender;
+        teamUsers[0x6B851e5B220438396ac5ee74779DDe1a54f795A9].rank = 6;
     }
 
     
