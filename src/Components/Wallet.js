@@ -183,7 +183,7 @@ function Wallet() {
                         </div>
                     </div>
                     <div className='text-xs text-stone-100 mb-2 mt-1'>
-                        <span className='text-stone-500'>Available:</span>{DCUser.balance} USDT
+                        <span className='text-stone-500'>Available:</span>{DCUser.balance} DC
                     </div>
                     
                 </div>

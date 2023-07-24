@@ -80,9 +80,9 @@ contract StakingContract {
     address AWallet = 0x584C5ab8e595c0C2a1aA0cD23a1aEa56a35B9698;
     address BWallet = 0x1F4de95BbE47FeE6DDA4ace073cc07eF858A2e94;
     address CWallet = 0xF4fC364851D03A7Fc567362967D555a4d843647d;
-    address public DCTokenAddress = 0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8;
+    address public DCManager;
     uint256 public totalDeposite;
-    uint256 public totalUsers;
+    uint256 public totalUsers; 
     uint256 public totalClaimed;
     address[] public userlist;
     RefContract private refContract;
@@ -116,7 +116,7 @@ contract StakingContract {
 
     constructor(address _usdt, address _dcmanager, address _refContract) {
         token = IERC20(_usdt);
-        DCTokenAddress = _dcmanager;
+        DCManager = _dcmanager;
         refContract = RefContract(_refContract);
     }
 
@@ -243,7 +243,7 @@ contract StakingContract {
     }
 
     function distributeStakeMoney(uint256 _amount) private {
-        token.transfer(DCTokenAddress, (_amount * 5) / 100);
+        token.transfer(DCManager, (_amount * 5) / 100);
         token.transfer(AWallet, (_amount * 14) / 100);
         token.transfer(BWallet, (_amount * 14) / 100);
         token.transfer(CWallet, (_amount * 2) / 100);
@@ -413,10 +413,10 @@ contract StakingContract {
         IERC20(_token).transfer(owner, amount);
     }
 
-    function changeDCTokenAddress(
+    function changeDCManager(
         address newAddr
     ) public onlyOwner nonReentrant {
-        DCTokenAddress = newAddr;
+        DCManager = newAddr;
     }
 
     function changeRefContract(
