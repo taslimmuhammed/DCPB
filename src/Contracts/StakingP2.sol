@@ -391,7 +391,7 @@ contract StakingContract {
     }
 
     function calculateTotalClaimableReward() public view returns (RewardStruct memory){
-        RewardStruct memory totalReward = getTotalRewards(msg.sender);
+        RewardStruct memory totalReward;
         for (uint i = 0; i < userlist.length; i++) {
             RewardStruct memory userRewards = getTotalRewards(userlist[i]);
             totalReward.staticReward += userRewards.staticReward;

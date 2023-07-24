@@ -36,7 +36,7 @@ function Affiliate() {
     const { data: Upgradable, isLoading: L3 } = useContractRead(contract, "checkUpgradablity", [address])
     const { data: User, isLoading: L4 } = useContractRead(contract, "getTeamUser", [address])
     const { data: stakeUser } = useContractRead(contract, "getStakeUser", [address])
-    const { data: RefRanks } = useContractRead(contract, "getReferralRanks", [address])
+    const { data: RefRanks } = useContractRead(contract, "getReferralRanks", [address]) 
     const { data: _count } = useContractRead(NFTRelease, "count", [address])
     const { data: _nftClaimable } = useContractRead(NFTRelease, "getcount", [address])
     const { data: _nftBalance } = useContractRead(NFTRelease, "getBalance", [address])

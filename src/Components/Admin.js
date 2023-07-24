@@ -27,7 +27,9 @@ function Admin() {
         const [totalReleased, settotalReleased] = useState(0)
         const [StakingWithdrawInput, setStakingWithdrawInput] = useState('0')
         const [DCWithdrawInput, setDCWithdrawInput] = useState('0')
+        const [TotalClaimable, setTotalClaimable] = useState(0)
     const { data: _totalDeposite } = useContractRead(contract, "totalDeposite", [])
+    const { data: _totalClaimble } = useContractRead(contract, "calculateTotalClaimableReward", [])
     const { data: _nftRelease } = useContractRead(NFTRelease, "totalReleased", [])
     const { data: _totalDCSold } = useContractRead(DCManager, "getTotalSold", [])
     const { data: _totalClaimed } = useContractRead(DCManager, "totalClaimed", [])
@@ -45,9 +47,9 @@ function Admin() {
        if(_StakedNFTs) setStakedNFTs(BigNoToInt(_StakedNFTs))
        if(_StakingusdtBalance) setStakingUSDTBalance(BigNoToUSDT(_StakingusdtBalance))
        if (_totalUsers) settotalUsers(BigNoToInt(_totalUsers))
+       if (_totalClaimble) setTotalClaimable(BigNoToUSDT(_totalClaimble))
        console.log(NFTReleased);
-    }, [_nftRelease, _totalDeposite, _totalDCSold, _totalClaimed, _StakedNFTs, _StakingusdtBalance, _totalUsers, _totalReleased])
-    
+    }, [_nftRelease, _totalDeposite, _totalDCSold, _totalClaimed, _StakedNFTs, _StakingusdtBalance, _totalUsers, _totalReleased, _totalClaimble])
     if (isLoading || L0) return <Loader />
     else return (
             <div className='text-white p-5 mb-32'>
@@ -61,7 +63,7 @@ function Admin() {
             </div>
             <div className='flex w-full justify-between mt-6'>
                 <div className='py-2 text-lg'>Total Cliamable</div>
-                <div className='bg-stone-700 w-32 py-2 px-2'>{TotalDeposite*2 - totalClaimed}</div>
+                <div className='bg-stone-700 w-32 py-2 px-2'>{TotalClaimable}</div>
             </div>
             <div className='flex w-full justify-between mt-6'>
                 <div className='py-2 text-lg'> Total StakingUser</div>
