@@ -1,30 +1,31 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { EthersContext } from '../Contexts/EthersContext'
-import {  BigNoToInt, BigNoToUSDT, stringToBigInt, stringToUSDT } from '../Utils/Utils'
-import {  useContractRead, useContractWrite } from '@thirdweb-dev/react'
+import { BigNoToInt, BigNoToUSDT, stringToBigInt, stringToUSDT } from '../Utils/Utils'
+import { useContractRead, useContractWrite } from '@thirdweb-dev/react'
 import { toast } from 'react-toastify'
 import Loader from './Loader'
 import withdraw from '../Assets/withdraw.png'
+import USDTlogo from '../Assets/usdt.png'
+import DClogo from '../Assets/DClogo.jpg'
 function Wallet() {
-    const {  contract, DCManager, address } = useContext(EthersContext)
+    const { contract, DCManager, address, handleDCSell } = useContext(EthersContext)
     // const address = "0x1c206F49C462ED3af40a5c368dbbd793278FCaa8"
     const [isLoading, setisLoading] = useState(false)
     const [StaticInput, setStaticInput] = useState("0")
     const [DynamicInput, setDynamicInput] = useState("0")
-    const [DCInput, setDCInput] = useState("0")
-    const [DCUser, setDCUser] = useState(0)
-    //const { data: User } = useContractRead(contract, "getStakeUser", [address])
+    const [DCInput, setDCInput] = useState(0)
+    const [tokenPrice, settokenPrice] = useState(0)
+    const { data: _tokenPrice } = useContractRead(DCManager, "tokenPrice", [])
     const { data: _reward, isLoading: L4 } = useContractRead(contract, "getStakes", [address])
     const { mutateAsync: claimDynamicReward } = useContractWrite(contract, "claimDynamicReward")
     const { mutateAsync: claimStaticReward } = useContractWrite(contract, "claimStaticReward")
-    const { mutateAsync: claimUSDT } = useContractWrite(DCManager, "claimUSDT")
     const [Rewards, setRewards] = useState([0, 0])
-    const { data: _DCUser } = useContractRead(DCManager, "Users", [address])
+    const [DCinUSDT, setDCinUSDT] = useState(0)
     const handleStatic = async () => {
         setisLoading(true)
         try {
             let amount = stringToUSDT(StaticInput)
-            if(amount<10) return toast.error("Minimum amount is 10 USDT")
+            if (amount < 10) return toast.error("Minimum amount is 10 USDT")
             const tx = await claimStaticReward({ args: [amount] });
             toast.success("Transaction succeful")
         } catch (e) {
@@ -38,7 +39,7 @@ function Wallet() {
         setisLoading(true)
         try {
             let amount = stringToUSDT(DynamicInput)
-            if(amount<10) return toast.error("Minimum amount is 10 USDT")
+            if (amount < 10) return toast.error("Minimum amount is 10 USDT")
             const tx = await claimDynamicReward({ args: [amount] });
             toast.success("Transaction succeful")
         } catch (e) {
@@ -49,38 +50,33 @@ function Wallet() {
         setisLoading(false)
     }
     const handleDCReward = async () => {
+        if (DCInput==0 || DCInput==="0" || DCInput===undefined) return toast.error("Minimum amount is 10 DC")
         setisLoading(true)
-        try {
-            let amount = stringToBigInt(DCInput)
-            const tx = await claimUSDT({ args: [amount] });
-            toast.success("Transaction succeful")
-        } catch (e) {
-            console.log(e);
-            if (e?.data?.message) toast.error(e.data.message)
-            else toast.error("transaction failed")
-        }
+        await handleDCSell(DCInput)
         setisLoading(false)
     }
     const setMax = (index) => {
         if (index === 0) {
-            setStaticInput(Rewards? Rewards[2]:"0")
-        } else if (index === 1) {
-            setDynamicInput(Rewards ? Rewards[3]:"0")
-        } else {
-            setDCInput(DCUser.balance)
+            setStaticInput(Rewards ? Rewards[2] : "0")
+        } else{
+            setDynamicInput(Rewards ? Rewards[3] : "0")
         }
+        //  else {
+        //     setDCInput(DCUser.balance)
+        // }
     }
     useEffect(() => {
-        if(_DCUser){
-            if (_DCUser) {
-                setDCUser({
-                    profit: BigNoToInt(_DCUser.profit),
-                    totalCoins: BigNoToInt(_DCUser.totalCoins),
-                    balance: BigNoToInt(_DCUser.balance)
-                })
-            }
+        if (_tokenPrice) {
+            settokenPrice(BigNoToInt(_tokenPrice) / 100)
         }
-    }, [_DCUser])
+    }, [ _tokenPrice])
+
+    useEffect(() => {
+      
+    }, [tokenPrice, DCInput])
+    useEffect(() => {
+        
+    }, [tokenPrice, DCinUSDT])
     useEffect(() => {
         if (_reward) {
             let stT = 0;
@@ -97,9 +93,10 @@ function Wallet() {
         }
     }, [_reward])
 
-   
+
     if (isLoading || L4 ) return <Loader />
-    else return (
+    else
+    return (
         <div className='text-white'>
             {/* Intrest */}
             <div className='flex w-full justify-between mt-5'>
@@ -124,7 +121,7 @@ function Wallet() {
                             <span className='text-stone-500'>Available:</span>  {Rewards ? Rewards[2] : "0"} USDT
                         </div>
                         <div>
-                        <span className='text-stone-500'>Min:</span> 10 USDT
+                            <span className='text-stone-500'>Min:</span> 10 USDT
                         </div>
                     </div>
                 </div>
@@ -156,7 +153,7 @@ function Wallet() {
                             <span className='text-stone-500'>Available:</span>  {Rewards ? Rewards[3] : "0"} USDT
                         </div>
                         <div>
-                        <span className='text-stone-500'>Min:</span> 10 USDT
+                            <span className='text-stone-500'>Min:</span> 10 USDT
                         </div>
                     </div>
                 </div>
@@ -165,7 +162,7 @@ function Wallet() {
                 </div>
             </div>
             {/* DC profit */}
-            <div className='flex w-full justify-between mt-5'>
+            {/* <div className='flex w-full justify-between mt-5'>
                 <div>
                     <div className="flex flex-col relative">
                         <label className="text-lg  mb-2" >
@@ -185,29 +182,71 @@ function Wallet() {
                     <div className='text-xs text-stone-100 mb-2 mt-1'>
                         <span className='text-stone-500'>Available:</span>{DCUser.balance} DC
                     </div>
-                    
+
                 </div>
                 <div className='flex flex-col justify-center' onClick={handleDCReward}>
                     <img src={withdraw} className='w-14 hover:w-12' />
                 </div>
-            </div>
+            </div> */}
 
-            {/* bottom box */}
-            <div className='flex w-full justify-center mt-20'>
+            {/* mid-bottom box */}
+            <div className='flex w-full justify-center mt-10'>
                 <div className='border border-yellow-300 border-2 p-2 w-96'>
                     <div className='flex justify-between'>
                         <div>Total Claimed Interest Value</div>
-                        <div>{_reward ? Rewards[0]:"0"} USDT</div>
+                        <div>{_reward ? Rewards[0] : "0"} USDT</div>
                     </div>
                     <div className='flex justify-between'>
                         <div>Total Claimed Booster Value</div>
                         <div>{Rewards ? Rewards[1] : "0"} USDT</div>
                     </div>
-                    <div className='flex justify-between'>
-                        <div>Total Claimed DC Profit Value</div>
-                        <div>{DCUser ? DCUser.profit : "0"} USDT</div>
-                    </div>
+                </div>
+            </div>
 
+            {/* Exchange start */}
+            <div className='m-5 mt-20'>
+                <div className='flex justify-between '>
+                    <div className='mt-5 text-stone-400 font-semibold text-xl'>EXCHANGE</div>
+                    <div className='border border-yellow-300 border-1  text-center py-2 px-5 '>
+                        <div> DC/USDT: </div>
+                        <div>{tokenPrice && tokenPrice}</div>
+                    </div>
+                </div>
+                {/* DC PART */}
+                <div className='mx-7 mt-5'>
+                    <label className="text-sm text-stone-400 " >From: </label>
+                    <div className='flex justify-between '>
+                        <div className='mt-3 ml-3 flex'>
+                            <img src={DClogo} className='w-5 h-5 mt-0.5 mx-1'></img>
+                            DC
+                        </div>
+                        <div>
+                            <input className='w-32 bg-stone-500 px-3 py-3 pl-10' type='number' value={DCInput} onChange={(e) => { setDCInput(e.target.value); setDCinUSDT(parseInt(tokenPrice * parseInt(e.target.value))) }} />
+                            <div className='text-xs text-stone-300 text-center mt-1'> Available: 0 DC</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className='text-center text-3xl m-2'>🔃</div>
+                {/* USDT PART */}
+                <div className='mx-7'>
+                    <label className="text-sm text-stone-400 " >To: </label>
+                    <div className='flex justify-between '>
+                        <div className='mt-3 ml-3 flex'>
+                            <img src={USDTlogo} className='w-5 h-5 mt-0.5 mx-1'></img>
+                            USDT
+                        </div>
+                        <div>
+                            <input className='w-32 bg-stone-500 px-3 py-3 pl-10' type='number' value={DCinUSDT} onChange={(e) => { setDCinUSDT(e.target.value); setDCInput(parseInt(parseInt(e.target.value) / tokenPrice)) }}></input>
+                        </div>
+                    </div>
+                </div>
+                <div className='flex justify-center mt-7'>
+                <div className='text-center bg-blue-500 px-10 py-2 rounded-md hover:bg-blue-700'
+                onClick={handleDCReward}
+                >
+                    Confirm
+                </div>
                 </div>
             </div>
         </div>

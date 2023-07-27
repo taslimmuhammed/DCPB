@@ -34,22 +34,13 @@ interface RefContract {
 
     function upgradeUser(address _user) external;
 
-    function getUser(
-        address _user
-    ) external view returns (TeamUserStruct memory);
+    function getUser(address _user) external view returns (TeamUserStruct memory);
 
-    function getUserDownReferrals(
-        address _user,
-        uint8 _level
-    ) external view returns (address[] memory);
+    function getUserDownReferrals(address _user,uint8 _level) external view returns (address[] memory);
 
-    function getRelationBonus(
-        address _user
-    ) external view returns (RelationStruct[] memory);
+    function getRelationBonus(address _user) external view returns (RelationStruct[] memory);
 
-    function getRankBonus(
-        address _user
-    ) external view returns (RankBonus[] memory);
+    function getRankBonus(address _user) external view returns (RankBonus[] memory);
 
     function getTotalStake(address _user) external view returns (uint256);
 
@@ -61,14 +52,9 @@ interface RefContract {
 
     function checkUpgradablity(address _user) external view returns (bool);
 
-    function getRefsWithRank(
-        uint8 _rank,
-        address _user
-    ) external view returns (uint256);
+    function getRefsWithRank(uint8 _rank,address _user) external view returns (uint256);
 
-    function getReferralRanks(
-        address _user
-    ) external view returns (uint256[7] memory);
+    function getReferralRanks(address _user) external view returns (uint256[7] memory);
 
 }
 
@@ -173,7 +159,7 @@ contract StakingContract {
             }
 
             //calculating static
-            for (uint8 j = 0; j < stakes.length; j++) {
+            for (uint256 j = 0; j < stakes.length; j++) {
                 if (availableArray[j] != 0 && stakes[j].timestamp < i) {
                     uint256 staticReward = (stakes[j].reward) / 200;
                     if (availableArray[j] <= staticReward) {
@@ -207,10 +193,7 @@ contract StakingContract {
     function signIn(address _friend) external nonReentrant {
         require(msg.sender != _friend, "user cant be same as referer");
         require(!Active[msg.sender], "already signed in");
-        require(
-            ((Active[_friend]) || (_friend == address(0))),
-            "Invalid ref id"
-        );
+        require(((Active[_friend]) || (_friend == address(0))), "Invalid ref id");
         Active[msg.sender] = true;
         refContract.signIn(msg.sender, _friend);
         totalUsers++;
@@ -218,7 +201,7 @@ contract StakingContract {
 
     function stake(uint256 _amount) external signedIn {
         require(_amount >= 1 * decimals, ">100usdt");
-        require(checkStakablity(msg.sender), "You cant stake before the previous stake is completed");
+        require(checkStakablity(msg.sender), "You can't stake before the previous stake is completed");
         _stake(_amount);
         distributeStakeMoney(_amount);
         handleDirectBonus(_amount);
@@ -228,7 +211,7 @@ contract StakingContract {
     function checkStakablity(address _user)public view returns(bool){
         if(Users[_user].stakes.length==0) return true;
         RewardStruct[] memory stakes = calculateAllReward(_user);
-        for (uint i = 0; i < stakes.length; i++) {
+        for (uint256 i = 0; i < stakes.length; i++) {
             uint256 totalGained = stakes[i].staticReward + stakes[i].dynamicReward;
             uint256 percent = (totalGained * 100) / Users[_user].stakes[i].reward;
             if(percent<80) return false;
@@ -255,7 +238,7 @@ contract StakingContract {
         uint256 total = (_amount * 20) / 100;
         RewardStruct[] memory rewardArr = calculateAllReward(_friend);
         StakeStruct[] memory stakes = Users[_friend].stakes;
-        for (uint i = 0; i < stakes.length; i++) {
+        for (uint256 i = 0; i < stakes.length; i++) {
             if (rewardArr[i].available >= total) {
                 Users[_friend].stakes[i].directBonus += total;
                 return;
@@ -406,22 +389,15 @@ contract StakingContract {
         owner = newOwner;
     }
 
-    function withDrawTokens(
-        address _token,
-        uint256 amount
-    ) public onlyOwner nonReentrant {
+    function withDrawTokens(address _token,uint256 amount) public onlyOwner nonReentrant {
         IERC20(_token).transfer(owner, amount);
     }
 
-    function changeDCManager(
-        address newAddr
-    ) public onlyOwner nonReentrant {
+    function changeDCManager(address newAddr) public onlyOwner nonReentrant {
         DCManager = newAddr;
     }
 
-    function changeRefContract(
-        address _refContract
-    ) public onlyOwner nonReentrant {
+    function changeRefContract(address _refContract) public onlyOwner nonReentrant {
         refContract = RefContract(_refContract);
     }
 }

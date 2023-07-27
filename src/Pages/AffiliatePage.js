@@ -16,7 +16,7 @@ function AffiliatePage() {
     <div className='pb-32'>
           <Navbar heading="Affiliate"/>
           <Affiliate/>
-          <Footer />
+         <Footer index={5} />
     </div>
   )
 }

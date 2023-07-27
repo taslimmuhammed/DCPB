@@ -16,7 +16,7 @@ function StakingPage() {
     <div className='pb-32'>
         <Navbar heading="USDT Staking" />
         <Staking/> 
-        <Footer />
+      <Footer index={2} />
       </div>
   )
 }

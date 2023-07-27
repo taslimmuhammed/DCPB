@@ -5,16 +5,16 @@ import help from '../Assets/help.png'
 import locker from '../Assets/locker.png'
 import docs from '../Assets/docs.png'
 import wallet from '../Assets/wallet.png'
-function Footer() {
+function Footer({index}) {
     const navigate = useNavigate()
   return (
       <div className="footer-main">
         <div className='footer-sub py-3'>
-            <img src={home} className='w-10 h-10' onClick={()=>navigate("/")}/>
-            <img src={locker}  className='w-10 h-10' onClick={()=>navigate("/stake")}/>
-            <img src={docs}  className='w-10 h-10' onClick={()=>navigate("/list")}/>
-            <img src={wallet} className='w-10 h-10' onClick={() => navigate("/wallet")} />
-            <img src={help}  className='w-10 h-10' onClick={()=>navigate("/affiliate")}/>
+            <img src={home} className={index==1? "w-12 h-12": "w-8 h-8 mt-2"} onClick={()=>navigate("/")}/>
+            <img src={locker}  className={index==2? "w-12 h-12": "w-8 h-8 mt-2"} onClick={()=>navigate("/stake")}/>
+            <img src={docs}  className={index==3? "w-12 h-12": "w-8 h-8 mt-2"} onClick={()=>navigate("/list")}/>
+            <img src={wallet} className={index==4? "w-12 h-12": "w-8 h-8 mt-2"} onClick={() => navigate("/wallet")} />
+            <img src={help}  className={index==5? "w-12 h-12": "w-8 h-8 mt-2"} onClick={()=>navigate("/affiliate")}/>
         </div>
       </div>
   )

@@ -9,7 +9,7 @@ function HomePage() {
     return (
       <div className= 'pb-32'>
       <Home/>
-      <Footer/>
+      <Footer index={1}/>
     </div>
   )
 }

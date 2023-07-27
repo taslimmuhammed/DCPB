@@ -26,12 +26,11 @@ function Affiliate() {
     const [ClaimableNFTs, setClaimableNFTs] = useState(0)
     const [NFTBalance, setNFTBalance] = useState(0)
     const [StakedNFTs, setStakedNFTs] = useState(0)
-    const [DCUser, setDCUser] = useState(null)
+    const [DCProfit, setDCProfit] = useState(0)
     const [DCclaimed, setDCclaimed] = useState(0)
     const [DCtokens, setDCtokens] = useState(0)
     const [DCinput, setDCinput] = useState("0")
     const [NFTinput, setNFTinput] = useState("0")
-    const [tokenPrice, settokenPrice] = useState(0)
     const [NFTCount, setNFTCount] = useState(0)
     const { data: Upgradable, isLoading: L3 } = useContractRead(contract, "checkUpgradablity", [address])
     const { data: User, isLoading: L4 } = useContractRead(contract, "getTeamUser", [address])
@@ -43,8 +42,7 @@ function Affiliate() {
     const { data: _stakedNFTs } = useContractRead(NFTStaking, "getTotalStake", [address])
     const { data: _DCReward } = useContractRead(NFTStaking, "calculateReward", [address])
     const { data: StakeUser } = useContractRead(NFTStaking, "users", [address])
-    const { data: _DCUser } = useContractRead(DCManager, "Users", [address])
-    const { data: _tokenPrice } = useContractRead(DCManager, "tokenPrice", [])
+    const { data: _Dcprofit } = useContractRead(DCManager, "userExchanges", [address])
     const { data: Balance } = useBalance(DCTokenAddress);
 
     useEffect(() => {
@@ -66,12 +64,8 @@ function Affiliate() {
             if (_count) setNFTCount(BigNoToInt(_count))
             if (_nftBalance) setNFTBalance(BigNoToInt(_nftBalance))
             if (_stakedNFTs) setStakedNFTs(BigNoToInt(_stakedNFTs))
-            if (_DCUser) {
-                setDCUser({
-                    profit: BigNoToUSDT(_DCUser.profit),
-                    totalCoins: BigNoToInt(_DCUser.totalCoins),
-                    balance: BigNoToInt(_DCUser.balance)
-                })
+            if (_Dcprofit) {
+                setDCProfit(BigNoToInt(_Dcprofit))
             }
             if (StakeUser) {
                 setDCclaimed(BigNoToDC(StakeUser.claimed))
@@ -84,14 +78,12 @@ function Affiliate() {
             if (_DCReward && BigNoToDC(_DCReward) > 1) {
                 setDCclaimable(true)
             }
-            if (_tokenPrice) {
-                settokenPrice(BigNoToInt(_tokenPrice)/100)
-            }
+            
         } catch (error) {
             console.log(error);
         }
 
-    }, [_count, _nftBalance, _stakedNFTs, _DCUser, StakeUser, _nftClaimable,_DCReward,_tokenPrice])
+    }, [_count, _nftBalance, _stakedNFTs, _Dcprofit, StakeUser, _nftClaimable,_DCReward])
     // useEffect(() => {
     //     let Active = []
     //     let Inactive = []
@@ -168,11 +160,6 @@ function Affiliate() {
                     <img src={community} className='w-14'></img>
                     <div className='bg-stone-800 w-20 h-10 p-1 px-3  flex justify-between mt-2 ml-3'>{Total && Total}</div>
                 </div>
-                 
-                <div className='border border-yellow-300 border-2  text-center p-2  m-5'>
-                   <div> DC/USDT: </div>
-                   <div>{tokenPrice && tokenPrice}</div>
-                </div>
             </div>
             
             {/* seprator */}
@@ -205,13 +192,13 @@ function Affiliate() {
                     <div className=''>Staking Profit:</div>
                     <div>{DCclaimed && DCclaimed} DC</div>
                 </div>
-                <div className='flex justify-between'>
+                {/* <div className='flex justify-between'>
                     <div className=''>DC Coin Sell:</div>
                     <div>{DCUser && DCUser.totalCoins} DC</div>
-                </div>
+                </div> */}
                 <div className='flex justify-between'>
                     <div className=''>DC Coin Profit</div>
-                    <div>{DCUser && DCUser.profit} <span className='text-yellow-300 '>USDT</span></div>
+                    <div>{DCProfit && DCProfit} <span className='text-yellow-300 '>USDT</span></div>
                 </div>
             </div>
 
@@ -222,19 +209,18 @@ function Affiliate() {
                     <div className='flex mt-6'>
                         <input className='bg-stone-700 w-32 py-2 px-3 mr-10' placeholder='0' onChange={(e) => setNFTinput(e.target.value)} />
                         <div className='border border-yellow-300 border-2 p-2 hover:bg-yellow-600' onClick={() => handleNFTStake(NFTinput)}>
-                            NFT Staking
+                          Stake NFT
                         </div>
                     </div>
                     <div className='text-xs text-stone-300'> Available: {NFTBalance && NFTBalance} NFT</div>
 
-
-                    <div className='flex mt-6'>
+                    {/* <div className='flex mt-6'>
                         <input className='bg-stone-700 w-32 py-2 px-3 mr-10' placeholder='0' onChange={(e) => setDCinput(e.target.value)} />
                         <div className='border border-yellow-300 border-2 p-2 hover:bg-yellow-600 px-6' onClick={() => handleDCSell(DCinput)}>
                             DC Sell
                         </div>
                     </div>
-                    <div className='text-xs text-stone-300'> Available: {Balance && Balance.displayValue} DC</div>
+                    <div className='text-xs text-stone-300'> Available: {Balance && Balance.displayValue} DC</div> */}
                 </div>
             </div>
             <div className='mb-32'></div>

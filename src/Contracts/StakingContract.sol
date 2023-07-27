@@ -197,7 +197,7 @@ contract StakingContract is RefContract {
             }
 
             //calculating static
-            for (uint8 j = 0; j < stakes.length; j++) {
+            for (uint256 j = 0; j < stakes.length; j++) {
                 if (availableArray[j] != 0 && stakes[j].timestamp < i) {
                     uint256 staticReward;
                     if (stakes[j].timestamp <= i)
@@ -298,7 +298,7 @@ contract StakingContract is RefContract {
         uint256 reward = (_amount * 5) / 10000;
         address[][] memory downReferrals = teamUsers[msg.sender].downReferrals;
 
-        for (uint8 i = 0; i < 6; i++) {
+        for (uint256 i = 0; i < 6; i++) {
             if (downReferrals[i].length == 0) break;
             for (uint256 j = 0; j < downReferrals[i].length; j++) {
                 address referer = downReferrals[i][j];

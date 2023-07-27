@@ -78,10 +78,10 @@ contract RefContract {
     }
 
     function handleDownReferals(address _user) private {
-        for (uint8 i = 0; i < 6; i++)
+        for (uint256 i = 0; i < 6; i++)
             teamUsers[_user].downReferrals.push();
         address friend = _user;
-        for (uint8 i = 0; i < 6; i++) {
+        for (uint256 i = 0; i < 6; i++) {
             friend = teamUsers[friend].referer;
             if (friend == address(0)) break;
             teamUsers[friend].downReferrals[i].push(_user);

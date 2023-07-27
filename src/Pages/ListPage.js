@@ -18,7 +18,7 @@ function ListPage() {
     <div className='pb-32'>
       <Navbar heading="Staking List"/>
       <StakingList/>
-      <Footer />
+      <Footer index={3} />
     </div>
   )
 }

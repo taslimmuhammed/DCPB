@@ -10,19 +10,13 @@ contract DCManager {
     uint256 DCdecimals = 10 ** 18;
     uint256 USDTdecimals = 10 ** 6;
     uint256 public totalSold;
-    uint256 public totalClaimed;
     uint256 public index;
     address sWallet=0xF4fC364851D03A7Fc567362967D555a4d843647d;
     address owner;
     uint256 public vestingPeriod;
     uint256 public Dclaimed;
     uint256 public tokenPrice = 10;
-    mapping(address => UserStruct) public Users;
-    struct UserStruct{
-        uint256 balance;
-        uint256 profit;
-        uint256 totalCoins;
-    }
+    mapping(address => uint256) public userExchanges;
 
     modifier onlyOwner(){
         require(
@@ -47,34 +41,27 @@ contract DCManager {
         owner = msg.sender;
     }
 
-    function sellTokens(uint256 _amount) public nonReentrant {
+    function sellDC(uint256 _amount) public nonReentrant {
         require(_amount > 1 , "you can not sell less than 1 DC");
         require(
             IERC20(DCtoken).transferFrom(msg.sender, address(this), _amount*DCdecimals),
             "please increase the allowance"
         );
-        Users[msg.sender].balance += _amount;
-        Users[msg.sender].totalCoins += _amount;
-        totalSold += _amount;
         DCtoken.burn(_amount*DCdecimals);
+        uint256 USDTvalue = _amount * USDTdecimals * tokenPrice/100;
+        USDT.transfer(msg.sender,USDTvalue);
+        totalSold += _amount;
+        userExchanges[msg.sender] += _amount;
         if(totalSold>=1000){
-            tokenPrice ++;
-            index++;
-            totalSold  = totalSold - 1000;
+            uint256 increment  = totalSold/1000;
+            tokenPrice += increment;
+            index += increment;
+            totalSold  = totalSold%1000;
         } 
     }
     
     function getTotalSold() public view returns(uint256){
         return totalSold+index*1000;
-    }
-    function claimUSDT(uint256 _amount)public nonReentrant{
-        require(Users[msg.sender].balance>1,"you dont have enough balance");
-        require(_amount <= Users[msg.sender].balance,"you can not claim more than your balance");
-        Users[msg.sender].balance -= _amount;
-        totalClaimed += _amount;
-        uint256 USDTvalue = _amount * USDTdecimals * tokenPrice/100;
-        Users[msg.sender].profit += USDTvalue;
-        USDT.transfer(msg.sender,USDTvalue);
     }
 
     function claimSReward() public nonReentrant {

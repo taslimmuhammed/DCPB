@@ -14,8 +14,7 @@ function AdminPage() {
   else return (
     <div className='pb-32'>
       <Navbar heading="Admin Panel" />
-      <Admin/>
-      <Footer />   
+      <Admin/> 
     </div>
   )
 }

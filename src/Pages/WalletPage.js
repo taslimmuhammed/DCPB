@@ -18,7 +18,7 @@ function WalletPage() {
         <div className='pb-32'>
             <Navbar heading="Wallet" />
             <Wallet />
-            <Footer />
+            <Footer index={4} />
         </div>
     )
 }
