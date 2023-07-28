@@ -212,9 +212,8 @@ contract StakingContract {
         if(Users[_user].stakes.length==0) return true;
         RewardStruct[] memory stakes = calculateAllReward(_user);
         for (uint256 i = 0; i < stakes.length; i++) {
-            uint256 totalGained = stakes[i].staticReward + stakes[i].dynamicReward;
-            uint256 percent = (totalGained * 100) / Users[_user].stakes[i].reward;
-            if(percent<80) return false;
+            uint256 percent = ( stakes[i].available* 100) / Users[_user].stakes[i].reward;
+            if(percent>20) return false;
         }
         return true;
     }

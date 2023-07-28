@@ -49,6 +49,7 @@ contract DCManager {
         );
         DCtoken.burn(_amount*DCdecimals);
         uint256 USDTvalue = _amount * USDTdecimals * tokenPrice/100;
+        USDTvalue = (USDTvalue*99)/100;
         USDT.transfer(msg.sender,USDTvalue);
         totalSold += _amount;
         userExchanges[msg.sender] += _amount;

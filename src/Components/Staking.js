@@ -52,7 +52,10 @@ function Staking() {
   useEffect(() => {
     if (allowance) setAllowance(BigNoToUSDT(allowance))
   }, [allowance])
-
+  useEffect(() => {
+    console.log({Stakablity})
+  }, [Stakablity])
+  
   if (isLoading) return <Loader />
   else
     return (
