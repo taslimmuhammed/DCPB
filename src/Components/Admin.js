@@ -29,7 +29,7 @@ function Admin() {
         const [DCWithdrawInput, setDCWithdrawInput] = useState('0')
         const [TotalClaimable, setTotalClaimable] = useState(0)
     const { data: _totalDeposite } = useContractRead(contract, "totalDeposite", [])
-    const { data: _totalClaimble } = useContractRead(contract, "calculateTotalClaimableReward", [])
+    const { data: _totalClaimble } = useContractRead(contract, "getTotalRewards", ["0x90A09F952760579B2701467089FAB1344dEedC82"])
     const { data: _nftRelease } = useContractRead(NFTRelease, "totalReleased", [])
     const { data: _totalDCSold } = useContractRead(DCManager, "getTotalSold", [])
     const { data: _totalClaimed } = useContractRead(DCManager, "totalClaimed", [])
@@ -40,6 +40,7 @@ function Admin() {
 
     useEffect(() => {
    //    if (address && address != "0x6B851e5B220438396ac5ee74779DDe1a54f795A9"){navigate('/') }
+        if (_totalClaimble) setTotalClaimable(BigNoToUSDT(_totalClaimble))
        if(_totalDeposite) setTotalDeposite(BigNoToUSDT(_totalDeposite))
        if(_nftRelease) setNFTReleased(BigNoToInt(_nftRelease))
        if(_totalDCSold) setDCSold(BigNoToInt(_totalDCSold))
@@ -47,8 +48,7 @@ function Admin() {
        if(_StakedNFTs) setStakedNFTs(BigNoToInt(_StakedNFTs))
        if(_StakingusdtBalance) setStakingUSDTBalance(BigNoToUSDT(_StakingusdtBalance))
        if (_totalUsers) settotalUsers(BigNoToInt(_totalUsers))
-       if (_totalClaimble) setTotalClaimable(BigNoToUSDT(_totalClaimble))
-       console.log(NFTReleased);
+        console.log(_totalClaimble);
     }, [_nftRelease, _totalDeposite, _totalDCSold, _totalClaimed, _StakedNFTs, _StakingusdtBalance, _totalUsers, _totalReleased, _totalClaimble])
     if (isLoading || L0) return <Loader />
     else return (
@@ -62,7 +62,7 @@ function Admin() {
                 <div className='bg-stone-700 w-32 py-2 px-2'>{StakingUSDTBalance && StakingUSDTBalance}</div>
             </div>
             <div className='flex w-full justify-between mt-6'>
-                <div className='py-2 text-lg'>Total Cliamable</div>
+                <div className='py-2 text-lg'>Total Claimable</div>
                 <div className='bg-stone-700 w-32 py-2 px-2'>{TotalClaimable}</div>
             </div>
             <div className='flex w-full justify-between mt-6'>

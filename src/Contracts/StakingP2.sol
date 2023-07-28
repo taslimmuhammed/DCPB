@@ -200,7 +200,7 @@ contract StakingContract {
     }
 
     function stake(uint256 _amount) external signedIn {
-        require(_amount >= 1 * decimals, ">100usdt");
+        require(_amount >= decimals, "least stake amount is 100usdt");
         require(checkStakablity(msg.sender), "You can't stake before the previous stake is completed");
         _stake(_amount);
         distributeStakeMoney(_amount);
@@ -374,14 +374,16 @@ contract StakingContract {
     }
 
     function calculateTotalClaimableReward() public view returns (RewardStruct memory){
-        RewardStruct memory totalReward;
+        uint256 staticReward;
+        uint256 dynamicReward;
+        uint256 balance;
         for (uint i = 0; i < userlist.length; i++) {
             RewardStruct memory userRewards = getTotalRewards(userlist[i]);
-            totalReward.staticReward += userRewards.staticReward;
-            totalReward.dynamicReward += userRewards.dynamicReward;
-            totalReward.available +=  userRewards.available;
+            staticReward += userRewards.staticReward;
+            dynamicReward += userRewards.dynamicReward;
+            balance +=  userRewards.available;
         }
-        return totalReward;
+        return RewardStruct(staticReward, dynamicReward, balance);
     }
 
     // Admin Functions:- Only to be used in case of emergencies

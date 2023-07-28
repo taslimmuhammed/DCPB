@@ -22,7 +22,7 @@ function Staking() {
   const { data: Balance } = useBalance(USDTAddress);
   const navigate = useNavigate()
   const handleStake = async () => {
-    if(allowance<100) return toast.error("Please create allowance of atleast 100 USDT before staking")
+    if (allowance < 100) return toast.error("Please create allowance of atleast 100 USDT before staking")
     if (parseInt(TokenInput) < 100) return toast.error("Please enter amount greater than 100 USDT")
     setisLoading(true)
     try {
@@ -119,7 +119,7 @@ function Staking() {
             </div>
             {/* Bottom */}
             {/* <div className='py-10 px-5'> */}
-              {/* <div className='w-full bg-stone-800 px-4 py-3'>
+            {/* <div className='w-full bg-stone-800 px-4 py-3'>
                 <div className='flex w-full justify-between'>
                   <div>Daily Intrest</div>
                   <div>1.0%</div>
@@ -135,9 +135,9 @@ function Staking() {
               </div> */}
 
             <div className='mt-5 w-full text-center bg-stone-600 text-yellow-400 font-bold text-2xl p-2 hover:bg-stone-700  rounded-lg cursor-pointer '
-                onClick={handleStake}>
-                Stake
-              </div>
+              onClick={handleStake}>
+              Stake
+            </div>
             {/* </div> */}
           </div> :
             <div className='flex justify-center align-center text-center h-screen mt-20'>
