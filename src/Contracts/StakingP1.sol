@@ -222,22 +222,11 @@ contract RefContract {
                 for (uint256 j = 0; j < stakes.length; j++) {
                     if (stakes[j].end > currentTime) {
                         teamUsers[_user].rankBonus.push(
-                            RankBonus(
-                                currentTime,
-                                stakes[j].end,
-                                teamUsers[_user].rank * 3,
-                                stakes[j].amount,
-                                downReferrals[i]
-                            )
+                            RankBonus(currentTime,stakes[j].end,teamUsers[_user].rank*3,stakes[j].amount/10000,downReferrals[i])
                         );
                     }
                 }
-                getValidStakes(
-                    _user,
-                    downReferrals[i],
-                    downReferrals[i],
-                    teamUsers[_user].rank * 3
-                );
+                getValidStakes(_user,downReferrals[i],downReferrals[i],teamUsers[_user].rank * 3);
             } else if (
                 teamUsers[downReferrals[i]].rank == teamUsers[_user].rank
             ) {
@@ -246,12 +235,7 @@ contract RefContract {
                 for (uint256 j = 0; j < stakes.length; j++) {
                     if (stakes[j].end > block.timestamp) {
                         teamUsers[_user].rankBonus.push(
-                            RankBonus(
-                                block.timestamp,
-                                stakes[j].end,
-                                multiplier,
-                                stakes[j].amount / 10000,
-                                downReferrals[i]
+                            RankBonus(block.timestamp,stakes[j].end,multiplier,stakes[j].amount / 10000,downReferrals[i]
                             )
                         );
                     }
