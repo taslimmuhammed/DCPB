@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { EthersContext } from '../Contexts/EthersContext'
-import { BigNoToInt, BigNoToUSDT, stringToBigInt, stringToUSDT } from '../Utils/Utils'
-import { useContractRead, useContractWrite } from '@thirdweb-dev/react'
+import { BigNoToInt, BigNoToUSDT, DCTokenAddress, stringToBigInt, stringToUSDT } from '../Utils/Utils'
+import { useBalance, useContractRead, useContractWrite } from '@thirdweb-dev/react'
 import { toast } from 'react-toastify'
 import Loader from './Loader'
 import withdraw from '../Assets/withdraw.png'
@@ -19,6 +19,7 @@ function Wallet() {
     const { data: _reward, isLoading: L4 } = useContractRead(contract, "getStakes", [address])
     const { mutateAsync: claimDynamicReward } = useContractWrite(contract, "claimDynamicReward")
     const { mutateAsync: claimStaticReward } = useContractWrite(contract, "claimStaticReward")
+    const { data: Balance } = useBalance(DCTokenAddress);
     const [Rewards, setRewards] = useState([0, 0])
     const [DCinUSDT, setDCinUSDT] = useState(0)
     const handleStatic = async () => {
@@ -94,7 +95,7 @@ function Wallet() {
     }, [_reward])
 
 
-    if (isLoading || L4 ) return <Loader />
+    if (isLoading  ) return <Loader />
     else
     return (
         <div className='text-white'>
@@ -222,7 +223,7 @@ function Wallet() {
                         </div>
                         <div>
                             <input className='w-32 bg-stone-500 px-3 py-3 pl-10' type='number' value={DCInput} onChange={(e) => { setDCInput(e.target.value); setDCinUSDT(parseInt(tokenPrice * parseInt(e.target.value))) }} />
-                            <div className='text-xs text-stone-300 text-center mt-1'> Available: 0 DC</div>
+                            <div className='text-xs text-stone-300 text-center mt-1'> Available: {Balance ? Balance.displayValue :"0"} DC</div>
                         </div>
                     </div>
                 </div>

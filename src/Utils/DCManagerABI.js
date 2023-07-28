@@ -55,50 +55,8 @@ export const DCManagerABI = [
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "name": "Users",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "balance",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "profit",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "totalCoins",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [],
         "name": "claimSReward",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "claimUSDT",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -137,7 +95,7 @@ export const DCManagerABI = [
                 "type": "uint256"
             }
         ],
-        "name": "sellTokens",
+        "name": "sellDC",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -145,19 +103,6 @@ export const DCManagerABI = [
     {
         "inputs": [],
         "name": "tokenPrice",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "totalClaimed",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -192,6 +137,25 @@ export const DCManagerABI = [
         "name": "transferOwnership",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "userExchanges",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     },
     {

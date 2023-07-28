@@ -126,19 +126,19 @@ contract StakingContract {
     function calculateAllReward(
         address _user
     ) public view returns (RewardStruct[] memory) {
+        StakeStruct[] memory stakes = Users[_user].stakes;
+        RewardStruct[] memory rewardStructs = new RewardStruct[](stakes.length);
+        if (Users[_user].stakes.length == 0) {
+            return rewardStructs;
+        }
         uint256 baseTime = Users[_user].stakes[0].timestamp;
         baseTime = baseTime - (baseTime % 60);
         baseTime += 60;
         uint256 currentTime = block.timestamp;
-        StakeStruct[] memory stakes = Users[_user].stakes;
+        
         RefContract.RelationStruct[] memory relationBonuses = refContract.getRelationBonus(_user);
         RefContract.RankBonus[] memory rankBonuses = refContract.getRankBonus(_user);
-
-        RewardStruct[] memory rewardStructs = new RewardStruct[](stakes.length);
         uint256[] memory availableArray = new uint256[](stakes.length);
-        if (Users[_user].stakes.length == 0) {
-            return rewardStructs;
-        }
         for (uint256 i = 0; i < stakes.length; i++)
             availableArray[i] =stakes[i].reward - stakes[i].directBonus - stakes[i].directClaimed;
 

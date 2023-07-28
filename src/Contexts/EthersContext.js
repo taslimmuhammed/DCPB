@@ -39,7 +39,7 @@ export default function Ethers({ children }) {
     const { mutateAsync: claimDC } = useContractWrite(NFTStaking, "getDCToken")
     const { mutateAsync: stakeNFT } = useContractWrite(NFTStaking, "stakeNFT")
     const { mutateAsync: increaseAllowance } = useContractWrite(DCContract, "increaseAllowance")
-    const { mutateAsync: sellDC } = useContractWrite(DCManager, "sellTokens")
+    const { mutateAsync: sellDC } = useContractWrite(DCManager, "sellDC")
     const { mutateAsync: _DCwithdraw } = useContractWrite(DCManager, "withdrawUSDT")
     const { mutateAsync: setApprovalForAll } = useContractWrite(NFTContract, "setApprovalForAll")
     const handleNFTClaim = async () => {

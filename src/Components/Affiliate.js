@@ -43,7 +43,6 @@ function Affiliate() {
     const { data: _DCReward } = useContractRead(NFTStaking, "calculateReward", [address])
     const { data: StakeUser } = useContractRead(NFTStaking, "users", [address])
     const { data: _Dcprofit } = useContractRead(DCManager, "userExchanges", [address])
-    const { data: Balance } = useBalance(DCTokenAddress);
 
     useEffect(() => {
         let total = 0;
