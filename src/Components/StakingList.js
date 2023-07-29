@@ -3,9 +3,10 @@ import { EthersContext } from '../Contexts/EthersContext'
 import Loader from './Loader'
 import { useContractRead } from '@thirdweb-dev/react'
 import { BigNoToUSDT, HexToDateString } from '../Utils/Utils'
+import { LangArray } from '../Utils/Language'
 
 function StakingList() {
-    const {contract, address } = useContext(EthersContext)
+    const { contract, address, Chinese } = useContext(EthersContext)
     const { data: stakingList, isLoading, error } = useContractRead(contract, "getStakes", [address])
     
     if (isLoading) return (<Loader />)
@@ -21,24 +22,24 @@ function StakingList() {
                     return (
                   <div className='bg-stone-700 p-3 mb-3' key={index}>
                       <div className='flex justify-between'>
-                          <div className=''>Staking Date:</div>
+                                <div className=''>{Chinese ? LangArray[43] : LangArray[42]}</div>
                                 <div>{HexToDateString(stake?.timestamp)}</div>
                       </div>
                       <div className='flex justify-between'>
-                          <div className=''>Staking Amount:</div>
+                                <div className=''>{Chinese ? LangArray[45] : LangArray[44]}</div>
                           <div>{amount} USDT </div>
                       </div>
                       <div className='flex justify-between'>
-                          <div className=''>Staking Intrest:</div>
+                                <div className=''>{Chinese ? LangArray[47] : LangArray[46]}</div>
                                 <div>{stReward+ staticClaimed} USDT</div>
                       </div>
                             <div className='flex justify-between'>
-                                <div className=''>Booster Value:</div>
+                                <div className=''>{Chinese ? LangArray[49] : LangArray[48]}</div>
                                 <div>{dyReward+ dynamicClaimed} USDT</div>
                             </div>
                       <div className='flex justify-between'>
-                          <div className=''>Total Profit</div>
-                              <div>{dyReward+stReward+staticClaimed+dynamicClaimed} | {amount*2} <span className='text-yellow-300 font-normal'>Max</span></div>
+                                <div className=''>{Chinese ? LangArray[51] : LangArray[50]}</div>
+                                <div>{dyReward + stReward + staticClaimed + dynamicClaimed} | {amount * 2} <span className='text-yellow-300 font-normal'>{Chinese ? LangArray[53] : LangArray[52]}</span></div>
                       </div>
                   </div>)})
             }

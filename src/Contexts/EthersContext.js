@@ -19,7 +19,10 @@ export default function Ethers({ children }) {
     const { contract: NFTRelease, isLoading: L15 } = useContract(NFTReleaseAddres, NFTReleaseABI);
     const { contract:NFTContract, isLoading:L16 } = useContract(NFTAddress);
     const { contract: USDTContract, isLoading: L17 } = useContract(USDTAddress, TokenABI);
+    const [Chinese, setChinese] = useState(false)
     const address = useAddress();
+    const chinese = localStorage.getItem("chinese")
+    if (chinese) setChinese(true)
     //const address = "0xA56617070bc969993b76F3531147E99d92Eae268" //c
     // const address = "0x90A09F952760579B2701467089FAB1344dEedC82" 
     //const address = "0x49CA032fe5230f8c15eE3eE221e40d88C737A125" //a
@@ -152,7 +155,8 @@ export default function Ethers({ children }) {
             handleNFTStake,
             handleDCSell,
             handleStakingWithdraw,
-            handleDCWithdraw
+            handleDCWithdraw,
+            Chinese, setChinese
         }}>
             {children}
         </EthersContext.Provider>

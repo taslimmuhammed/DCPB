@@ -234,7 +234,7 @@ contract StakingContract {
     function handleDirectBonus(uint256 _amount) private {
         address _friend = refContract.getReferer(msg.sender);
         if (_friend == address(0) || Users[_friend].stakes.length == 0) return;
-        uint256 total = (_amount * 20) / 100;
+        uint256 total = (_amount * 15) / 100;
         RewardStruct[] memory rewardArr = calculateAllReward(_friend);
         StakeStruct[] memory stakes = Users[_friend].stakes;
         for (uint256 i = 0; i < stakes.length; i++) {

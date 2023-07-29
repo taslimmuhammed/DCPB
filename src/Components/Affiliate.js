@@ -6,6 +6,7 @@ import Loader from './Loader'
 import { BigNoToDC, BigNoToInt, BigNoToUSDT, DCTokenAddress } from '../Utils/Utils'
 import graph from '../Assets/graph.png'
 import community from '../Assets/community.png'
+import { LangArray } from '../Utils/Language'
 function Affiliate() {
     const { address,
         L0,
@@ -16,7 +17,7 @@ function Affiliate() {
         handleDCClaim,
         handleUpgrade,
         handleNFTStake,
-        handleDCSell,
+        Chinese,
         NFTRelease } = useContext(EthersContext)
     const [isLoading, setisLoading] = useState(false)
     const [NFTClaimable, setNFTClaimable] = useState(false)
@@ -134,7 +135,7 @@ function Affiliate() {
     else return (
         <div className='text-white'>
             <div className='ml-5 my-10'>
-                <div >Rank Status</div>
+                <div >{Chinese ? LangArray[75] : LangArray[74]}</div>
                 <div className='border border-yellow-300 border-2 w-80 p-4 flex mt-1'>
                     <img src={graph} className='w-10' />
                     <div className='text-yellow-500 text-2xl ml-5 mt-1 mr-5'> V{User ? User.rank : "0"}</div>
@@ -166,29 +167,29 @@ function Affiliate() {
 
             <div className="buttons">
                 <div>
-                    <a className={NFTClaimable ? "button" : "button disabled"} href="#" onClick={async()=>{await handleNFTClaim(); setNFTClaimable(false)}}>Claim NFT</a>
-                    <div className='text-sm text-center -mt-3 text-stone-500'>Avaliable:</div>
+                    <a className={NFTClaimable ? "button" : "button disabled"} href="#" onClick={async () => { await handleNFTClaim(); setNFTClaimable(false) }}>{Chinese ? LangArray[77] : LangArray[76]}</a>
+                    <div className='text-sm text-center -mt-3 text-stone-500'>{Chinese ? LangArray[93] : LangArray[92]}</div>
                     <div className='text-sm text-center '>{ClaimableNFTs && ClaimableNFTs} NFTs</div>
                 </div>
                 
                 <div>
-                    <a className={DCclaimable ? "button" : "button disabled"} href="#" onClick={async () => {await handleDCClaim();setDCclaimable(false)}}>Claim DC</a>
-                    <div className='text-sm text-center -mt-3 text-stone-500'>Avaliable:</div>
+                    <a className={DCclaimable ? "button" : "button disabled"} href="#" onClick={async () => { await handleDCClaim(); setDCclaimable(false) }}>{Chinese ? LangArray[79] : LangArray[78]}</a>
+                    <div className='text-sm text-center -mt-3 text-stone-500'>{Chinese ? LangArray[93] : LangArray[92]}</div>
                     <div className='text-sm text-center '>{DCtokens && DCtokens} DC</div>
                 </div>
             </div>
             {/*Bottom Box  */}
             <div className='p-3 my-5 border border-yellow-300 border-2'>
                 <div className='flex justify-between'>
-                    <div className=''>NFT Reward:</div>
+                    <div className=''>{Chinese ? LangArray[81] : LangArray[80]}</div>
                     <div>{NFTCount && NFTCount}NFT</div>
                 </div>
                 <div className='flex justify-between'>
-                    <div className=''>NFT Staking:</div>
+                    <div className=''>{Chinese ? LangArray[83] : LangArray[82]}</div>
                     <div>{StakedNFTs && StakedNFTs} NFT</div>
                 </div>
                 <div className='flex justify-between'>
-                    <div className=''>Staking Profit:</div>
+                    <div className=''>{Chinese ? LangArray[85] : LangArray[84]}</div>
                     <div>{DCclaimed && DCclaimed} DC</div>
                 </div>
                 {/* <div className='flex justify-between'>
@@ -196,7 +197,7 @@ function Affiliate() {
                     <div>{DCUser && DCUser.totalCoins} DC</div>
                 </div> */}
                 <div className='flex justify-between'>
-                    <div className=''>DC Coin Profit</div>
+                    <div className=''>{Chinese ? LangArray[89] : LangArray[88]}</div>
                     <div>{DCProfit && DCProfit} <span className='text-yellow-300 '>USDT</span></div>
                 </div>
             </div>

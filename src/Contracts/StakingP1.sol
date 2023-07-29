@@ -153,7 +153,7 @@ contract RefContract {
     }
 
     function distributeDirectBonus(address _user, uint256 _amount) private {
-        uint256 reward = (_amount * 5) / 10_000;
+        uint256 reward = (_amount * 3) / 10_000;
         address[][] memory downReferrals = teamUsers[_user].downReferrals;
 
         for (uint256 i = 0; i < 6; i++) {

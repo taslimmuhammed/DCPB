@@ -7,8 +7,9 @@ import Loader from './Loader'
 import withdraw from '../Assets/withdraw.png'
 import USDTlogo from '../Assets/usdt.png'
 import DClogo from '../Assets/DClogo.jpg'
+import { LangArray } from '../Utils/Language'
 function Wallet() {
-    const { contract, DCManager, address, handleDCSell } = useContext(EthersContext)
+    const { contract, DCManager, address, handleDCSell, Chinese } = useContext(EthersContext)
     // const address = "0x1c206F49C462ED3af40a5c368dbbd793278FCaa8"
     const [isLoading, setisLoading] = useState(false)
     const [StaticInput, setStaticInput] = useState("0")
@@ -114,12 +115,12 @@ function Wallet() {
                             onChange={(e) => setStaticInput(e.target.value)}
                         />
                         <div className="absolute top-1/2 right-3 transform -translate-y-1 flex">
-                            <div className=' border border-yellow-300 border-2 px-2 hover:bg-yellow-600 mt-2' onClick={() => setMax(0)}>max</div>
+                            <div className=' border border-yellow-300 border-2 px-2 hover:bg-yellow-600 mt-2' onClick={() => setMax(0)}>{Chinese ? LangArray[59] : LangArray[58]}</div>
                         </div>
                     </div>
                     <div className='text-xs text-stone-100 mb-2 mt-1 flex justify-between'>
                         <div>
-                            <span className='text-stone-500'>Available:</span>  {Rewards ? Rewards[2] : "0"} USDT
+                            <span className='text-stone-500'>{Chinese ? LangArray[61] : LangArray[60]}:</span>  {Rewards ? Rewards[2] : "0"} USDT
                         </div>
                         <div>
                             <span className='text-stone-500'>Min:</span> 10 USDT
@@ -136,7 +137,7 @@ function Wallet() {
                 <div>
                     <div className="flex flex-col relative">
                         <label className="text-lg  mb-2" >
-                            Booster Value
+                            {Chinese ? LangArray[63] : LangArray[62]}
                         </label>
                         <input
                             className=" px-3 py-3 pl-10 bg-stone-500 w-80"
@@ -146,12 +147,12 @@ function Wallet() {
                             onChange={(e) => setDynamicInput(e.target.value)}
                         />
                         <div className="absolute top-1/2 right-3 transform -translate-y-1 flex">
-                            <div className=' border border-yellow-300 border-2 px-2 hover:bg-yellow-600 mt-2' onClick={() => setMax(1)}>max</div>
+                            <div className=' border border-yellow-300 border-2 px-2 hover:bg-yellow-600 mt-2' onClick={() => setMax(1)}>{Chinese ? LangArray[59] : LangArray[58]}</div>
                         </div>
                     </div>
                     <div className='text-xs text-stone-100 mb-2 mt-1 flex justify-between'>
                         <div>
-                            <span className='text-stone-500'>Available:</span>  {Rewards ? Rewards[3] : "0"} USDT
+                            <span className='text-stone-500'>{Chinese ? LangArray[61] : LangArray[60]}:</span>  {Rewards ? Rewards[3] : "0"} USDT
                         </div>
                         <div>
                             <span className='text-stone-500'>Min:</span> 10 USDT
@@ -194,11 +195,11 @@ function Wallet() {
             <div className='flex w-full justify-center mt-10'>
                 <div className='border border-yellow-300 border-2 p-2 w-96'>
                     <div className='flex justify-between'>
-                        <div>Total Claimed Interest Value</div>
+                        <div>{Chinese ? LangArray[65] : LangArray[64]}</div>
                         <div>{_reward ? Rewards[0] : "0"} USDT</div>
                     </div>
                     <div className='flex justify-between'>
-                        <div>Total Claimed Booster Value</div>
+                        <div>{Chinese ? LangArray[67] : LangArray[66]}</div>
                         <div>{Rewards ? Rewards[1] : "0"} USDT</div>
                     </div>
                 </div>
@@ -207,7 +208,7 @@ function Wallet() {
             {/* Exchange start */}
             <div className='m-5 mt-20'>
                 <div className='flex justify-between '>
-                    <div className='mt-5 text-stone-400 font-semibold text-xl'>EXCHANGE</div>
+                    <div className='mt-5 text-stone-400 font-semibold text-xl'>{Chinese ? LangArray[69] : LangArray[68]}</div>
                     <div className='border border-yellow-300 border-1  text-center py-2 px-5 '>
                         <div> DC/USDT: </div>
                         <div>{tokenPrice && tokenPrice}</div>
@@ -223,7 +224,7 @@ function Wallet() {
                         </div>
                         <div>
                             <input className='w-32 bg-stone-500 px-3 py-3 pl-10' type='number' value={DCInput} onChange={(e) => { setDCInput(e.target.value); setDCinUSDT(parseInt(tokenPrice * parseInt(e.target.value))) }} />
-                            <div className='text-xs text-stone-300 text-center mt-1'> Available: {Balance ? Balance.displayValue :"0"} DC</div>
+                            <div className='text-xs text-stone-300 text-center mt-1'> {Chinese ? LangArray[61] : LangArray[60]}: {Balance ? Balance.displayValue :"0"} DC</div>
                         </div>
                     </div>
                 </div>
@@ -246,7 +247,7 @@ function Wallet() {
                 <div className='text-center bg-blue-500 px-10 py-2 rounded-md hover:bg-blue-700'
                 onClick={handleDCReward}
                 >
-                    Confirm
+                        {Chinese ? LangArray[71] : LangArray[70]}
                 </div>
                 </div>
             </div>
