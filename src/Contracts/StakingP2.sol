@@ -309,10 +309,10 @@ contract StakingContract {
                 Users[msg.sender].stakes[i].directBonus -= total;
                 return;
             }
-            if (total > allocArray[i].dynamicReward) {
-                Users[msg.sender].stakes[i].dynamicClaimed += allocArray[i]
-                    .dynamicReward;
-                total -= allocArray[i].dynamicReward;
+            uint256 onlyDynamic = allocArray[i].dynamicReward - stakes[i].directBonus;
+            if (total > onlyDynamic) {
+                Users[msg.sender].stakes[i].dynamicClaimed += onlyDynamic;
+                total -= onlyDynamic;
             } else {
                 Users[msg.sender].stakes[i].dynamicClaimed += total;
                 return;

@@ -77,7 +77,7 @@ function Affiliate() {
             if (_DCReward && BigNoToDC(_DCReward) > 1) {
                 setDCclaimable(true)
             }
-            
+            console.log({stakeUser})
         } catch (error) {
             console.log(error);
         }
