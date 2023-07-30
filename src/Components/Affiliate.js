@@ -104,33 +104,33 @@ function Affiliate() {
     //         console.log({ Active, Inactive, });
     //     }
     // }, [User])
-    useEffect(() => {
-        let Active = []
-        let Inactive = []
-        if (User && User.relationBonus) {
-            for (let index = 0; index < User.relationBonus.length; index++) {
-                const bonus = User.relationBonus[index];
-                let startDate = new Date(BigNoToInt(bonus.start) * 1000);
-                let endDate = new Date(BigNoToInt(bonus.end) * 1000);
-                const reward = BigNoToUSDT(bonus.reward)
-                let active = true
-                const referer = bonus.referer
-                if (endDate.getTime() < Date.now()) active = false
-                if (active) Active.push({ startDate, endDate, reward, referer })
-                else Inactive.push({ startDate, endDate, reward, referer })
-            }
-            console.log({ Active, Inactive, });
-        }
-    }, [User])
-    useEffect(() => {
-        try {
-           console.log(stakeUser);
-       calculateAllReward(stakeUser, User)
-        } catch (error) {
-            //console.log(error);
-        }
+    // useEffect(() => {
+    //     let Active = []
+    //     let Inactive = []
+    //     if (User && User.relationBonus) {
+    //         for (let index = 0; index < User.relationBonus.length; index++) {
+    //             const bonus = User.relationBonus[index];
+    //             let startDate = new Date(BigNoToInt(bonus.start) * 1000);
+    //             let endDate = new Date(BigNoToInt(bonus.end) * 1000);
+    //             const reward = BigNoToUSDT(bonus.reward)
+    //             let active = true
+    //             const referer = bonus.referer
+    //             if (endDate.getTime() < Date.now()) active = false
+    //             if (active) Active.push({ startDate, endDate, reward, referer })
+    //             else Inactive.push({ startDate, endDate, reward, referer })
+    //         }
+    //         console.log({ Active, Inactive, });
+    //     }
+    // }, [User])
+    // useEffect(() => {
+    //     try {
+    //        console.log(stakeUser);
+    //    calculateAllReward(stakeUser, User)
+    //     } catch (error) {
+    //         //console.log(error);
+    //     }
         
-    }, [stakeUser, User])
+    // }, [stakeUser, User])
 
     if (isLoading || L3 || L4 || L0) return <Loader />
     else return (

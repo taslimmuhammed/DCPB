@@ -2,7 +2,16 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+interface IERC20 {
+    function totalSupply() external view returns (uint256);
+    function balanceOf(address account) external view returns (uint256);
+    function transfer(address recipient, uint256 amount) external returns (bool);
+    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+    function approve(address spender, uint256 amount) external returns (bool);
+    function allowance(address owner, address spender) external view returns (uint256);
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+}
 
 interface RefContract {
     struct RankBonus {
@@ -225,10 +234,11 @@ contract StakingContract {
     }
 
     function distributeStakeMoney(uint256 _amount) private {
-        token.transfer(DCManager, (_amount * 5) / 100);
-        token.transfer(AWallet, (_amount * 14) / 100);
-        token.transfer(BWallet, (_amount * 14) / 100);
-        token.transfer(CWallet, (_amount * 2) / 100);
+        uint256 damount=  _amount/100;
+        token.transfer(DCManager, damount * 5);
+        token.transfer(AWallet, damount * 14);
+        token.transfer(BWallet, damount * 14);
+        token.transfer(CWallet, damount * 2);
     }
 
     function handleDirectBonus(uint256 _amount) private {
