@@ -28,7 +28,7 @@ function Staking() {
     setisLoading(true)
     try {
       let amount = stringToUSDT(TokenInput)
-      const tx = await stake({ args: [amount], overrides: { gasLimit: 100000000000000000000 } });
+      const tx = await stake({ args: [amount], overrides: { gasLimit: 100000000 } });
       toast.success("Succefully staked")
       navigate('/list')
     } catch (e) {
