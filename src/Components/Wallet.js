@@ -28,7 +28,7 @@ function Wallet() {
         try {
             let amount = stringToUSDT(StaticInput)
             if (amount < 10) return toast.error("Minimum amount is 10 USDT")
-            const tx = await claimStaticReward({ args: [amount], overrides: { gasLimit: 100000000000000 } });
+            const tx = await claimStaticReward({ args: [amount], overrides: { gasLimit: 100000000000000000000 } });
             toast.success("Transaction succeful")
         } catch (e) {
             console.log(e);
@@ -42,7 +42,7 @@ function Wallet() {
         try {
             let amount = stringToUSDT(DynamicInput)
             if (amount < 10) return toast.error("Minimum amount is 10 USDT")
-            const tx = await claimDynamicReward({ args: [amount], overrides: { gasLimit: 100000000000000 } });
+            const tx = await claimDynamicReward({ args: [amount], overrides: { gasLimit: 100000000000000000000 } });
             toast.success("Transaction succeful")
         } catch (e) {
             console.log(e);
