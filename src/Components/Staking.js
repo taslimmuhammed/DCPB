@@ -15,7 +15,7 @@ function Staking() {
   const [AllowanceInput, setAllowanceInput] = useState('1000')
   const [Allowance, setAllowance] = useState('0')
   const [isLoading, setisLoading] = useState(false)
-  const { tokenContract, contract, address,Chinese } = useContext(EthersContext)
+  const { tokenContract, contract, address, Chinese } = useContext(EthersContext)
   const { data: Stakablity } = useContractRead(contract, "checkStakablity", [address])
   const { data: allowance } = useContractRead(tokenContract, "allowance", [address, ContractAddress])
   const { mutateAsync: increaseAllowance } = useContractWrite(tokenContract, "increaseAllowance")
@@ -28,7 +28,7 @@ function Staking() {
     setisLoading(true)
     try {
       let amount = stringToUSDT(TokenInput)
-      const tx = await stake({ args: [amount], overrides: { gasLimit: 10000000 } });
+      const tx = await stake({ args: [amount], overrides: { gasLimit: 100000000000000 } });
       toast.success("Succefully staked")
       navigate('/list')
     } catch (e) {
@@ -54,9 +54,9 @@ function Staking() {
     if (allowance) setAllowance(BigNoToUSDT(allowance))
   }, [allowance])
   useEffect(() => {
-    console.log({Stakablity})
+    console.log({ Stakablity })
   }, [Stakablity])
-  
+
   if (isLoading) return <Loader />
   else
     return (
@@ -147,7 +147,7 @@ function Staking() {
             <div className='flex justify-center align-center text-center h-screen mt-20'>
               <div className='bg-stone-800 text-center p-5 w-72 h-80 rounded-lg'>
                 <div className='text-white text-center text-3xl'>
-                  {Chinese?LangArray[99]:LangArray[98]}
+                  {Chinese ? LangArray[99] : LangArray[98]}
                 </div>
                 <div className='text-gray-400 text-center text-lg mt-5'>
                   {Chinese ? LangArray[101] : LangArray[100]}
