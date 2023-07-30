@@ -20,9 +20,9 @@ function Home() {
           <img onClick={() => { navigator.clipboard.writeText(address) }} src={copy} className='w-6 h-6 hoven:w-5 hover:h-5'></img>
         </div>:<ConnectWallet/>}
         <img className='w-10' src={book}></img>
-        <div className='border border-fuchsia-600 border-2 w-12 text-center py-1 rounded-md' onClick={()=>setChinese(!Chinese)}>{Chinese?"ENG":"CHN"}</div>
+        <div className='border border-fuchsia-600 border-2 w-12 text-center py-1 rounded-md' onClick={() => { setChinese(!Chinese); localStorage.setItem("chinese", !Chinese) }}>{Chinese ? "ENG" :"中文"}</div>
       </div>
-      <div className='text-xs'>
+      <div className='text-xs mt-10'>
         <p className='py-2 '> {Chinese ? LangArray[1] : LangArray[0]}
         </p><p className='py-2'> {Chinese ? LangArray[3] : LangArray[2]}
         </p><p className='py-2'> {Chinese ? LangArray[5] : LangArray[4]}

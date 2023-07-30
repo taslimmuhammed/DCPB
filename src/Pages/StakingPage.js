@@ -14,7 +14,7 @@ function StakingPage() {
   else if (!SignedIn) return (<Login />)
   else return (
     <div className='pb-32'>
-        <Navbar heading="USDT Staking" />
+      <Navbar english="USDT Staking" chinese="USDT资押"/>
         <Staking/> 
       <Footer index={2} />
       </div>

@@ -29,10 +29,10 @@ function Admin() {
         const [DCWithdrawInput, setDCWithdrawInput] = useState('0')
         const [TotalClaimable, setTotalClaimable] = useState(0)
     const { data: _totalDeposite } = useContractRead(contract, "totalDeposite", [])
-    const { data: _totalClaimble } = useContractRead(contract, "getTotalRewards", ["0x90A09F952760579B2701467089FAB1344dEedC82"])
+    const { data: _totalClaimble } = useContractRead(contract, "calculateTotalClaimableReward", [])
     const { data: _nftRelease } = useContractRead(NFTRelease, "totalReleased", [])
     const { data: _totalDCSold } = useContractRead(DCManager, "getTotalSold", [])
-    const { data: _totalClaimed } = useContractRead(DCManager, "totalClaimed", [])
+    const { data: _totalClaimed } = useContractRead(contract, "calculateTotalClaimableReward", [])
     const { data: _StakedNFTs } = useContractRead(NFTStaking, "totalStaked", [])
     const { data: _totalUsers } = useContractRead(contract, "totalUsers", [])
     const { data: _totalReleased } = useContractRead(NFTStaking, "totalReleased", [])
@@ -40,15 +40,15 @@ function Admin() {
 
     useEffect(() => {
    //    if (address && address != "0x6B851e5B220438396ac5ee74779DDe1a54f795A9"){navigate('/') }
-        if (_totalClaimble) setTotalClaimable(BigNoToUSDT(_totalClaimble))
+        if (_totalClaimble) setTotalClaimable(BigNoToUSDT(_totalClaimble.staticReward) + BigNoToUSDT(_totalClaimble.dynamicReward))
        if(_totalDeposite) setTotalDeposite(BigNoToUSDT(_totalDeposite))
        if(_nftRelease) setNFTReleased(BigNoToInt(_nftRelease))
        if(_totalDCSold) setDCSold(BigNoToInt(_totalDCSold))
-       if(_totalClaimed) settotalClaimed(BigNoToInt(_totalClaimed))
+    //    if(_totalClaimed) console.log(BigNoToInt(_totalClaimed))
        if(_StakedNFTs) setStakedNFTs(BigNoToInt(_StakedNFTs))
        if(_StakingusdtBalance) setStakingUSDTBalance(BigNoToUSDT(_StakingusdtBalance))
        if (_totalUsers) settotalUsers(BigNoToInt(_totalUsers))
-        console.log(_totalClaimble);
+        console.log(_totalClaimed);
     }, [_nftRelease, _totalDeposite, _totalDCSold, _totalClaimed, _StakedNFTs, _StakingusdtBalance, _totalUsers, _totalReleased, _totalClaimble])
     if (isLoading || L0) return <Loader />
     else return (

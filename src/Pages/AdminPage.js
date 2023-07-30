@@ -13,7 +13,7 @@ function AdminPage() {
   else if (L1 || L2 ||L13 || L14 || L15 || L17) return <Loader />
   else return (
     <div className='pb-32'>
-      <Navbar heading="Admin Panel" />
+      <Navbar english="Admin Panel" chinese="Admin Panel"/>
       <Admin/> 
     </div>
   )

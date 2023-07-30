@@ -16,7 +16,7 @@ function WalletPage() {
     else if (!SignedIn) return (<Login />)
     else return (
         <div className='pb-32'>
-            <Navbar heading="Wallet" />
+            <Navbar english="Wallet" chinese="钱包"/>
             <Wallet />
             <Footer index={4} />
         </div>

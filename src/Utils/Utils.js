@@ -26,7 +26,7 @@ export const BigNoToInt = (bigno) => {
         let amount = parseInt(bigno._hex, 16)
         return amount
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         return 0
     }
 }
@@ -36,7 +36,7 @@ export const BigNoToDC = (bigno) => {
         amount = parseInt(amount._hex, 16)
         return amount
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         return 0
     }
 }
@@ -47,7 +47,7 @@ export const stringToUSDT = (_amount) => {
         amount = amount.mul(10 ** 6 + "")
         return amount._hex
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         return 0
     }
 
@@ -58,7 +58,7 @@ export const stringToBigInt = (_amount) => {
         amount = ethers.BigNumber.from(amount)
         return amount
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         return 0
     }
 
@@ -79,7 +79,7 @@ export function HexToDateString(timestamp) {
         date = new Date(date)
         return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         return ''
     }
 }  
@@ -89,10 +89,11 @@ export const hexTimeToUnix = (hexTime) => {
         date = new Date(date)
         return date.getTime()
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         return 0
     }
 }
+
 //0 - 0x0000000000000000000000000000000000000000
 //1 - 0xd0cc32348E98f148E769f034A9C79b1C5a0e2A78
 //2 - 0x8FC715eF0A42940aD52bA6E52460CCbcAb8776E7

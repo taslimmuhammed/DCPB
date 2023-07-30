@@ -1,14 +1,15 @@
 import { BigNoToUSDT, hexTimeToUnix } from "./Utils";
 
 
-export const calculateAllReward = (Users, relationBonus, rankBonus) => {
-
-    let baseTime = hexTimeToUnix(Users.stakes[0].timestamp);
+export const calculateAllReward = (StakeUser, teamUser) => {
+    if (!StakeUser || !teamUser) return console.log("Not ready");
+    let baseTime = hexTimeToUnix(StakeUser.stakes[0].timestamp);
     baseTime = baseTime - (baseTime % 60000);
+    baseTime += 60000;
     let currentTime = new Date().getTime();
-    let stakes = Users.stakes;
-    let relationBonuses = relationBonus;
-    let rankBonuses = rankBonus;
+    let stakes = StakeUser.stakes;
+    let relationBonuses = teamUser.relationBonus;
+    let rankBonuses = teamUser.rankBonus;
 
     let rewardStructs = [];
     for (let i = 0; i < stakes.length; i++) {
@@ -19,66 +20,64 @@ export const calculateAllReward = (Users, relationBonus, rankBonus) => {
         }
     }
     let availableArray = [];
-    if (Users.stakes.length == 0) {
+    if (StakeUser.stakes.length == 0) {
         return rewardStructs;
     }
     for (let i = 0; i < stakes.length; i++)
         availableArray[i] = BigNoToUSDT(stakes[i].reward) - BigNoToUSDT(stakes[i].directBonus) - BigNoToUSDT(stakes[i].directClaimed);
+    let staticBonus = [];
+    for (let i = 0; i < stakes.length; i++)
+        staticBonus[i] = BigNoToUSDT(stakes[i].reward) / 200;
 
+    console.log("staticBonus: ", staticBonus);
     //interpreting and allocating all rewards day by day
-    console.log(availableArray[0]);
     for (let i = baseTime; i < currentTime; i += 60000) {
         let dynamicReward = 0;
         // calculating dynamic
         for (let j = 0; j < relationBonuses.length; j++) {
-            if (i > relationBonuses[j].timestamp)
-                dynamicReward += BigNoToUSDT(relationBonuses[j].reward);
+            if (i > relationBonuses[j].start && i <= relationBonuses[j].end)
+                dynamicReward += relationBonuses[j].reward;
         }
         //adding team bonus
         for (let j = 0; j < rankBonuses.length; j++) {
-            if (i > hexTimeToUnix(rankBonuses[j].start) && i <= hexTimeToUnix(rankBonuses[j].end))
-                dynamicReward += BigNoToUSDT(rankBonuses[j].reward) * rankBonuses[j].multiplier;
+            if (i > rankBonuses[j].start && i <= rankBonuses[j].end)
+                dynamicReward += rankBonuses[j].reward * rankBonuses[j].multiplier;
         }
-        //calculating static
         for (let j = 0; j < stakes.length; j++) {
-            if (availableArray[j] != 0 && hexTimeToUnix(stakes[j].timestamp) < i) {
-                let staticReward = BigNoToUSDT(stakes[j].reward) / 200;
-                if (availableArray[j] <= staticReward) {
-                    console.log("Before")
-                    console.log(" Rewards struct staticReward", rewardStructs[j].staticReward);
-                    console.log("available", availableArray[j]);
+            if (availableArray[j] != 0 && stakes[j].timestamp < i) {
+                console.log(availableArray);
+                if (availableArray[j] <= staticBonus[j]) {
                     rewardStructs[j].staticReward += availableArray[j];
                     availableArray[j] = 0;
-                    console.log("After")
-                    console.log(" Rewards struct staticReward", rewardStructs[j].staticReward);
-                    console.log("available", availableArray[j]);
-                }
-                else {
-                    rewardStructs[j].staticReward += staticReward;
-                    availableArray[j] -= staticReward;
-                    if (availableArray[j] > dynamicReward) {
+                    console.log("Set ", j, "As zero", rewardStructs[j]);
+                    console.log("directBonus: ", BigNoToUSDT(stakes[j].directBonus), " + ", BigNoToUSDT(stakes[j].directClaimed));
+                } else {
+                    rewardStructs[j].staticReward += staticBonus[j];
+                    availableArray[j] -= staticBonus[j];
+                    //subtrating dynamic reward
+                    if (availableArray[j] <= dynamicReward) {
+                        rewardStructs[j].dynamicReward += availableArray[j];
+                        availableArray[j] = 0;
+                        console.log("Set ", j, "As zeror ", rewardStructs[j]);
+                    } else {
                         rewardStructs[j].dynamicReward += dynamicReward;
                         availableArray[j] -= dynamicReward;
-                    }
-                    else {
-                        rewardStructs[j].dynamicReward += BigNoToUSDT(availableArray[j]);
-                        availableArray[j] = 0;
+                        console.log("Subtracting dynamic reward", dynamicReward);
                     }
                 }
             }
         }
-       // console.log(rewardStructs[0], availableArray[0]);
     }
-    console.log(availableArray[0]);
+    // console.log(rewardStructs[0], availableArray[0]);
+    console.log("Final Reward");
     for (let i = 0; i < stakes.length; i++) {
-        console.log("directBonus",BigNoToUSDT(stakes[i].directBonus));
-        console.log("dynamicClaimed", BigNoToUSDT(stakes[i].dynamicClaimed));
-        console.log("staticClaimed", BigNoToUSDT(stakes[i].staticClaimed));
         rewardStructs[i].dynamicReward += BigNoToUSDT(stakes[i].directBonus);
         rewardStructs[i].dynamicReward -= BigNoToUSDT(stakes[i].dynamicClaimed);
         rewardStructs[i].staticReward -= BigNoToUSDT(stakes[i].staticClaimed);
         rewardStructs[i].available = availableArray[i];
+        console.log("directBonus: ", BigNoToUSDT(stakes[i].directBonus), " + ", BigNoToUSDT(stakes[i].directClaimed));
+        console.log("dynamicClaimed", rewardStructs[i].dynamicReward, " + ", BigNoToUSDT(stakes[i].dynamicClaimed));
+        console.log("staticClaimed", rewardStructs[i].staticReward, " + ", BigNoToUSDT(stakes[i].staticClaimed));
     }
-    console.log(rewardStructs[0]);
     return rewardStructs;
 }

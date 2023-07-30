@@ -7,6 +7,7 @@ import { BigNoToDC, BigNoToInt, BigNoToUSDT, DCTokenAddress } from '../Utils/Uti
 import graph from '../Assets/graph.png'
 import community from '../Assets/community.png'
 import { LangArray } from '../Utils/Language'
+import { calculateAllReward } from '../Utils/test'
 function Affiliate() {
     const { address,
         L0,
@@ -123,8 +124,8 @@ function Affiliate() {
     }, [User])
     useEffect(() => {
         try {
-          //  console.log(stakeUser);
-       // calculateAllReward(stakeUser, User.relationBonus, User.rankBonus)
+           console.log(stakeUser);
+       calculateAllReward(stakeUser, User)
         } catch (error) {
             //console.log(error);
         }
@@ -209,10 +210,10 @@ function Affiliate() {
                     <div className='flex mt-6'>
                         <input className='bg-stone-700 w-32 py-2 px-3 mr-10' placeholder='0' onChange={(e) => setNFTinput(e.target.value)} />
                         <div className='border border-yellow-300 border-2 p-2 hover:bg-yellow-600' onClick={() => handleNFTStake(NFTinput)}>
-                          Stake NFT
+                            {Chinese ? LangArray[107] : LangArray[106]}
                         </div>
                     </div>
-                    <div className='text-xs text-stone-300'> Available: {NFTBalance && NFTBalance} NFT</div>
+                    <div className='text-xs text-stone-300'> {Chinese?LangArray[25]:LangArray[24]}: {NFTBalance && NFTBalance} NFT</div>
 
                     {/* <div className='flex mt-6'>
                         <input className='bg-stone-700 w-32 py-2 px-3 mr-10' placeholder='0' onChange={(e) => setDCinput(e.target.value)} />

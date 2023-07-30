@@ -14,7 +14,7 @@ function AffiliatePage() {
   else if (!SignedIn) return (<Login />)
   else return (
     <div className='pb-32'>
-          <Navbar heading="Affiliate"/>
+      <Navbar english="Community" chinese="社区"/>
           <Affiliate/>
          <Footer index={5} />
     </div>

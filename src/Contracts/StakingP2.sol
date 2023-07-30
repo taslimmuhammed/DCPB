@@ -123,9 +123,7 @@ contract StakingContract {
         locked = false;
     }
 
-    function calculateAllReward(
-        address _user
-    ) public view returns (RewardStruct[] memory) {
+    function calculateAllReward(address _user) public view returns (RewardStruct[] memory) {
         StakeStruct[] memory stakes = Users[_user].stakes;
         RewardStruct[] memory rewardStructs = new RewardStruct[](stakes.length);
         if (Users[_user].stakes.length == 0) {
@@ -139,6 +137,11 @@ contract StakingContract {
         RefContract.RelationStruct[] memory relationBonuses = refContract.getRelationBonus(_user);
         RefContract.RankBonus[] memory rankBonuses = refContract.getRankBonus(_user);
         uint256[] memory availableArray = new uint256[](stakes.length);
+        uint256[] memory staticBonus = new uint256[](stakes.length);
+
+        for (uint256 i = 0; i < staticBonus.length; i++)
+            staticBonus[i] =stakes[i].reward/200;
+
         for (uint256 i = 0; i < stakes.length; i++)
             availableArray[i] =stakes[i].reward - stakes[i].directBonus - stakes[i].directClaimed;
 
@@ -153,28 +156,25 @@ contract StakingContract {
             //adding team bonus
             for (uint256 j = 0; j < rankBonuses.length; j++) {
                 if (i > rankBonuses[j].start && i <= rankBonuses[j].end)
-                    dynamicReward +=
-                        rankBonuses[j].reward *
-                        rankBonuses[j].multiplier;
+                    dynamicReward +=rankBonuses[j].reward*rankBonuses[j].multiplier;
             }
 
             //calculating static
             for (uint256 j = 0; j < stakes.length; j++) {
                 if (availableArray[j] != 0 && stakes[j].timestamp < i) {
-                    uint256 staticReward = (stakes[j].reward) / 200;
-                    if (availableArray[j] <= staticReward) {
+                    if (availableArray[j] <= staticBonus[j]) {
                         rewardStructs[j].staticReward += availableArray[j];
                         availableArray[j] = 0;
-                        continue;
                     } else {
-                        rewardStructs[j].staticReward += staticReward;
-                        availableArray[j] -= staticReward;
-                        if (availableArray[j] > dynamicReward) {
-                            rewardStructs[j].dynamicReward += dynamicReward;
-                            availableArray[j] -= dynamicReward;
-                        } else {
+                        rewardStructs[j].staticReward += staticBonus[j];
+                        availableArray[j] -= staticBonus[j];
+                        //subtrating dynamic reward
+                        if (availableArray[j] <= dynamicReward) {
                             rewardStructs[j].dynamicReward += availableArray[j];
                             availableArray[j] = 0;
+                        } else {
+                            rewardStructs[j].dynamicReward += dynamicReward;
+                            availableArray[j] -= dynamicReward;
                         }
                     }
                 }

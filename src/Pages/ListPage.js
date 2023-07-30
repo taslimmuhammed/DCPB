@@ -16,7 +16,7 @@ function ListPage() {
   else if (!SignedIn) return (<Login />)
   else return (
     <div className='pb-32'>
-      <Navbar heading="Staking List"/>
+      <Navbar english="Staking List" chinese="资押清单"/>
       <StakingList/>
       <Footer index={3} />
     </div>

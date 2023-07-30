@@ -123,7 +123,7 @@ function Wallet() {
                             <span className='text-stone-500'>{Chinese ? LangArray[61] : LangArray[60]}:</span>  {Rewards ? Rewards[2] : "0"} USDT
                         </div>
                         <div>
-                            <span className='text-stone-500'>Min:</span> 10 USDT
+                            <span className='text-stone-500'>{Chinese ? LangArray[109] : LangArray[108]}:</span> 10 USDT
                         </div>
                     </div>
                 </div>
@@ -155,7 +155,7 @@ function Wallet() {
                             <span className='text-stone-500'>{Chinese ? LangArray[61] : LangArray[60]}:</span>  {Rewards ? Rewards[3] : "0"} USDT
                         </div>
                         <div>
-                            <span className='text-stone-500'>Min:</span> 10 USDT
+                            <span className='text-stone-500'>{Chinese ? LangArray[109] : LangArray[108]}:</span> 10 USDT
                         </div>
                     </div>
                 </div>

@@ -74,7 +74,7 @@ function Staking() {
               onChange={(e) => setAllowanceInput(e.target.value)}
             />
             <div className='text-sm text-stone-100 mb-2 mt-1'>
-              <span className='text-stone-500'>Available:</span>  {Balance && Balance.displayValue} USDT
+              <span className='text-stone-500'>{Chinese ? LangArray[25] : LangArray[24]}:</span>  {Balance && Balance.displayValue} USDT
             </div>
             <p className='text-xs text-red-500'>{Chinese ? LangArray[17] : LangArray[16]}</p>
             <div className='mt-5 w-full text-center bg-stone-600 text-yellow-400 font-bold text-2xl p-2 hover:bg-stone-700 rounded-lg cursor-pointer '
@@ -147,17 +147,17 @@ function Staking() {
             <div className='flex justify-center align-center text-center h-screen mt-20'>
               <div className='bg-stone-800 text-center p-5 w-72 h-80 rounded-lg'>
                 <div className='text-white text-center text-3xl'>
-                  You have already staked
+                  {Chinese?LangArray[99]:LangArray[98]}
                 </div>
                 <div className='text-gray-400 text-center text-lg mt-5'>
-                  You wont be able to stake again, until the current stake is over.
+                  {Chinese ? LangArray[101] : LangArray[100]}
                 </div>
 
                 {/* Veiw stakes button */}
                 <div className='mt-10 w-full text-center bg-stone-600 text-yellow-400 font-bold text-2xl p-2 hover:bg-stone-700 rounded-md cursor-pointer'
                   onClick={() => navigate('/list')}
                 >
-                  View Stakes
+                  {Chinese ? LangArray[103] : LangArray[102]}
                 </div>
               </div>
             </div>
