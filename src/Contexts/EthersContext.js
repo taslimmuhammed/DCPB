@@ -137,7 +137,9 @@ export default function Ethers({ children }) {
     }
     useEffect(() => {
         const chinese = localStorage.getItem("chinese")
-        if (chinese) setChinese(true)
+        console.log(typeof chinese);
+        if (chinese=='false') setChinese(false)
+        else setChinese(true)
     }, [])
     
     return (

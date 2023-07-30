@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import copy from '../Assets/copy.svg'
 import { EthersContext } from '../Contexts/EthersContext'
 import VideoPlayer from './VideoPlayer'
-import logo from '../Assets/logo.jpg'
+import logo from '../Assets/DCPBlogo.png'
 import { ConnectWallet } from '@thirdweb-dev/react'
 import { shortenAddress } from '../Utils/Utils'
 import book from '../Assets/book.png'
@@ -20,7 +20,7 @@ function Home() {
           <img onClick={() => { navigator.clipboard.writeText(address) }} src={copy} className='w-6 h-6 hoven:w-5 hover:h-5'></img>
         </div>:<ConnectWallet/>}
         <img className='w-10' src={book}></img>
-        <div className='border border-fuchsia-600 border-2 w-12 text-center py-1 rounded-md' onClick={() => { setChinese(!Chinese); localStorage.setItem("chinese", !Chinese) }}>{Chinese ? "ENG" :"中文"}</div>
+        <div className='border border-fuchsia-600 border-2 w-12 text-center py-1 rounded-md' onClick={() => { localStorage.setItem("chinese", (!Chinese+"")); setChinese(!Chinese); console.log(localStorage.getItem("chinese")) }}>{Chinese ? "ENG" :"中文"}</div>
       </div>
       <div className='text-xs mt-10'>
         <p className='py-2 '> {Chinese ? LangArray[1] : LangArray[0]}
