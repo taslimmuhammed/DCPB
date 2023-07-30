@@ -53,42 +53,6 @@ export const StakingABI = [
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_user",
-                "type": "address"
-            }
-        ],
-        "name": "calculateAllReward",
-        "outputs": [
-            {
-                "components": [
-                    {
-                        "internalType": "uint256",
-                        "name": "staticReward",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "dynamicReward",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "available",
-                        "type": "uint256"
-                    }
-                ],
-                "internalType": "struct StakingContract.RewardStruct[]",
-                "name": "",
-                "type": "tuple[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [],
         "name": "calculateTotalClaimableReward",
         "outputs": [
@@ -294,11 +258,46 @@ export const StakingABI = [
                                 "internalType": "uint256",
                                 "name": "directClaimed",
                                 "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "staticClaimable",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "dynamicClaimable",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "staticBonus",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "index",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "filled",
+                                "type": "bool"
                             }
                         ],
                         "internalType": "struct StakingContract.StakeStruct[]",
                         "name": "stakes",
                         "type": "tuple[]"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "baseTime",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "totalStakes",
+                        "type": "uint256"
                     }
                 ],
                 "internalType": "struct StakingContract.UserStruct",
@@ -328,16 +327,6 @@ export const StakingABI = [
                     },
                     {
                         "internalType": "uint256",
-                        "name": "staticReward",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "dynamicReward",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
                         "name": "staticClaimed",
                         "type": "uint256"
                     },
@@ -350,9 +339,44 @@ export const StakingABI = [
                         "internalType": "uint256",
                         "name": "timestamp",
                         "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "directBonus",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "directClaimed",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "staticClaimable",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "dynamicClaimable",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "staticBonus",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "index",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "filled",
+                        "type": "bool"
                     }
                 ],
-                "internalType": "struct StakingContract.StakeListStruct[]",
+                "internalType": "struct StakingContract.StakeStruct[]",
                 "name": "",
                 "type": "tuple[]"
             }
@@ -468,7 +492,26 @@ export const StakingABI = [
                 "type": "address"
             }
         ],
-        "name": "getTotalRewards",
+        "name": "getTotalStakes",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_user",
+                "type": "address"
+            }
+        ],
+        "name": "getTotalWithdrawable",
         "outputs": [
             {
                 "components": [
@@ -497,22 +540,10 @@ export const StakingABI = [
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_user",
-                "type": "address"
-            }
-        ],
-        "name": "getTotalStakes",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
+        "inputs": [],
+        "name": "refreshRewards",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
     },
     {

@@ -321,7 +321,26 @@ contract RefContract {
     ) external view returns (RankBonus[] memory) {
         return teamUsers[_user].rankBonus;
     }
-
+    function getValidRankBonus(address _user, uint256 baseTime) external view returns (RankBonus[] memory) {
+        RankBonus[] memory rankBonus = teamUsers[_user].rankBonus;
+        uint256 count;
+        for (uint256 i = 0; i < rankBonus.length; i++)
+            if (rankBonus[i].start>=baseTime) count++;
+        RankBonus[] memory newRankBonus = new RankBonus[](count);
+        for (uint256 i = 0; i < rankBonus.length; i++)
+            if (rankBonus[i].start>=baseTime) newRankBonus[i] = rankBonus[i];
+        return newRankBonus;
+    }
+    function getValidRelationalBonus(address _user, uint256 baseTime) external view returns (RelationStruct[] memory) {
+        RelationStruct[] memory relationBonus = teamUsers[_user].relationBonus;
+        uint256 count;
+        for (uint256 i = 0; i < relationBonus.length; i++)
+            if (relationBonus[i].start>=baseTime) count++;
+        RelationStruct[] memory newrelationBonus = new RelationStruct[](count);
+        for (uint256 i = 0; i < relationBonus.length; i++)
+            if (relationBonus[i].start>=baseTime) newrelationBonus[i] = relationBonus[i];
+        return newrelationBonus;
+    }
     function getTotalStake(address _user) external view returns (uint256) {
         return teamUsers[_user].totalStake;
     }
@@ -386,4 +405,6 @@ contract RefContract {
             }
         }
     }
+
+    
 }

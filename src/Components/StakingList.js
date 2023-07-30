@@ -1,24 +1,44 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { EthersContext } from '../Contexts/EthersContext'
 import Loader from './Loader'
-import { useContractRead } from '@thirdweb-dev/react'
+import { useContractRead, useContractWrite } from '@thirdweb-dev/react'
 import { BigNoToUSDT, HexToDateString } from '../Utils/Utils'
 import { LangArray } from '../Utils/Language'
+import { toast } from 'react-toastify'
 
 function StakingList() {
     const { contract, address, Chinese } = useContext(EthersContext)
-    const { data: stakingList, isLoading, error } = useContractRead(contract, "getStakes", [address])
-    
-    if (isLoading) return (<Loader />)
+    const { data: stakingList, isLoading:L10, error } = useContractRead(contract, "getStakes", [address])
+    const { mutateAsync: refresh } = useContractWrite(contract, "refreshRewards")
+    const [isLoading, setisLoading] = useState(false)
+    const handleRefresh = async () => {
+        setisLoading(true)
+        try {
+            const tx = await refresh({ args: [] });
+            toast.success("Succefully refreshed")
+        } catch (e) {
+            if (e?.data?.message) toast.error(e.data.message)
+            else toast.error("transaction failed, please re-try after few minutes")
+        }
+        setisLoading(false)
+    }
+    if (isLoading || L10) return (<Loader />)
     else return (<div className='p-3 mb-10'>
+        <div className='flex justify-center w-full mb-3'>
+            <div className=' py-3 px-5 bg-blue-500 text-white rounded-md' onClick={handleRefresh}>
+                Refresh
+            </div>
+        </div>
           <div className='w-full bg-stone-800 p-5 text-white font-semibold text-sm'>
             {
                   stakingList && stakingList.map((stake, index) =>{
+
                       const amount = BigNoToUSDT(stake.reward)/2
-                      const dyReward = BigNoToUSDT(stake.dynamicReward)
-                      const stReward = BigNoToUSDT(stake.staticReward)
+                      const dyReward = BigNoToUSDT(stake.dynamicClaimable)
+                      const stReward = BigNoToUSDT(stake.staticClaimable)
                       const staticClaimed = BigNoToUSDT(stake.staticClaimed)
                       const dynamicClaimed = BigNoToUSDT(stake.dynamicClaimed)
+
                     return (
                   <div className='bg-stone-700 p-3 mb-3' key={index}>
                       <div className='flex justify-between'>
