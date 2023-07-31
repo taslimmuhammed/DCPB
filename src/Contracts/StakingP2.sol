@@ -265,6 +265,7 @@ contract StakingContract {
          for (uint i = 0; i < stakes.length; i++) {
             rewardStruct.staticReward += stakes[i].staticClaimable;
             rewardStruct.dynamicReward += stakes[i].dynamicClaimable;
+            rewardStruct.dynamicReward += stakes[i].directBonus;
          }
          return rewardStruct;
     }
