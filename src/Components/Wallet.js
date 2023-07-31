@@ -17,7 +17,8 @@ function Wallet() {
     const [DCInput, setDCInput] = useState(0)
     const [tokenPrice, settokenPrice] = useState(0)
     const { data: _tokenPrice } = useContractRead(DCManager, "tokenPrice", [])
-    const { data: _reward, isLoading: L4 } = useContractRead(contract, "getTotalWithdrawable", [address])
+    // const { data: _reward, isLoading: L4 } = useContractRead(contract, "getTotalWithdrawable", [address])
+    const { data: _reward, isLoading: L10, error } = useContractRead(contract, "getStakes", [address])
     const { mutateAsync: claimDynamicReward } = useContractWrite(contract, "claimDynamicReward")
     const { mutateAsync: claimStaticReward } = useContractWrite(contract, "claimStaticReward")
     const { data: Balance } = useBalance(DCTokenAddress);
@@ -80,19 +81,21 @@ function Wallet() {
 
     }, [tokenPrice, DCinUSDT])
     useEffect(() => {
-        // if (_reward) {
-        //     let stT = 0;
-        //     let dyT = 0;
-        //     let dyC = 0;
-        //     let stC = 0;
-        //     for (let index = 0; index < _reward.length; index++) {
-        //         stT += BigNoToUSDT(_reward[index].staticClaimed);
-        //         dyT += BigNoToUSDT(_reward[index].dynamicClaimed);
-        //         stC += BigNoToUSDT(_reward[index].staticReward);
-        //         dyC += BigNoToUSDT(_reward[index].dynamicReward);
-        //     }
-        //     setRewards([stT, dyT, stC, dyC])
-        // }
+        if (_reward) {
+            let stT = 0;
+            let dyT = 0;
+            let dyC = 0;
+            let stC = 0;
+            for (let index = 0; index < _reward.length; index++) {
+                stT += BigNoToUSDT(_reward[index].staticClaimable);
+                dyT += BigNoToUSDT(_reward[index].dynamicClaimable);
+                dyT += BigNoToUSDT(_reward[index].directBonus);
+                stC += BigNoToUSDT(_reward[index].staticClaimed);
+                dyC += BigNoToUSDT(_reward[index].dynamicClaimed);
+                dyC += BigNoToUSDT(_reward[index].directClaimed);
+            }
+            setRewards([stT, dyT, stC, dyC])
+        }
         if (_reward) {
             console.log(_reward);
             let st = BigNoToUSDT(_reward.staticReward);
@@ -202,11 +205,11 @@ function Wallet() {
                     <div className='border border-yellow-300 border-2 p-2 w-96'>
                         <div className='flex justify-between'>
                             <div>{Chinese ? LangArray[65] : LangArray[64]}</div>
-                            <div>{_reward ? Rewards[0] : "0"} USDT</div>
+                            <div>{_reward ? Rewards[2] : "0"} USDT</div>
                         </div>
                         <div className='flex justify-between'>
                             <div>{Chinese ? LangArray[67] : LangArray[66]}</div>
-                            <div>{Rewards ? Rewards[1] : "0"} USDT</div>
+                            <div>{Rewards ? Rewards[3] : "0"} USDT</div>
                         </div>
                     </div>
                 </div>
