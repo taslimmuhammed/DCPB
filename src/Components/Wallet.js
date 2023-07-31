@@ -64,9 +64,6 @@ function Wallet() {
         } else {
             setDynamicInput(Rewards ? Rewards[3] : "0")
         }
-        //  else {
-        //     setDCInput(DCUser.balance)
-        // }
     }
     useEffect(() => {
         if (_tokenPrice) {
@@ -86,6 +83,7 @@ function Wallet() {
             let dyT = 0;
             let dyC = 0;
             let stC = 0;
+            console.log(_reward);
             for (let index = 0; index < _reward.length; index++) {
                 stT += BigNoToUSDT(_reward[index].staticClaimable);
                 dyT += BigNoToUSDT(_reward[index].dynamicClaimable);
@@ -94,13 +92,8 @@ function Wallet() {
                 dyC += BigNoToUSDT(_reward[index].dynamicClaimed);
                 dyC += BigNoToUSDT(_reward[index].directClaimed);
             }
+            console.log(stT, dyT, stC, dyC);
             setRewards([stT, dyT, stC, dyC])
-        }
-        if (_reward) {
-            console.log(_reward);
-            let st = BigNoToUSDT(_reward.staticReward);
-            let dy = BigNoToUSDT(_reward.dynamicReward);
-            setRewards([st, dy])
         }
     }, [_reward])
 
