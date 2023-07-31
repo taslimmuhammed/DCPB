@@ -203,23 +203,17 @@ contract StakingContract {
 
     function refreshRewards() public {
         StakeStruct[] memory stakes = Users[msg.sender].stakes;
-        if (Users[msg.sender].stakes.length == 0) return;
+        if (stakes.length == 0) return;
         uint256 baseTime = Users[msg.sender].baseTime;
         uint256 currentTime = block.timestamp;
         Users[msg.sender].baseTime = currentTime;
 
         RefContract.RelationStruct[] memory relationBonuses = refContract.getValidRelationalBonus(msg.sender, baseTime);
         RefContract.RankBonus[] memory rankBonuses = refContract.getValidRankBonus(msg.sender, baseTime);
-        
-        //filtering stakes
-        uint256 count;
-        for (uint256 i = 0; i < stakes.length; i++) if (!stakes[i].filled) count++;
-        StakeStruct[] memory filteredStakes = new StakeStruct[](count);
-        for (uint256 i = 0; i < stakes.length; i++) if (!stakes[i].filled) filteredStakes[i] = stakes[i];
 
-        uint256[] memory availableArray = new uint256[](filteredStakes.length);
-        for (uint256 i = 0; i < filteredStakes.length; i++) 
-            availableArray[i] = filteredStakes[i].reward - filteredStakes[i].directBonus - filteredStakes[i].directClaimed - filteredStakes[i].staticClaimed - filteredStakes[i].dynamicClaimed - filteredStakes[i].staticClaimable - filteredStakes[i].dynamicClaimable;
+        uint256[] memory availableArray = new uint256[](stakes.length);
+        for (uint256 i = 0; i < stakes.length; i++) 
+            availableArray[i] = stakes[i].reward - stakes[i].directBonus - stakes[i].directClaimed - stakes[i].staticClaimed - stakes[i].dynamicClaimed - stakes[i].staticClaimable - stakes[i].dynamicClaimable;
 
         for (uint256 time = baseTime; time < currentTime; time+=60) {
             //calculating dynamic for the day
@@ -227,31 +221,32 @@ contract StakingContract {
             for (uint256 i = 0; i < relationBonuses.length; i++)
                 if (time > relationBonuses[i].start && time <= relationBonuses[i].end)
                     dynamicReward += relationBonuses[i].reward;
+
             for (uint256 i = 0; i < rankBonuses.length; i++)
                 if (time > rankBonuses[i].start && time <= rankBonuses[i].end)
                     dynamicReward +=rankBonuses[i].reward*rankBonuses[i].multiplier;
             
-             for (uint256 i = 0; i < filteredStakes.length; i++) {
-                if (filteredStakes[i].filled || time <= filteredStakes[i].timestamp) continue;
+             for (uint256 i = 0; i < stakes.length; i++) {
+                if (stakes[i].filled || time <= stakes[i].timestamp) continue;
                 //subtracting static
-                if (availableArray[i] <= filteredStakes[i].staticBonus) {
-                    Users[msg.sender].stakes[filteredStakes[i].index].staticClaimable += availableArray[i];
-                    Users[msg.sender].stakes[filteredStakes[i].index].filled = true;
-                    filteredStakes[i].filled = true;
+                if (availableArray[i] <= stakes[i].staticBonus) {
+                    Users[msg.sender].stakes[i].staticClaimable += availableArray[i];
+                    Users[msg.sender].stakes[i].filled = true;
+                    stakes[i].filled = true;
                     availableArray[i] = 0;
                 } else {
-                    Users[msg.sender].stakes[filteredStakes[i].index].staticClaimable += filteredStakes[i].staticBonus;
-                    availableArray[i] -= filteredStakes[i].staticBonus;
+                    Users[msg.sender].stakes[i].staticClaimable += stakes[i].staticBonus;
+                    availableArray[i] -= stakes[i].staticBonus;
                     //subtrating dynamic 
                     if(dynamicReward>0)
                         if (availableArray[i] <= dynamicReward) {
-                            Users[msg.sender].stakes[filteredStakes[i].index].dynamicClaimable += availableArray[i];
+                            Users[msg.sender].stakes[i].dynamicClaimable += availableArray[i];
                             dynamicReward -= availableArray[i]; 
-                            Users[msg.sender].stakes[filteredStakes[i].index].filled = true;
-                            filteredStakes[i].filled = true;
+                            Users[msg.sender].stakes[i].filled = true;
+                            stakes[i].filled = true;
                             availableArray[i] = 0;
                         } else {
-                            Users[msg.sender].stakes[filteredStakes[i].index].dynamicClaimable += dynamicReward;
+                            Users[msg.sender].stakes[i].dynamicClaimable += dynamicReward;
                             availableArray[i] -= dynamicReward;
                             dynamicReward = 0;
                         }

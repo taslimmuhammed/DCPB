@@ -22,6 +22,10 @@ function StakingList() {
         }
         setisLoading(false)
     }
+    useEffect(() => {
+      console.log({ stakingList })
+    }, [stakingList])
+    
     if (isLoading || L10) return (<Loader />)
     else return (<div className='p-3 mb-10'>
         <div className='flex justify-center w-full mb-3'>
