@@ -60,9 +60,9 @@ function Wallet() {
     }
     const setMax = (index) => {
         if (index === 0) {
-            setStaticInput(Rewards ? Rewards[2] : "0")
+            setStaticInput(Rewards ? Rewards[0] : "0")
         } else {
-            setDynamicInput(Rewards ? Rewards[3] : "0")
+            setDynamicInput(Rewards ? Rewards[1] : "0")
         }
     }
     useEffect(() => {
