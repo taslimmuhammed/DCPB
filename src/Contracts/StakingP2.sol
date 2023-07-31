@@ -218,7 +218,7 @@ contract StakingContract {
         for (uint256 i = 0; i < stakes.length; i++) if (!stakes[i].filled) filteredStakes[i] = stakes[i];
 
         uint256[] memory availableArray = new uint256[](filteredStakes.length);
-        for (uint i = 0; i < filteredStakes.length; i++) 
+        for (uint256 i = 0; i < filteredStakes.length; i++) 
             availableArray[i] = filteredStakes[i].reward - filteredStakes[i].directBonus - filteredStakes[i].directClaimed - filteredStakes[i].staticClaimed - filteredStakes[i].dynamicClaimed - filteredStakes[i].staticClaimable - filteredStakes[i].dynamicClaimable;
 
         for (uint256 time = baseTime; time < currentTime; time+=60) {
@@ -231,7 +231,7 @@ contract StakingContract {
                 if (time > rankBonuses[i].start && time <= rankBonuses[i].end)
                     dynamicReward +=rankBonuses[i].reward*rankBonuses[i].multiplier;
             
-             for (uint i = 0; i < filteredStakes.length; i++) {
+             for (uint256 i = 0; i < filteredStakes.length; i++) {
                 if (filteredStakes[i].filled || time <= filteredStakes[i].timestamp) continue;
                 //subtracting static
                 if (availableArray[i] <= filteredStakes[i].staticBonus) {
@@ -262,7 +262,7 @@ contract StakingContract {
     function getTotalWithdrawable(address _user) public view returns (RewardStruct memory) {
          StakeStruct[] memory stakes = Users[_user].stakes;
          RewardStruct memory rewardStruct;
-         for (uint i = 0; i < stakes.length; i++) {
+         for (uint256 i = 0; i < stakes.length; i++) {
             rewardStruct.staticReward += stakes[i].staticClaimable;
             rewardStruct.dynamicReward += stakes[i].dynamicClaimable;
             rewardStruct.dynamicReward += stakes[i].directBonus;
@@ -429,7 +429,7 @@ contract StakingContract {
         uint256 staticReward;
         uint256 dynamicReward;
         uint256 balance;
-        for (uint i = 0; i < userlist.length; i++) {
+        for (uint256 i = 0; i < userlist.length; i++) {
             RewardStruct memory userRewards = getTotalWithdrawable(userlist[i]);
             staticReward += userRewards.staticReward;
             dynamicReward += userRewards.dynamicReward;

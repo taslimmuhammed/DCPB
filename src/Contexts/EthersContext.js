@@ -21,7 +21,7 @@ export default function Ethers({ children }) {
     const { contract: USDTContract, isLoading: L17 } = useContract(USDTAddress, TokenABI);
     const [Chinese, setChinese] = useState(false)
     const address = useAddress();
-    //const address = "0x6B851e5B220438396ac5ee74779DDe1a54f795A9" //c
+   // const address = "0xd4c97185E39fE07AD7C3e062aAC015BF028Bc850" //c
     // const address = "0x90A09F952760579B2701467089FAB1344dEedC82" 
     //const address = "0x49CA032fe5230f8c15eE3eE221e40d88C737A125" //a
     //const address = "0xd4c97185E39fE07AD7C3e062aAC015BF028Bc850" //d
