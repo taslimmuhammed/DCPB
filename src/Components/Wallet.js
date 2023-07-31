@@ -80,18 +80,23 @@ function Wallet() {
 
     }, [tokenPrice, DCinUSDT])
     useEffect(() => {
+        // if (_reward) {
+        //     let stT = 0;
+        //     let dyT = 0;
+        //     let dyC = 0;
+        //     let stC = 0;
+        //     for (let index = 0; index < _reward.length; index++) {
+        //         stT += BigNoToUSDT(_reward[index].staticClaimed);
+        //         dyT += BigNoToUSDT(_reward[index].dynamicClaimed);
+        //         stC += BigNoToUSDT(_reward[index].staticReward);
+        //         dyC += BigNoToUSDT(_reward[index].dynamicReward);
+        //     }
+        //     setRewards([stT, dyT, stC, dyC])
+        // }
         if (_reward) {
-            let stT = 0;
-            let dyT = 0;
-            let dyC = 0;
-            let stC = 0;
-            for (let index = 0; index < _reward.length; index++) {
-                stT += BigNoToUSDT(_reward[index].staticClaimed);
-                dyT += BigNoToUSDT(_reward[index].dynamicClaimed);
-                stC += BigNoToUSDT(_reward[index].staticReward);
-                dyC += BigNoToUSDT(_reward[index].dynamicReward);
-            }
-            setRewards([stT, dyT, stC, dyC])
+            let st = BigNoToUSDT(_reward.staticClaimable);
+            let dy = BigNoToUSDT(_reward.dynamicClaimable);
+            setRewards([st, dy])
         }
     }, [_reward])
 

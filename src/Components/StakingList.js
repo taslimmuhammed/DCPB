@@ -61,7 +61,7 @@ function StakingList() {
                             </div>
                       <div className='flex justify-between'>
                                 <div className=''>{Chinese ? LangArray[51] : LangArray[50]}</div>
-                                <div>{dyReward + stReward + staticClaimed + dynamicClaimed} | {amount * 2} <span className='text-yellow-300 font-normal'>{Chinese ? LangArray[53] : LangArray[52]}</span></div>
+                                <div>{dyReward + stReward + staticClaimed + dynamicClaimed + directBonus + directClaimed} | {amount * 2} <span className='text-yellow-300 font-normal'>{Chinese ? LangArray[53] : LangArray[52]}</span></div>
                       </div>
                   </div>)})
             }
