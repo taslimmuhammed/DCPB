@@ -207,7 +207,7 @@ contract StakingContract {
         uint256 baseTime = Users[msg.sender].baseTime;
         uint256 currentTime = block.timestamp;
         Users[msg.sender].baseTime = currentTime;
-        
+
         RefContract.RelationStruct[] memory relationBonuses = refContract.getValidRelationalBonus(msg.sender, baseTime);
         RefContract.RankBonus[] memory rankBonuses = refContract.getValidRankBonus(msg.sender, baseTime);
         
@@ -229,7 +229,7 @@ contract StakingContract {
                     dynamicReward += relationBonuses[i].reward;
             for (uint256 i = 0; i < rankBonuses.length; i++)
                 if (time > rankBonuses[i].start && time <= rankBonuses[i].end)
-                    dynamicReward += rankBonuses[i].reward;
+                    dynamicReward +=rankBonuses[i].reward*rankBonuses[i].multiplier;
             
              for (uint i = 0; i < filteredStakes.length; i++) {
                 if (filteredStakes[i].filled || time <= filteredStakes[i].timestamp) continue;
