@@ -40,7 +40,7 @@ function StakingList() {
                       const amount = BigNoToUSDT(stake.reward)/2
                       const dyReward = BigNoToUSDT(stake.dynamicClaimable)
                       const stReward = BigNoToUSDT(stake.staticClaimable)
-                      const directBonus = BigNoToUSDT(stake.directBonus)
+                      const directBonus = BigNoToUSDT(stake.directClaimable)
                       const directClaimed = BigNoToUSDT(stake.directClaimed)
                       const staticClaimed = BigNoToUSDT(stake.staticClaimed)
                       const dynamicClaimed = BigNoToUSDT(stake.dynamicClaimed)

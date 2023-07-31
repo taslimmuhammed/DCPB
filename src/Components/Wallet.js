@@ -87,7 +87,7 @@ function Wallet() {
             for (let index = 0; index < _reward.length; index++) {
                 stT += BigNoToUSDT(_reward[index].staticClaimable);
                 dyT += BigNoToUSDT(_reward[index].dynamicClaimable);
-                dyT += BigNoToUSDT(_reward[index].directBonus);
+                dyT += BigNoToUSDT(_reward[index].directClaimable);
                 stC += BigNoToUSDT(_reward[index].staticClaimed);
                 dyC += BigNoToUSDT(_reward[index].dynamicClaimed);
                 dyC += BigNoToUSDT(_reward[index].directClaimed);
