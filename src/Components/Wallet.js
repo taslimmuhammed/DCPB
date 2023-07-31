@@ -17,7 +17,7 @@ function Wallet() {
     const [DCInput, setDCInput] = useState(0)
     const [tokenPrice, settokenPrice] = useState(0)
     const { data: _tokenPrice } = useContractRead(DCManager, "tokenPrice", [])
-    const { data: _reward, isLoading: L4 } = useContractRead(contract, "getStakes", [address])
+    const { data: _reward, isLoading: L4 } = useContractRead(contract, "getTotalWithdrawable", [address])
     const { mutateAsync: claimDynamicReward } = useContractWrite(contract, "claimDynamicReward")
     const { mutateAsync: claimStaticReward } = useContractWrite(contract, "claimStaticReward")
     const { data: Balance } = useBalance(DCTokenAddress);

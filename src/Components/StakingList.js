@@ -36,6 +36,8 @@ function StakingList() {
                       const amount = BigNoToUSDT(stake.reward)/2
                       const dyReward = BigNoToUSDT(stake.dynamicClaimable)
                       const stReward = BigNoToUSDT(stake.staticClaimable)
+                      const directBonus = BigNoToUSDT(stake.directBonus)
+                      const directClaimed = BigNoToUSDT(stake.directClaimed)
                       const staticClaimed = BigNoToUSDT(stake.staticClaimed)
                       const dynamicClaimed = BigNoToUSDT(stake.dynamicClaimed)
 
@@ -55,7 +57,7 @@ function StakingList() {
                       </div>
                             <div className='flex justify-between'>
                                 <div className=''>{Chinese ? LangArray[49] : LangArray[48]}</div>
-                                <div>{dyReward+ dynamicClaimed} USDT</div>
+                                <div>{dyReward+ dynamicClaimed +directBonus+directClaimed} USDT</div>
                             </div>
                       <div className='flex justify-between'>
                                 <div className=''>{Chinese ? LangArray[51] : LangArray[50]}</div>

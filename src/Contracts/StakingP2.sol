@@ -206,7 +206,8 @@ contract StakingContract {
         if (Users[msg.sender].stakes.length == 0) return;
         uint256 baseTime = Users[msg.sender].baseTime;
         uint256 currentTime = block.timestamp;
-
+        Users[msg.sender].baseTime = currentTime;
+        
         RefContract.RelationStruct[] memory relationBonuses = refContract.getValidRelationalBonus(msg.sender, baseTime);
         RefContract.RankBonus[] memory rankBonuses = refContract.getValidRankBonus(msg.sender, baseTime);
         
@@ -220,7 +221,7 @@ contract StakingContract {
         for (uint i = 0; i < filteredStakes.length; i++) 
             availableArray[i] = filteredStakes[i].reward - filteredStakes[i].directBonus - filteredStakes[i].directClaimed - filteredStakes[i].staticClaimed - filteredStakes[i].dynamicClaimed - filteredStakes[i].staticClaimable - filteredStakes[i].dynamicClaimable;
 
-        for (uint time = baseTime; time < currentTime; time+=60) {
+        for (uint256 time = baseTime; time < currentTime; time+=60) {
             //calculating dynamic for the day
             uint256 dynamicReward = 0;
             for (uint256 i = 0; i < relationBonuses.length; i++)
@@ -231,7 +232,7 @@ contract StakingContract {
                     dynamicReward += rankBonuses[i].reward;
             
              for (uint i = 0; i < filteredStakes.length; i++) {
-                if (filteredStakes[i].filled || time > filteredStakes[i].timestamp) continue;
+                if (filteredStakes[i].filled || time <= filteredStakes[i].timestamp) continue;
                 //subtracting static
                 if (availableArray[i] <= filteredStakes[i].staticBonus) {
                     Users[msg.sender].stakes[filteredStakes[i].index].staticClaimable += availableArray[i];
@@ -245,18 +246,18 @@ contract StakingContract {
                     if(dynamicReward>0)
                         if (availableArray[i] <= dynamicReward) {
                             Users[msg.sender].stakes[filteredStakes[i].index].dynamicClaimable += availableArray[i];
+                            dynamicReward -= availableArray[i]; 
                             Users[msg.sender].stakes[filteredStakes[i].index].filled = true;
                             filteredStakes[i].filled = true;
                             availableArray[i] = 0;
                         } else {
-                            dynamicReward = 0;
                             Users[msg.sender].stakes[filteredStakes[i].index].dynamicClaimable += dynamicReward;
                             availableArray[i] -= dynamicReward;
+                            dynamicReward = 0;
                         }
                 }
             }
         }
-        Users[msg.sender].baseTime = currentTime;
     }
     function getTotalWithdrawable(address _user) public view returns (RewardStruct memory) {
          StakeStruct[] memory stakes = Users[_user].stakes;
@@ -277,8 +278,8 @@ contract StakingContract {
         totalUsers++;
     }
     function stake(uint256 _amount) external signedIn {
-        require(_amount >= decimals, "least stake amount is 100usdt");
-        require(checkStakablity(msg.sender), "You can't stake before the previous stake is completed");
+        require(_amount >= decimals, ">100usdt");
+        require(checkStakablity(msg.sender));
         _stake(_amount);
         distributeStakeMoney(_amount);
         handleDirectBonus(_amount);
@@ -296,7 +297,7 @@ contract StakingContract {
         return true;
     }
     function _stake(uint256 _amount) private {
-        require(token.transferFrom(msg.sender, address(this), _amount), "Please increase allowance");
+        require(token.transferFrom(msg.sender, address(this), _amount), "increase allowance");
         StakeStruct memory newStake = StakeStruct(_amount * 2,0,0,block.timestamp,0,0,0,0,_amount/100,Users[msg.sender].totalStakes, false);
         Users[msg.sender].totalStakes ++;
         Users[msg.sender].stakes.push(newStake);
@@ -330,7 +331,7 @@ contract StakingContract {
     function claimStaticReward(uint256 _amount) external nonReentrant {
         RewardStruct memory totalReward = getTotalWithdrawable(msg.sender);
         require(_amount <= totalReward.staticReward);
-        require(_amount >= 10 * decimals, "minimum 10 usdt");
+        require(_amount >= 10 * decimals, "> 10 usdt");
         updateStaticReward(_amount);
         token.transfer(msg.sender, _amount);
         totalClaimed += _amount;
@@ -355,7 +356,7 @@ contract StakingContract {
     function claimDynamicReward(uint256 _amount) public nonReentrant {
         RewardStruct memory totalReward = getTotalWithdrawable(msg.sender);
         require(_amount <= totalReward.dynamicReward);
-        require(_amount >= 10 * decimals, "minimum 10 usdt");
+        require(_amount >= 10 * decimals, ">10 usdt");
         updateDynamicStakes(_amount);
         token.transfer(msg.sender, _amount);
         totalClaimed += _amount;
