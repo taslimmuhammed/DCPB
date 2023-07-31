@@ -94,8 +94,9 @@ function Wallet() {
         //     setRewards([stT, dyT, stC, dyC])
         // }
         if (_reward) {
-            let st = BigNoToUSDT(_reward.staticClaimable);
-            let dy = BigNoToUSDT(_reward.dynamicClaimable);
+            console.log(_reward);
+            let st = BigNoToUSDT(_reward.staticReward);
+            let dy = BigNoToUSDT(_reward.dynamicReward);
             setRewards([st, dy])
         }
     }, [_reward])
@@ -125,7 +126,7 @@ function Wallet() {
                         </div>
                         <div className='text-xs text-stone-100 mb-2 mt-1 flex justify-between'>
                             <div>
-                                <span className='text-stone-500'>{Chinese ? LangArray[61] : LangArray[60]}:</span>  {Rewards ? Rewards[2] : "0"} USDT
+                                <span className='text-stone-500'>{Chinese ? LangArray[61] : LangArray[60]}:</span>  {Rewards ? Rewards[0] : "0"} USDT
                             </div>
                             <div>
                                 <span className='text-stone-500'>{Chinese ? LangArray[109] : LangArray[108]}:</span> 10 USDT
@@ -157,7 +158,7 @@ function Wallet() {
                         </div>
                         <div className='text-xs text-stone-100 mb-2 mt-1 flex justify-between'>
                             <div>
-                                <span className='text-stone-500'>{Chinese ? LangArray[61] : LangArray[60]}:</span>  {Rewards ? Rewards[3] : "0"} USDT
+                                <span className='text-stone-500'>{Chinese ? LangArray[61] : LangArray[60]}:</span>  {Rewards ? Rewards[1] : "0"} USDT
                             </div>
                             <div>
                                 <span className='text-stone-500'>{Chinese ? LangArray[109] : LangArray[108]}:</span> 10 USDT
