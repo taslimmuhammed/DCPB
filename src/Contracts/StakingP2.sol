@@ -65,9 +65,9 @@ interface RefContract {
 
     function getReferralRanks(address _user) external view returns (uint256[7] memory);
 
-    function getValidRankBonus(address _user, uint256 baseTime) external view returns (RankBonus[] memory);
+    function getValidRankBonus(address _user, uint256 baseTime) external view returns (RankBonus[] memory,uint256 length) ;
 
-    function getValidRelationalBonus(address _user, uint256 baseTime) external view returns (RelationStruct[] memory);
+    function getValidRelationalBonus(address _user, uint256 baseTime) external view returns (RelationStruct[] memory,uint256 length);
 }
 
 contract StakingContract {
@@ -207,8 +207,8 @@ contract StakingContract {
         require(currentTime > baseTime+60, "wait for 1 minute");
         Users[msg.sender].baseTime = currentTime;
 
-        RefContract.RelationStruct[] memory relationBonuses = refContract.getValidRelationalBonus(msg.sender, baseTime);
-        RefContract.RankBonus[] memory rankBonuses = refContract.getValidRankBonus(msg.sender, baseTime);
+        (RefContract.RelationStruct[] memory relationBonuses, uint256 relationLen) = refContract.getValidRelationalBonus(msg.sender, baseTime);
+        (RefContract.RankBonus[] memory rankBonuses, uint256 rankLen) = refContract.getValidRankBonus(msg.sender, baseTime);
 
         for (uint256 i = 0; i < stakes.length; i++){ 
             stakes[i].reward -= (stakes[i].directClaimable + stakes[i].directClaimed + stakes[i].staticClaimed + stakes[i].dynamicClaimed + stakes[i].staticClaimable + stakes[i].dynamicClaimable);}
@@ -216,11 +216,11 @@ contract StakingContract {
         for (uint256 time = baseTime; time < currentTime; time+=60) {
             //calculating dynamic for the day
             uint256 dynamicReward = 0;
-            for (uint256 i = 0; i < relationBonuses.length; i++){
+            for (uint256 i = 0; i < relationLen; i++){
                 if (time > relationBonuses[i].start && time <= relationBonuses[i].end)
                     dynamicReward += relationBonuses[i].reward;}
 
-            for (uint256 i = 0; i < rankBonuses.length; i++){
+            for (uint256 i = 0; i < rankLen; i++){
                 if (time > rankBonuses[i].start && time <= rankBonuses[i].end)
                     dynamicReward +=rankBonuses[i].reward*rankBonuses[i].multiplier;}
             

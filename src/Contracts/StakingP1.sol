@@ -321,7 +321,7 @@ contract RefContract {
     ) external view returns (RankBonus[] memory) {
         return teamUsers[_user].rankBonus;
     }
-    function getValidRankBonus(address _user, uint256 baseTime) external view returns (RankBonus[] memory) {
+    function getValidRankBonus(address _user, uint256 baseTime) external view returns (RankBonus[] memory,uint256 length) {
         RankBonus[] memory rankBonus = teamUsers[_user].rankBonus;
         uint256 count;
         for (uint256 i = 0; i < rankBonus.length; i++)
@@ -329,9 +329,9 @@ contract RefContract {
         RankBonus[] memory newRankBonus = new RankBonus[](count);
         for (uint256 i = 0; i < rankBonus.length; i++)
             if (rankBonus[i].end>=baseTime) newRankBonus[i] = rankBonus[i];
-        return newRankBonus;
+        return (newRankBonus, count);
     }
-    function getValidRelationalBonus(address _user, uint256 baseTime) external view returns (RelationStruct[] memory) {
+    function getValidRelationalBonus(address _user, uint256 baseTime) external view returns (RelationStruct[] memory,uint256 length) {
         RelationStruct[] memory relationBonus = teamUsers[_user].relationBonus;
         uint256 count;
         for (uint256 i = 0; i < relationBonus.length; i++)
@@ -339,7 +339,7 @@ contract RefContract {
         RelationStruct[] memory newrelationBonus = new RelationStruct[](count);
         for (uint256 i = 0; i < relationBonus.length; i++)
             if (relationBonus[i].end>=baseTime) newrelationBonus[i] = relationBonus[i];
-        return newrelationBonus;
+        return (newrelationBonus, count);
     }
     function getTotalStake(address _user) external view returns (uint256) {
         return teamUsers[_user].totalStake;
